@@ -1,0 +1,59 @@
+package client
+
+import (
+	"github.com/dadyutenga/hms-control/internal/db/generated"
+	"github.com/dadyutenga/hms-control/internal/views/layout"
+)
+
+type DashboardProps struct {
+	Tenant generated.Tenant
+	User   generated.User
+}
+
+templ Dashboard(props DashboardProps) {
+	@layout.Base("Dashboard") {
+		<div class="max-w-4xl mx-auto p-6">
+			<div class="flex justify-between items-center mb-6">
+				<h1 class="text-2xl font-bold text-white">Welcome, { props.User.Name }</h1>
+				<form method="POST" action="/logout">
+					<button type="submit" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded text-sm">Logout</button>
+				</form>
+			</div>
+
+			<div class="bg-slate-900 rounded-xl border border-slate-800 p-6 mb-6">
+				<h2 class="text-lg font-semibold text-white mb-4">Your HMS Instance</h2>
+				<dl class="space-y-3 text-sm">
+					<div class="flex justify-between">
+						<dt class="text-slate-400">Company</dt>
+						<dd class="text-white">{ props.Tenant.CompanyName }</dd>
+					</div>
+					<div class="flex justify-between">
+						<dt class="text-slate-400">Domain</dt>
+						<dd>
+							if props.Tenant.Status == generated.TenantStatusActive {
+								<a href={ templ.URL("https://" + props.Tenant.Domain) } class="text-indigo-400 hover:underline">{ props.Tenant.Domain }</a>
+							} else {
+								<span class="text-slate-500">{ props.Tenant.Domain }</span>
+							}
+						</dd>
+					</div>
+					<div class="flex justify-between">
+						<dt class="text-slate-400">Status</dt>
+						<dd>
+							switch string(props.Tenant.Status) {
+								case "active":
+									<span class="px-2 py-1 bg-green-900 text-green-300 rounded text-xs">active</span>
+								case "provisioning":
+									<span class="px-2 py-1 bg-cyan-900 text-cyan-300 rounded text-xs animate-pulse">provisioning</span>
+								case "pending_approval":
+									<span class="px-2 py-1 bg-purple-900 text-purple-300 rounded text-xs">pending approval</span>
+								default:
+									<span class="px-2 py-1 bg-slate-700 text-slate-400 rounded text-xs">{ string(props.Tenant.Status) }</span>
+							}
+						</dd>
+					</div>
+				</dl>
+			</div>
+		</div>
+	}
+}

@@ -1,0 +1,117 @@
+package admin
+
+import (
+	"fmt"
+
+	"github.com/dadyutenga/hms-control/internal/db/generated"
+	"github.com/dadyutenga/hms-control/internal/views/layout"
+)
+
+templ TenantList(tenants []generated.ListTenantsRow) {
+	@layout.Base("Tenants") {
+		<div class="max-w-7xl mx-auto p-6">
+			<div class="flex justify-between items-center mb-6">
+				<h1 class="text-2xl font-bold text-white">Tenants</h1>
+				<span class="text-slate-400">{ fmt.Sprintf("%d", len(tenants)) } total</span>
+			</div>
+			@TenantTable(tenants)
+		</div>
+	}
+}
+
+templ TenantTable(tenants []generated.ListTenantsRow) {
+	<div id="tenant-table">
+		<table class="w-full text-sm">
+			<thead>
+				<tr class="border-b border-slate-800 text-slate-400">
+					<th class="text-left py-3">Company</th>
+					<th class="text-left py-3">Domain</th>
+					<th class="text-left py-3">Status</th>
+					<th class="text-left py-3">Registered</th>
+					<th class="text-left py-3">Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				for _, t := range tenants {
+					<tr class="border-b border-slate-800/50 hover:bg-slate-900/50">
+						<td class="py-3">
+							<div class="font-medium">{ t.CompanyName }</div>
+							<div class="text-slate-500 text-xs">{ t.UserEmail }</div>
+						</td>
+						<td class="py-3">
+							<a href={ templ.URL("https://" + t.Domain) }
+							   class="text-indigo-400 hover:underline" target="_blank">
+								{ t.Domain }
+							</a>
+						</td>
+						<td class="py-3" id={ "status-" + t.ID.String() }>
+							@StatusBadge(string(t.Status))
+						</td>
+						<td class="py-3 text-slate-400">
+							{ t.CreatedAt.Format("02 Jan 2006") }
+						</td>
+						<td class="py-3">
+							@TenantActions(t)
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+}
+
+templ TenantActions(t generated.ListTenantsRow) {
+	<div class="flex gap-2">
+		if t.Status == generated.TenantStatusPendingApproval {
+			<button
+				hx-post={ "/admin/tenants/" + t.ID.String() + "/approve" }
+				hx-target={ "#status-" + t.ID.String() }
+				hx-swap="innerHTML"
+				hx-confirm="Approve and provision this tenant?"
+				class="px-3 py-1 bg-indigo-600 hover:bg-indigo-500 rounded text-xs font-medium">
+				Approve
+			</button>
+		}
+		if t.Status == generated.TenantStatusActive {
+			<button
+				hx-post={ "/admin/tenants/" + t.ID.String() + "/suspend" }
+				hx-target={ "#status-" + t.ID.String() }
+				hx-swap="innerHTML"
+				class="px-3 py-1 bg-red-700 hover:bg-red-600 rounded text-xs font-medium">
+				Suspend
+			</button>
+		}
+		if t.Status == generated.TenantStatusFailed {
+			<button
+				hx-post={ "/admin/tenants/" + t.ID.String() + "/retry" }
+				hx-target={ "#status-" + t.ID.String() }
+				hx-swap="innerHTML"
+				class="px-3 py-1 bg-orange-600 hover:bg-orange-500 rounded text-xs font-medium">
+				Retry
+			</button>
+		}
+		<a href={ templ.URL("/admin/tenants/" + t.ID.String()) }
+		   class="px-3 py-1 bg-slate-700 hover:bg-slate-600 rounded text-xs font-medium">
+			Logs
+		</a>
+	</div>
+}
+
+templ StatusBadge(status string) {
+	switch status {
+		case "pending_verification":
+			<span class="px-2 py-1 bg-slate-700 text-slate-300 rounded text-xs">unverified</span>
+		case "pending_approval":
+			<span class="px-2 py-1 bg-purple-900 text-purple-300 rounded text-xs">pending</span>
+		case "provisioning":
+			<span class="px-2 py-1 bg-cyan-900 text-cyan-300 rounded text-xs animate-pulse">provisioning</span>
+		case "active":
+			<span class="px-2 py-1 bg-green-900 text-green-300 rounded text-xs">active</span>
+		case "suspended":
+			<span class="px-2 py-1 bg-red-900 text-red-300 rounded text-xs">suspended</span>
+		case "failed":
+			<span class="px-2 py-1 bg-orange-900 text-orange-300 rounded text-xs">failed</span>
+		default:
+			<span class="px-2 py-1 bg-slate-700 text-slate-400 rounded text-xs">{ status }</span>
+	}
+}

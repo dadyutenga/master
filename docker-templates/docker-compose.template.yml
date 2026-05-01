@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  app_{{SLUG}}:
+    build:
+      context: /opt/hms-source
+      dockerfile: Dockerfile
+    image: hms-app:latest
+    container_name: hms_{{SLUG}}
+    restart: unless-stopped
+    env_file: /opt/tenants/{{SLUG}}/.env
+    volumes:
+      - /opt/tenants/{{SLUG}}/storage:/var/www/html/storage
+    networks:
+      - traefik_net
+    depends_on:
+      - postgres_{{SLUG}}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.{{SLUG}}.rule=Host(`{{DOMAIN}}`)"
+      - "traefik.http.routers.{{SLUG}}.entrypoints=websecure"
+      - "traefik.http.routers.{{SLUG}}.tls.certresolver=letsencrypt"
+      - "traefik.http.services.{{SLUG}}.loadbalancer.server.port=9000"
+
+  postgres_{{SLUG}}:
+    image: postgres:15-alpine
+    container_name: postgres_{{SLUG}}
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: {{DB_NAME}}
+      POSTGRES_USER: {{DB_USER}}
+      POSTGRES_PASSWORD: {{DB_PASS}}
+    volumes:
+      - pgdata_{{SLUG}}:/var/lib/postgresql/data
+    networks:
+      - traefik_net
+
+volumes:
+  pgdata_{{SLUG}}:
+
+networks:
+  traefik_net:
+    external: true

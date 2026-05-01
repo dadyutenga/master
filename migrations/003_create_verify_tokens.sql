@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS verify_tokens (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id    INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    token      TEXT NOT NULL UNIQUE,
+    expires_at DATETIME NOT NULL,
+    used       INTEGER NOT NULL DEFAULT 0
+);
