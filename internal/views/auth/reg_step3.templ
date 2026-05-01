@@ -16,17 +16,17 @@ type Step3Props struct {
 
 templ RegisterStep3(props Step3Props) {
 	@layout.Base("Contact & Documents") {
-		<header class="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-50">
+		<header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
 			<div class="flex items-center justify-between max-w-[1120px] mx-auto h-16 px-6">
-				<div class="text-xl font-bold tracking-tight text-slate-900" style="font-family: 'Public Sans', sans-serif;">HMS Control</div>
+				<div class="text-xl font-bold tracking-tight text-black" style="font-family: 'Public Sans', sans-serif;">HMS Control</div>
 				<nav class="hidden md:flex items-center gap-8 h-full">
-					<a class="text-slate-600 hover:text-slate-900 text-sm font-medium flex items-center h-full px-1" href="#" style="font-family: 'Public Sans', sans-serif;">Company Info</a>
-					<a class="text-slate-600 hover:text-slate-900 text-sm font-medium flex items-center h-full px-1" href="#" style="font-family: 'Public Sans', sans-serif;">Legal Structure</a>
-					<a class="border-b-2 border-blue-700 text-blue-700 font-semibold flex items-center h-full px-1 text-sm" href="#" style="font-family: 'Public Sans', sans-serif;">Documents</a>
-					<a class="text-slate-600 hover:text-slate-900 text-sm font-medium flex items-center h-full px-1" href="#" style="font-family: 'Public Sans', sans-serif;">Help &amp; Support</a>
+					<a class="text-gray-600 hover:text-black text-sm font-medium flex items-center h-full px-1" href="#" style="font-family: 'Public Sans', sans-serif;">Company Info</a>
+					<a class="text-gray-600 hover:text-black text-sm font-medium flex items-center h-full px-1" href="#" style="font-family: 'Public Sans', sans-serif;">Legal Structure</a>
+					<a class="border-b-2 border-[#3B82F6] text-[#3B82F6] font-semibold flex items-center h-full px-1 text-sm" href="#" style="font-family: 'Public Sans', sans-serif;">Documents</a>
+					<a class="text-gray-600 hover:text-black text-sm font-medium flex items-center h-full px-1" href="#" style="font-family: 'Public Sans', sans-serif;">Help &amp; Support</a>
 				</nav>
 				<div class="flex items-center gap-4">
-					<span class="material-symbols-outlined text-secondary cursor-pointer">account_circle</span>
+					<span class="material-symbols-outlined text-gray-500 cursor-pointer">account_circle</span>
 				</div>
 			</div>
 		</header>
@@ -34,166 +34,118 @@ templ RegisterStep3(props Step3Props) {
 			<div class="mb-12">
 				<div class="flex items-center justify-between mb-8 overflow-x-auto pb-4">
 					<div class="flex items-center min-w-max">
-						<div class="flex items-center text-on-tertiary-container">
-							<div class="w-8 h-8 rounded-full bg-on-tertiary-container flex items-center justify-center text-white font-bold text-sm">
+						<div class="flex items-center">
+							<div class="w-8 h-8 rounded-full bg-[#3B82F6] flex items-center justify-center text-white font-bold text-sm">
 								<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">check</span>
 							</div>
-							<span class="ml-3 text-sm font-semibold text-on-surface">Company Profile</span>
+							<span class="ml-3 text-sm font-semibold text-black">Company Profile</span>
 						</div>
-						<div class="w-16 h-0.5 bg-on-tertiary-container mx-4"></div>
-						<div class="flex items-center text-on-tertiary-container">
-							<div class="w-8 h-8 rounded-full bg-on-tertiary-container flex items-center justify-center text-white font-bold text-sm">
+						<div class="w-16 h-0.5 bg-[#3B82F6] mx-4"></div>
+						<div class="flex items-center">
+							<div class="w-8 h-8 rounded-full bg-[#3B82F6] flex items-center justify-center text-white font-bold text-sm">
 								<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">check</span>
 							</div>
-							<span class="ml-3 text-sm font-semibold text-on-surface">Compliance</span>
+							<span class="ml-3 text-sm font-semibold text-black">Compliance</span>
 						</div>
-						<div class="w-16 h-0.5 bg-on-tertiary-container mx-4"></div>
-						<div class="flex items-center text-primary">
-							<div class="w-8 h-8 rounded-full border-2 border-primary flex items-center justify-center bg-primary text-white font-bold text-sm">3</div>
-							<span class="ml-3 text-sm font-semibold text-primary">Documents</span>
+						<div class="w-16 h-0.5 bg-[#3B82F6] mx-4"></div>
+						<div class="flex items-center">
+							<div class="w-8 h-8 rounded-full border-2 border-[#3B82F6] flex items-center justify-center bg-[#3B82F6] text-white font-bold text-sm">3</div>
+							<span class="ml-3 text-sm font-semibold text-black">Documents</span>
 						</div>
-						<div class="w-16 h-0.5 bg-outline-variant mx-4"></div>
-						<div class="flex items-center text-outline">
-							<div class="w-8 h-8 rounded-full border-2 border-outline-variant flex items-center justify-center text-outline font-bold text-sm">4</div>
-							<span class="ml-3 text-sm font-semibold text-outline">Review</span>
+						<div class="w-16 h-0.5 bg-gray-200 mx-4"></div>
+						<div class="flex items-center text-gray-400">
+							<div class="w-8 h-8 rounded-full border-2 border-gray-200 flex items-center justify-center font-bold text-sm">4</div>
+							<span class="ml-3 text-sm font-semibold">Review</span>
 						</div>
 					</div>
 				</div>
 				<div class="mb-4">
-					<h1 class="text-3xl font-bold text-on-surface mb-2" style="font-family: 'Public Sans', sans-serif; letter-spacing: -0.02em;">Contact &amp; Document Upload</h1>
-					<p class="text-base text-secondary max-w-2xl">Please provide the primary contact details for your organization and upload the required regulatory certificates to complete your institutional verification.</p>
+					<h1 class="text-3xl font-bold text-black mb-2" style="font-family: 'Public Sans', sans-serif; letter-spacing: -0.02em;">Contact &amp; Document Upload</h1>
+					<p class="text-base text-gray-500 max-w-2xl">Please provide the primary contact details for your organization and upload the required regulatory certificates to complete your institutional verification.</p>
 				</div>
-				<div class="w-full bg-surface-container h-1.5 rounded-full overflow-hidden mb-12">
-					<div class="bg-on-tertiary-container h-full w-3/4"></div>
+				<div class="w-full bg-gray-200 h-1.5 rounded-full overflow-hidden mb-12">
+					<div class="bg-[#3B82F6] h-full w-3/4"></div>
 				</div>
 			</div>
 			<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 				<section class="lg:col-span-7 space-y-8">
-					<div class="bg-white border border-outline-variant p-8 rounded-lg shadow-sm">
-						<h2 class="text-2xl font-semibold text-on-surface mb-6 flex items-center gap-2" style="font-family: 'Public Sans', sans-serif;">
+					<div class="bg-white border border-gray-200 p-8 rounded-lg shadow-sm">
+						<h2 class="text-2xl font-semibold text-black mb-6 flex items-center gap-2" style="font-family: 'Public Sans', sans-serif;">
 							<span class="material-symbols-outlined">contact_mail</span>
 							Primary Contact Details
 						</h2>
 						<form hx-post="/register/step3" hx-encoding="multipart/form-data" class="space-y-5">
 							<div class="flex flex-col gap-2">
-								<label class="text-sm font-semibold text-on-surface" for="full_name">Primary Contact Full Name</label>
-								<div class="relative group">
-									<input class="w-full h-12 px-4 rounded border border-outline hover:border-on-surface focus:border-blue-700 focus:ring-1 focus:ring-blue-700 outline-none transition" id="full_name" name="name" placeholder="e.g. John Doe" required type="text"/>
-								</div>
+								<label class="text-sm font-semibold text-black" for="full_name">Primary Contact Full Name</label>
+								<input class="w-full h-12 px-4 rounded border border-gray-200 hover:border-gray-400 focus:border-[#3B82F6] focus:ring-1 focus:ring-[#3B82F6] outline-none transition" name="name" placeholder="e.g. John Doe" required type="text"/>
 							</div>
 							<div class="grid grid-cols-1 md:grid-cols-2 gap-5">
 								<div class="flex flex-col gap-2">
-									<label class="text-sm font-semibold text-on-surface" for="phone">Phone Number</label>
+									<label class="text-sm font-semibold text-black" for="phone">Phone Number</label>
 									<div class="relative">
-										<span class="absolute left-4 top-1/2 -translate-y-1/2 text-outline text-sm font-semibold">+255</span>
-										<input class="w-full h-12 pl-14 pr-4 rounded border border-outline hover:border-on-surface focus:border-blue-700 focus:ring-1 focus:ring-blue-700 outline-none transition" id="phone" name="phone" placeholder="712 345 678" type="tel"/>
+										<span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-semibold">+255</span>
+										<input class="w-full h-12 pl-14 pr-4 rounded border border-gray-200 hover:border-gray-400 focus:border-[#3B82F6] focus:ring-1 focus:ring-[#3B82F6] outline-none transition" name="phone" placeholder="712 345 678" type="tel"/>
 									</div>
 								</div>
 								<div class="flex flex-col gap-2">
-									<label class="text-sm font-semibold text-on-surface" for="email">Email Address</label>
-									<input class="w-full h-12 px-4 rounded border border-outline hover:border-on-surface focus:border-blue-700 focus:ring-1 focus:ring-blue-700 outline-none transition" id="email" name="email" placeholder="contact@company.co.tz" required type="email"/>
+									<label class="text-sm font-semibold text-black" for="email">Email Address</label>
+									<input class="w-full h-12 px-4 rounded border border-gray-200 hover:border-gray-400 focus:border-[#3B82F6] focus:ring-1 focus:ring-[#3B82F6] outline-none transition" name="email" placeholder="contact@company.co.tz" required type="email"/>
 								</div>
 							</div>
 							<div class="grid grid-cols-1 md:grid-cols-2 gap-5">
 								<div class="flex flex-col gap-2">
-									<label class="text-sm font-semibold text-on-surface" for="password">Password</label>
-									<input class="w-full h-12 px-4 rounded border border-outline hover:border-on-surface focus:border-blue-700 focus:ring-1 focus:ring-blue-700 outline-none transition" id="password" name="password" placeholder="Min 8 characters" required type="password" minlength="8"/>
+									<label class="text-sm font-semibold text-black" for="password">Password</label>
+									<input class="w-full h-12 px-4 rounded border border-gray-200 hover:border-gray-400 focus:border-[#3B82F6] focus:ring-1 focus:ring-[#3B82F6] outline-none transition" name="password" placeholder="Min 8 characters" required type="password" minlength="8"/>
 								</div>
 								<div class="flex flex-col gap-2">
-									<label class="text-sm font-semibold text-on-surface" for="password_confirmation">Confirm Password</label>
-									<input class="w-full h-12 px-4 rounded border border-outline hover:border-on-surface focus:border-blue-700 focus:ring-1 focus:ring-blue-700 outline-none transition" id="password_confirmation" name="password_confirmation" placeholder="Re-enter password" required type="password"/>
+									<label class="text-sm font-semibold text-black">Confirm Password</label>
+									<input class="w-full h-12 px-4 rounded border border-gray-200 hover:border-gray-400 focus:border-[#3B82F6] focus:ring-1 focus:ring-[#3B82F6] outline-none transition" name="password_confirmation" placeholder="Re-enter password" required type="password"/>
 								</div>
 							</div>
-							<hr class="my-6"/>
-							<h2 class="text-2xl font-semibold text-on-surface mb-6 flex items-center gap-2" style="font-family: 'Public Sans', sans-serif;">
+							<hr class="my-6 border-gray-200"/>
+							<h2 class="text-2xl font-semibold text-black mb-6 flex items-center gap-2" style="font-family: 'Public Sans', sans-serif;">
 								<span class="material-symbols-outlined">upload_file</span>
 								Required Certificates
 							</h2>
 							<div class="flex flex-col gap-3">
 								<div class="flex items-center justify-between">
-									<span class="text-sm font-semibold text-on-surface">BRELA Certificate</span>
-									<span class="text-xs font-bold uppercase tracking-widest text-on-secondary-container bg-secondary-container px-2 py-0.5 rounded">Mandatory</span>
+									<span class="text-sm font-semibold text-black">BRELA Certificate</span>
+									<span class="text-xs font-bold uppercase tracking-widest text-gray-600 bg-gray-200 px-2 py-0.5 rounded">Mandatory</span>
 								</div>
-								if props.BrelaFile != nil {
-									<div class="border-2 border-on-tertiary-container rounded-lg p-6 bg-surface flex flex-row items-center gap-6">
-										<div class="w-24 h-24 bg-surface-container-highest rounded border border-outline-variant flex items-center justify-center overflow-hidden">
-											<span class="material-symbols-outlined text-4xl text-on-tertiary-container">image</span>
-										</div>
-										<div class="flex-1">
-											<div class="flex items-center justify-between mb-1">
-												<p class="text-sm font-semibold text-on-surface">{ props.BrelaFile.Name }</p>
-												<button class="text-error hover:bg-error-container p-1 rounded-full transition-colors" type="button">
-													<span class="material-symbols-outlined text-xl">delete</span>
-												</button>
-											</div>
-											<div class="flex items-center gap-2 mb-2">
-												<span class="material-symbols-outlined text-on-tertiary-container text-lg" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-												<span class="text-xs text-on-tertiary-container">Upload Complete</span>
-											</div>
-											<div class="w-full bg-surface-container-highest h-1 rounded-full">
-												<div class="bg-on-tertiary-container h-full w-full rounded-full"></div>
-											</div>
-										</div>
+								<div class="border-2 border-dashed border-gray-200 rounded-lg p-10 bg-gray-50 hover:bg-blue-50/50 hover:border-[#3B82F6] transition cursor-pointer group flex flex-col items-center justify-center gap-4">
+									<div class="w-12 h-12 rounded-full bg-white flex items-center justify-center group-hover:scale-110 transition-transform">
+										<span class="material-symbols-outlined text-gray-400 group-hover:text-[#3B82F6]">image</span>
 									</div>
-								} else {
-									<div class="border-2 border-dashed border-outline-variant rounded-lg p-10 bg-surface hover:bg-secondary-container/10 hover:border-blue-700 transition cursor-pointer group flex flex-col items-center justify-center gap-4">
-										<div class="w-12 h-12 rounded-full bg-surface-container flex items-center justify-center group-hover:scale-110 transition-transform">
-											<span class="material-symbols-outlined text-outline group-hover:text-blue-700">image</span>
-										</div>
-										<div class="text-center">
-											<input type="file" name="brela_certificate" accept="image/*" required class="block w-full text-sm text-secondary file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-on-tertiary-container file:text-white hover:file:opacity-90"/>
-											<p class="text-xs text-secondary mt-2">Images only (PNG, JPG, JPEG) up to 10MB</p>
-										</div>
+									<div class="text-center">
+										<input type="file" name="brela_certificate" accept="image/*" required class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#3B82F6] file:text-white hover:file:bg-blue-600"/>
+										<p class="text-xs text-gray-400 mt-2">Images only (PNG, JPG, JPEG) up to 10MB</p>
 									</div>
-								}
+								</div>
 							</div>
 							<div class="flex flex-col gap-3 mt-6">
 								<div class="flex items-center justify-between">
-									<span class="text-sm font-semibold text-on-surface">TRA Certificate</span>
-									<span class="text-xs font-bold uppercase tracking-widest text-on-secondary-container bg-secondary-container px-2 py-0.5 rounded">Mandatory</span>
+									<span class="text-sm font-semibold text-black">TRA Certificate</span>
+									<span class="text-xs font-bold uppercase tracking-widest text-gray-600 bg-gray-200 px-2 py-0.5 rounded">Mandatory</span>
 								</div>
-								if props.TraFile != nil {
-									<div class="border-2 border-on-tertiary-container rounded-lg p-6 bg-surface flex flex-row items-center gap-6">
-										<div class="w-24 h-24 bg-surface-container-highest rounded border border-outline-variant flex items-center justify-center overflow-hidden">
-											<span class="material-symbols-outlined text-4xl text-on-tertiary-container">image</span>
-										</div>
-										<div class="flex-1">
-											<div class="flex items-center justify-between mb-1">
-												<p class="text-sm font-semibold text-on-surface">{ props.TraFile.Name }</p>
-												<button class="text-error hover:bg-error-container p-1 rounded-full transition-colors" type="button">
-													<span class="material-symbols-outlined text-xl">delete</span>
-												</button>
-											</div>
-											<div class="flex items-center gap-2 mb-2">
-												<span class="material-symbols-outlined text-on-tertiary-container text-lg" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-												<span class="text-xs text-on-tertiary-container">Upload Complete</span>
-											</div>
-											<div class="w-full bg-surface-container-highest h-1 rounded-full">
-												<div class="bg-on-tertiary-container h-full w-full rounded-full"></div>
-											</div>
-										</div>
+								<div class="border-2 border-dashed border-gray-200 rounded-lg p-10 bg-gray-50 hover:bg-blue-50/50 hover:border-[#3B82F6] transition cursor-pointer group flex flex-col items-center justify-center gap-4">
+									<div class="w-12 h-12 rounded-full bg-white flex items-center justify-center group-hover:scale-110 transition-transform">
+										<span class="material-symbols-outlined text-gray-400 group-hover:text-[#3B82F6]">image</span>
 									</div>
-								} else {
-									<div class="border-2 border-dashed border-outline-variant rounded-lg p-10 bg-surface hover:bg-secondary-container/10 hover:border-blue-700 transition cursor-pointer group flex flex-col items-center justify-center gap-4">
-										<div class="w-12 h-12 rounded-full bg-surface-container flex items-center justify-center group-hover:scale-110 transition-transform">
-											<span class="material-symbols-outlined text-outline group-hover:text-blue-700">image</span>
-										</div>
-										<div class="text-center">
-											<input type="file" name="tra_certificate" accept="image/*" required class="block w-full text-sm text-secondary file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-on-tertiary-container file:text-white hover:file:opacity-90"/>
-											<p class="text-xs text-secondary mt-2">Images only (PNG, JPG, JPEG) up to 10MB</p>
-										</div>
+									<div class="text-center">
+										<input type="file" name="tra_certificate" accept="image/*" required class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#3B82F6] file:text-white hover:file:bg-blue-600"/>
+										<p class="text-xs text-gray-400 mt-2">Images only (PNG, JPG, JPEG) up to 10MB</p>
 									</div>
-								}
+								</div>
 							</div>
 							if props.Error != "" {
-								<div class="p-4 bg-error-container border border-error/20 rounded-lg text-sm text-on-error-container">{ props.Error }</div>
+								<div class="p-4 bg-red-100 border border-red-200 rounded-lg text-sm text-red-700">{ props.Error }</div>
 							}
 							<div class="flex items-center justify-between pt-4">
-								<a href="/register/step2" class="flex items-center gap-2 px-6 h-12 text-sm font-semibold text-on-surface border border-outline-variant rounded hover:bg-surface-container transition">
+								<a href="/register/step2" class="flex items-center gap-2 px-6 h-12 text-sm font-semibold text-gray-600 border border-gray-200 rounded hover:bg-gray-50 transition">
 									<span class="material-symbols-outlined text-xl">arrow_back</span>
 									Back
 								</a>
-								<button class="flex items-center gap-2 px-8 h-12 text-sm font-semibold text-white bg-on-tertiary-container rounded hover:opacity-90 transition shadow-md" type="submit">
+								<button class="flex items-center gap-2 px-8 h-12 text-sm font-semibold text-white bg-[#3B82F6] rounded hover:bg-blue-600 transition shadow-md" type="submit">
 									Complete Registration
 									<span class="material-symbols-outlined text-xl">done_all</span>
 								</button>
@@ -202,53 +154,37 @@ templ RegisterStep3(props Step3Props) {
 					</div>
 				</section>
 				<aside class="lg:col-span-5 space-y-6">
-					<div class="bg-primary-container p-8 rounded-lg text-white">
-						<h3 class="text-xs font-bold uppercase tracking-widest text-on-primary-container mb-4" style="letter-spacing: 0.05em;">Guidance</h3>
+					<div class="bg-[#3B82F6] p-8 rounded-lg text-white">
+						<h3 class="text-xs font-bold uppercase tracking-widest text-blue-100 mb-4">Guidance</h3>
 						<div class="space-y-6">
 							<div class="flex gap-4">
-								<span class="material-symbols-outlined text-on-tertiary-fixed-dim">info</span>
+								<span class="material-symbols-outlined text-blue-200">info</span>
 								<div class="flex-1">
 									<p class="text-sm font-semibold mb-1">BRELA Requirements</p>
-									<p class="text-on-primary-container text-sm leading-relaxed">Ensure the Business Registration and Licensing Agency (BRELA) certificate shows a clear stamp and the current date of incorporation.</p>
+									<p class="text-blue-100 text-sm leading-relaxed">Ensure the certificate shows a clear stamp and the current date of incorporation.</p>
 								</div>
 							</div>
 							<div class="flex gap-4">
-								<span class="material-symbols-outlined text-on-tertiary-fixed-dim">security</span>
+								<span class="material-symbols-outlined text-blue-200">security</span>
 								<div class="flex-1">
 									<p class="text-sm font-semibold mb-1">Data Privacy</p>
-									<p class="text-on-primary-container text-sm leading-relaxed">Your documents are encrypted using AES-256 standards before being stored in our secure vault.</p>
+									<p class="text-blue-100 text-sm leading-relaxed">Your documents are encrypted using AES-256 standards before being stored in our secure vault.</p>
 								</div>
 							</div>
-						</div>
-					</div>
-					<div class="bg-white border border-outline-variant rounded-lg overflow-hidden">
-						<div class="relative h-48">
-							<img alt="Support Office" class="object-cover w-full h-full" src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=600&h=400&fit=crop"/>
-							<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-6">
-								<p class="text-white text-sm font-semibold">Need help with registration?</p>
-								<p class="text-white/80 text-sm">Our compliance officers are available 24/7</p>
-							</div>
-						</div>
-						<div class="p-6">
-							<button class="w-full h-10 border border-outline rounded text-sm font-semibold text-on-surface hover:bg-surface transition flex items-center justify-center gap-2">
-								<span class="material-symbols-outlined text-lg">headset_mic</span>
-								Speak to an Advisor
-							</button>
 						</div>
 					</div>
 				</aside>
 			</div>
 		</main>
-		<footer class="mt-20 py-12 bg-surface-container-low border-t border-outline-variant">
+		<footer class="mt-20 py-12 bg-gray-50 border-t border-gray-200">
 			<div class="max-w-[1120px] mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-8">
 				<div class="flex flex-col gap-2">
-					<p class="text-sm font-semibold text-on-surface">HMS Control</p>
-					<p class="text-secondary text-sm"> 2024 Institutional Verification Services. All rights reserved.</p>
+					<p class="text-sm font-semibold text-black">HMS Control</p>
+					<p class="text-gray-500 text-sm"> 2024 Institutional Verification Services. All rights reserved.</p>
 				</div>
 				<div class="flex gap-8">
-					<a class="text-secondary hover:text-on-surface text-sm transition-colors" href="#">Privacy Policy</a>
-					<a class="text-secondary hover:text-on-surface text-sm transition-colors" href="#">Terms of Service</a>
-					<a class="text-secondary hover:text-on-surface text-sm transition-colors" href="#">Compliance Standards</a>
+					<a class="text-gray-500 hover:text-black text-sm transition-colors" href="#">Privacy Policy</a>
+					<a class="text-gray-500 hover:text-black text-sm transition-colors" href="#">Terms of Service</a>
 				</div>
 			</div>
 		</footer>
