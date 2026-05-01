@@ -8,16 +8,18 @@ import (
 )
 
 type User struct {
-	ID        int64     `json:"id"`
-	Name      string    `json:"name"`
-	Email     string    `json:"email"`
-	Company   string    `json:"company"`
-	Phone     *string   `json:"phone"`
-	Password  string    `json:"password"`
-	Role      string    `json:"role"`
-	Verified  bool      `json:"verified"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	ID          int64     `json:"id"`
+	Name        string    `json:"name"`
+	Email       string    `json:"email"`
+	Company     string    `json:"company"`
+	Phone       *string   `json:"phone"`
+	Password    string    `json:"password"`
+	Role        string    `json:"role"`
+	Verified    bool      `json:"verified"`
+	TIN         *string   `json:"tin"`
+	BrelaNumber *string   `json:"brela_number"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }
 
 type Tenant struct {
@@ -34,8 +36,26 @@ type Tenant struct {
 	ProvisionLog  *string    `json:"provision_log"`
 	ApprovedAt    *time.Time `json:"approved_at"`
 	ProvisionedAt *time.Time `json:"provisioned_at"`
+	HotelName     *string    `json:"hotel_name"`
+	Category      *string    `json:"category"`
+	RoomCount     *int64     `json:"room_count"`
+	Address       *string    `json:"address"`
+	City          *string    `json:"city"`
+	Country       *string    `json:"country"`
 	CreatedAt     time.Time  `json:"created_at"`
 	UpdatedAt     time.Time  `json:"updated_at"`
+}
+
+type Document struct {
+	ID           int64     `json:"id"`
+	UserID       int64     `json:"user_id"`
+	TenantID     *string   `json:"tenant_id"`
+	DocType      string    `json:"doc_type"`
+	Filename     string    `json:"filename"`
+	OriginalName string    `json:"original_name"`
+	MimeType     string    `json:"mime_type"`
+	SizeBytes    int64     `json:"size_bytes"`
+	CreatedAt    time.Time `json:"created_at"`
 }
 
 type VerifyToken struct {

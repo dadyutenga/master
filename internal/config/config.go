@@ -12,6 +12,8 @@ type Config struct {
 	AppURL          string
 	BaseDomain      string
 	DBPath          string
+	UploadDir       string
+	MaxUploadSize   int64
 	SMTPHost        string
 	SMTPPort        string
 	SMTPUser        string
@@ -39,7 +41,9 @@ func Load() *Config {
 	return &Config{
 		AppURL:          getEnv("APP_URL", "https://master.hms.co.tz"),
 		BaseDomain:      getEnv("BASE_DOMAIN", "hms.co.tz"),
-		DBPath:          getEnv("DB_PATH", "./hms_master.db"),
+		DBPath:          getEnv("DB_PATH", "./data/hms_master.db"),
+		UploadDir:       getEnv("UPLOAD_DIR", "./uploads"),
+		MaxUploadSize:   10 << 20, // 10MB
 		SMTPHost:        getEnv("SMTP_HOST", ""),
 		SMTPPort:        getEnv("SMTP_PORT", "587"),
 		SMTPUser:        getEnv("SMTP_USER", ""),

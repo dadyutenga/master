@@ -41,6 +41,7 @@ func runMigrationsUp(db *sql.DB) {
 		migrationUsers,
 		migrationTenants,
 		migrationVerifyTokens,
+		migrationDocuments,
 	}
 
 	for i, m := range migrations {
@@ -49,6 +50,20 @@ func runMigrationsUp(db *sql.DB) {
 		if err != nil {
 			log.Fatalf("Migration %d failed: %v", i+1, err)
 		}
+	}
+	// Add columns that may be missing from existing tables (ignore errors)
+	alterColumns := []string{
+		"ALTER TABLE users ADD COLUMN tin TEXT",
+		"ALTER TABLE users ADD COLUMN brela_number TEXT",
+		"ALTER TABLE tenants ADD COLUMN hotel_name TEXT",
+		"ALTER TABLE tenants ADD COLUMN category TEXT",
+		"ALTER TABLE tenants ADD COLUMN room_count INTEGER",
+		"ALTER TABLE tenants ADD COLUMN address TEXT",
+		"ALTER TABLE tenants ADD COLUMN city TEXT",
+		"ALTER TABLE tenants ADD COLUMN country TEXT",
+	}
+	for _, a := range alterColumns {
+		db.Exec(a) // ignore error if column already exists
 	}
 	fmt.Println("All migrations applied successfully.")
 }
@@ -94,6 +109,8 @@ CREATE TABLE IF NOT EXISTS users (
     password   TEXT NOT NULL,
     role       TEXT NOT NULL DEFAULT 'client',
     verified   INTEGER NOT NULL DEFAULT 0,
+    tin        TEXT,
+    brela_number TEXT,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
@@ -114,8 +131,28 @@ CREATE TABLE IF NOT EXISTS tenants (
     provision_log   TEXT,
     approved_at     DATETIME,
     provisioned_at  DATETIME,
+    hotel_name      TEXT,
+    category        TEXT,
+    room_count      INTEGER,
+    address         TEXT,
+    city            TEXT,
+    country         TEXT,
     created_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+`
+
+const migrationDocuments = `
+CREATE TABLE IF NOT EXISTS documents (
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id       INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    tenant_id     TEXT REFERENCES tenants(id) ON DELETE CASCADE,
+    doc_type      TEXT NOT NULL CHECK(doc_type IN ('brela_certificate','tra_certificate','other')),
+    filename      TEXT NOT NULL,
+    original_name TEXT NOT NULL,
+    mime_type     TEXT NOT NULL,
+    size_bytes    INTEGER NOT NULL,
+    created_at    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 `
 

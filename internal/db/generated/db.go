@@ -18,12 +18,22 @@ const (
 	TenantStatusFailed              = "failed"
 )
 
+// ── Params ──────────────────────────────────────────────────────────────────
+
 type CreateUserParams struct {
-	Name     string
-	Email    string
-	Company  string
-	Phone    *string
-	Password string
+	Name        string
+	Email       string
+	Company     string
+	Phone       *string
+	Password    string
+	TIN         *string
+	BrelaNumber *string
+}
+
+type UpdateUserParams struct {
+	ID          int64
+	TIN         *string
+	BrelaNumber *string
 }
 
 type CreateTenantParams struct {
@@ -34,6 +44,12 @@ type CreateTenantParams struct {
 	DbName      string
 	DbUser      string
 	DbPassword  string
+	HotelName   *string
+	Category    *string
+	RoomCount   *int64
+	Address     *string
+	City        *string
+	Country     *string
 }
 
 type UpdateTenantStatusParams struct {
@@ -62,33 +78,78 @@ type ListTenantsParams struct {
 	Offset int32
 }
 
+type CreateDocumentParams struct {
+	UserID       int64
+	TenantID     *string
+	DocType      string
+	Filename     string
+	OriginalName string
+	MimeType     string
+	SizeBytes    int64
+}
+
+// ── Users ───────────────────────────────────────────────────────────────────
+
+func scanUser(scanner interface{ Scan(dest ...any) error }) (User, error) {
+	var u User
+	var phone, tin, brela sql.NullString
+	err := scanner.Scan(
+		&u.ID, &u.Name, &u.Email, &u.Company, &phone, &u.Password,
+		&u.Role, &u.Verified, &tin, &brela, &u.CreatedAt, &u.UpdatedAt,
+	)
+	if phone.Valid {
+		u.Phone = &phone.String
+	}
+	if tin.Valid {
+		u.TIN = &tin.String
+	}
+	if brela.Valid {
+		u.BrelaNumber = &brela.String
+	}
+	return u, err
+}
+
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
 	var u User
+	var phone, tin, brela sql.NullString
 	err := q.db.QueryRowContext(ctx,
-		`INSERT INTO users (name, email, company, phone, password)
-		 VALUES (?, ?, ?, ?, ?)
-		 RETURNING id, name, email, company, phone, password, role, verified, created_at, updated_at`,
-		arg.Name, arg.Email, arg.Company, arg.Phone, arg.Password,
-	).Scan(&u.ID, &u.Name, &u.Email, &u.Company, &u.Phone, &u.Password, &u.Role, &u.Verified, &u.CreatedAt, &u.UpdatedAt)
+		`INSERT INTO users (name, email, company, phone, password, tin, brela_number)
+		 VALUES (?, ?, ?, ?, ?, ?, ?)
+		 RETURNING id, name, email, company, phone, password, role, verified, tin, brela_number, created_at, updated_at`,
+		arg.Name, arg.Email, arg.Company, arg.Phone, arg.Password, arg.TIN, arg.BrelaNumber,
+	).Scan(&u.ID, &u.Name, &u.Email, &u.Company, &phone, &u.Password, &u.Role, &u.Verified, &tin, &brela, &u.CreatedAt, &u.UpdatedAt)
+	if phone.Valid {
+		u.Phone = &phone.String
+	}
+	if tin.Valid {
+		u.TIN = &tin.String
+	}
+	if brela.Valid {
+		u.BrelaNumber = &brela.String
+	}
 	return u, err
 }
 
 func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
-	var u User
-	err := q.db.QueryRowContext(ctx,
-		`SELECT id, name, email, company, phone, password, role, verified, created_at, updated_at FROM users WHERE email = ?`,
+	return scanUser(q.db.QueryRowContext(ctx,
+		`SELECT id, name, email, company, phone, password, role, verified, tin, brela_number, created_at, updated_at FROM users WHERE email = ?`,
 		email,
-	).Scan(&u.ID, &u.Name, &u.Email, &u.Company, &u.Phone, &u.Password, &u.Role, &u.Verified, &u.CreatedAt, &u.UpdatedAt)
-	return u, err
+	))
 }
 
 func (q *Queries) GetUserByID(ctx context.Context, id int64) (User, error) {
-	var u User
-	err := q.db.QueryRowContext(ctx,
-		`SELECT id, name, email, company, phone, password, role, verified, created_at, updated_at FROM users WHERE id = ?`,
+	return scanUser(q.db.QueryRowContext(ctx,
+		`SELECT id, name, email, company, phone, password, role, verified, tin, brela_number, created_at, updated_at FROM users WHERE id = ?`,
 		id,
-	).Scan(&u.ID, &u.Name, &u.Email, &u.Company, &u.Phone, &u.Password, &u.Role, &u.Verified, &u.CreatedAt, &u.UpdatedAt)
-	return u, err
+	))
+}
+
+func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) error {
+	_, err := q.db.ExecContext(ctx,
+		`UPDATE users SET tin = ?, brela_number = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`,
+		arg.TIN, arg.BrelaNumber, arg.ID,
+	)
+	return err
 }
 
 func (q *Queries) VerifyUser(ctx context.Context, id int64) error {
@@ -98,6 +159,8 @@ func (q *Queries) VerifyUser(ctx context.Context, id int64) error {
 	)
 	return err
 }
+
+// ── Verify Tokens ───────────────────────────────────────────────────────────
 
 func (q *Queries) CreateVerifyToken(ctx context.Context, arg CreateVerifyTokenParams) (VerifyToken, error) {
 	var vt VerifyToken
@@ -130,16 +193,20 @@ func (q *Queries) UseVerifyToken(ctx context.Context, token string) error {
 	return err
 }
 
-func scanTenant(scanner interface {
-	Scan(dest ...any) error
-}) (Tenant, error) {
+// ── Tenants ─────────────────────────────────────────────────────────────────
+
+func scanTenant(scanner interface{ Scan(dest ...any) error }) (Tenant, error) {
 	var t Tenant
 	var appKey, provisionLog sql.NullString
 	var approvedAt, provisionedAt sql.NullTime
+	var hotelName, category, address, city, country sql.NullString
+	var roomCount sql.NullInt64
 	err := scanner.Scan(
 		&t.ID, &t.UserID, &t.CompanyName, &t.Slug, &t.Domain,
 		&t.DbName, &t.DbUser, &t.DbPassword, &appKey, &t.Status,
-		&provisionLog, &approvedAt, &provisionedAt, &t.CreatedAt, &t.UpdatedAt,
+		&provisionLog, &approvedAt, &provisionedAt,
+		&hotelName, &category, &roomCount, &address, &city, &country,
+		&t.CreatedAt, &t.UpdatedAt,
 	)
 	if err != nil {
 		return t, err
@@ -156,28 +223,39 @@ func scanTenant(scanner interface {
 	if provisionedAt.Valid {
 		t.ProvisionedAt = &provisionedAt.Time
 	}
+	if hotelName.Valid {
+		t.HotelName = &hotelName.String
+	}
+	if category.Valid {
+		t.Category = &category.String
+	}
+	if roomCount.Valid {
+		t.RoomCount = &roomCount.Int64
+	}
+	if address.Valid {
+		t.Address = &address.String
+	}
+	if city.Valid {
+		t.City = &city.String
+	}
+	if country.Valid {
+		t.Country = &country.String
+	}
 	return t, nil
 }
 
+const tenantCols = `id, user_id, company_name, slug, domain, db_name, db_user, db_password, app_key, status, provision_log, approved_at, provisioned_at, hotel_name, category, room_count, address, city, country, created_at, updated_at`
+
 func (q *Queries) GetTenantByID(ctx context.Context, id uuid.UUID) (Tenant, error) {
-	return scanTenant(q.db.QueryRowContext(ctx,
-		`SELECT id, user_id, company_name, slug, domain, db_name, db_user, db_password, app_key, status, provision_log, approved_at, provisioned_at, created_at, updated_at FROM tenants WHERE id = ?`,
-		id,
-	))
+	return scanTenant(q.db.QueryRowContext(ctx, `SELECT `+tenantCols+` FROM tenants WHERE id = ?`, id))
 }
 
 func (q *Queries) GetTenantBySlug(ctx context.Context, slug string) (Tenant, error) {
-	return scanTenant(q.db.QueryRowContext(ctx,
-		`SELECT id, user_id, company_name, slug, domain, db_name, db_user, db_password, app_key, status, provision_log, approved_at, provisioned_at, created_at, updated_at FROM tenants WHERE slug = ?`,
-		slug,
-	))
+	return scanTenant(q.db.QueryRowContext(ctx, `SELECT `+tenantCols+` FROM tenants WHERE slug = ?`, slug))
 }
 
 func (q *Queries) GetTenantByUserID(ctx context.Context, userID int64) (Tenant, error) {
-	return scanTenant(q.db.QueryRowContext(ctx,
-		`SELECT id, user_id, company_name, slug, domain, db_name, db_user, db_password, app_key, status, provision_log, approved_at, provisioned_at, created_at, updated_at FROM tenants WHERE user_id = ?`,
-		userID,
-	))
+	return scanTenant(q.db.QueryRowContext(ctx, `SELECT `+tenantCols+` FROM tenants WHERE user_id = ?`, userID))
 }
 
 func (q *Queries) ListTenants(ctx context.Context, arg ListTenantsParams) ([]ListTenantsRow, error) {
@@ -237,10 +315,10 @@ func (q *Queries) CreateTenant(ctx context.Context, arg CreateTenantParams) (Ten
 	id := uuid.New()
 	now := time.Now()
 	_, err := q.db.ExecContext(ctx,
-		`INSERT INTO tenants (id, user_id, company_name, slug, domain, db_name, db_user, db_password, status, created_at, updated_at)
-		 VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending_verification', ?, ?)`,
+		`INSERT INTO tenants (id, user_id, company_name, slug, domain, db_name, db_user, db_password, status, hotel_name, category, room_count, address, city, country, created_at, updated_at)
+		 VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending_verification', ?, ?, ?, ?, ?, ?, ?, ?)`,
 		id, arg.UserID, arg.CompanyName, arg.Slug, arg.Domain,
-		arg.DbName, arg.DbUser, arg.DbPassword, now, now,
+		arg.DbName, arg.DbUser, arg.DbPassword, arg.HotelName, arg.Category, arg.RoomCount, arg.Address, arg.City, arg.Country, now, now,
 	)
 	if err != nil {
 		return Tenant{}, err
@@ -287,6 +365,46 @@ func (q *Queries) SetTenantProvisioning(ctx context.Context, id uuid.UUID) error
 	)
 	return err
 }
+
+// ── Documents ──────────────────────────────────────────────────────────────
+
+func (q *Queries) CreateDocument(ctx context.Context, arg CreateDocumentParams) (Document, error) {
+	var d Document
+	err := q.db.QueryRowContext(ctx,
+		`INSERT INTO documents (user_id, tenant_id, doc_type, filename, original_name, mime_type, size_bytes)
+		 VALUES (?, ?, ?, ?, ?, ?, ?)
+		 RETURNING id, user_id, tenant_id, doc_type, filename, original_name, mime_type, size_bytes, created_at`,
+		arg.UserID, arg.TenantID, arg.DocType, arg.Filename, arg.OriginalName, arg.MimeType, arg.SizeBytes,
+	).Scan(&d.ID, &d.UserID, &d.TenantID, &d.DocType, &d.Filename, &d.OriginalName, &d.MimeType, &d.SizeBytes, &d.CreatedAt)
+	return d, err
+}
+
+func (q *Queries) GetDocumentsByUserID(ctx context.Context, userID int64) ([]Document, error) {
+	rows, err := q.db.QueryContext(ctx,
+		`SELECT id, user_id, tenant_id, doc_type, filename, original_name, mime_type, size_bytes, created_at FROM documents WHERE user_id = ? ORDER BY created_at DESC`,
+		userID,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var docs []Document
+	for rows.Next() {
+		var d Document
+		if err := rows.Scan(&d.ID, &d.UserID, &d.TenantID, &d.DocType, &d.Filename, &d.OriginalName, &d.MimeType, &d.SizeBytes, &d.CreatedAt); err != nil {
+			return nil, err
+		}
+		docs = append(docs, d)
+	}
+	return docs, nil
+}
+
+func (q *Queries) DeleteDocument(ctx context.Context, id int64) error {
+	_, err := q.db.ExecContext(ctx, `DELETE FROM documents WHERE id = ?`, id)
+	return err
+}
+
+// ── Superadmin ──────────────────────────────────────────────────────────────
 
 func (q *Queries) CreateSuperadminIfNotExists(ctx context.Context, arg CreateUserParams) error {
 	var count int
