@@ -42,10 +42,12 @@ func main() {
 
 	app.Get("/", h.Home)
 	app.Get("/register", h.ShowRegister)
-	app.Post("/register", h.Register)
 	app.Post("/register/step1", h.RegisterStep1)
+	app.Get("/register/step2", h.ShowRegisterStep2)
 	app.Post("/register/step2", h.RegisterStep2)
+	app.Get("/register/step3", h.ShowRegisterStep3)
 	app.Post("/register/step3", h.RegisterStep3)
+	app.Get("/register/success", h.ShowRegisterSuccess)
 	app.Get("/verify/:token", h.VerifyEmail)
 	app.Get("/login", h.ShowLogin)
 	app.Post("/login", h.Login)
