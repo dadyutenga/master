@@ -1,8 +1,5 @@
-2026/05/01 17:11:35 Connected to SQLite: ./data/hms_master.db
-2026/05/01 17:11:35 [provisioner] started 3 workers
-2026/05/01 17:11:35 [worker-0] ready
-2026/05/01 17:11:35 [worker-1] ready
-2026/05/01 17:11:35 [worker-2] ready
+2026/05/01 18:19:07 Connected to SQLite: ./data/hms_master.db
+2026/05/01 18:19:07 [provisioner] started 3 workers
 
  ┌───────────────────────────────────────────────────┐ 
  │                  Fiber v2.52.13                   │ 
@@ -10,7 +7,10 @@
  │       (bound on host 0.0.0.0 and port 8080)       │ 
  │                                                   │ 
  │ Handlers ............ 30  Processes ........... 1 │ 
- │ Prefork ....... Disabled  PID ............ 390158 │ 
+ │ Prefork ....... Disabled  PID ............ 409669 │ 
  └───────────────────────────────────────────────────┘ 
 
-17:11:38 | 200 |      46.121µs | 127.0.0.1 | GET | / | -
+2026/05/01 18:19:07 [worker-0] ready
+2026/05/01 18:19:07 [worker-1] ready
+2026/05/01 18:19:07 [worker-2] ready
+18:19:10 | 200 |     157.346µs | 127.0.0.1 | GET | / | -
