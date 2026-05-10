@@ -42,6 +42,8 @@ func main() {
 	h := handlers.New(cfg, database, mail, store, eng)
 
 	app.Get("/", h.Home)
+	app.Get("/about", h.About)
+	app.Get("/contact", h.Contact)
 	app.Get("/register", h.ShowRegister)
 	app.Post("/register/step1", h.RegisterStep1)
 	app.Get("/register/step2", h.ShowRegisterStep2)

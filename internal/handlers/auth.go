@@ -24,6 +24,14 @@ func (h *Handler) Home(c *fiber.Ctx) error {
 	return render(c, home.Welcome())
 }
 
+func (h *Handler) About(c *fiber.Ctx) error {
+	return render(c, home.About())
+}
+
+func (h *Handler) Contact(c *fiber.Ctx) error {
+	return render(c, home.Contact())
+}
+
 func (h *Handler) ShowRegister(c *fiber.Ctx) error {
 	return render(c, auth.RegisterStep1(auth.RegisterProps{}))
 }
