@@ -16,13 +16,18 @@ func Auth(store *session.Store, db *sql.DB) fiber.Handler {
 			return c.Redirect("/login")
 		}
 
-		userID := sess.Get("userID")
-		if userID == nil {
+		rawID := sess.Get("userID")
+		if rawID == nil {
+			return c.Redirect("/login")
+		}
+		userID, ok := rawID.(int64)
+		if !ok {
+			sess.Destroy()
 			return c.Redirect("/login")
 		}
 
 		q := generated.New(db)
-		user, err := q.GetUserByID(c.Context(), userID.(int64))
+		user, err := q.GetUserByID(c.Context(), userID)
 		if err != nil {
 			sess.Destroy()
 			return c.Redirect("/login")
@@ -33,6 +38,7 @@ func Auth(store *session.Store, db *sql.DB) fiber.Handler {
 	}
 }
 
-func GetUser(c *fiber.Ctx) generated.User {
-	return c.Locals("user").(generated.User)
+func GetUser(c *fiber.Ctx) (generated.User, bool) {
+	u, ok := c.Locals("user").(generated.User)
+	return u, ok
 }

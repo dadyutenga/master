@@ -61,22 +61,35 @@ func (e *Engine) provision(tenantID uuid.UUID) {
 
 	if err != nil {
 		log.Printf("[provisioner] FAILED tenant %s: %v", tenant.Slug, err)
-		q.SetTenantFailed(ctx, generated.SetTenantFailedParams{
+		if err := q.SetTenantFailed(ctx, generated.SetTenantFailedParams{
 			ID:           tenantID,
 			ProvisionLog: &logOutput,
-		})
+		}); err != nil {
+			log.Printf("[provisioner] FAILED to mark tenant %s as failed: %v", tenant.Slug, err)
+		}
 		return
 	}
 
-	appKey, _ := runner.GetAppKey(tenant.Slug)
+	appKey, err := runner.GetAppKey(tenant.Slug)
+	if err != nil {
+		log.Printf("[provisioner] WARNING: failed to get app key for %s: %v", tenant.Slug, err)
+		appKey = ""
+	}
 
-	q.SetTenantActive(ctx, generated.SetTenantActiveParams{
+	if err := q.SetTenantActive(ctx, generated.SetTenantActiveParams{
 		ID:           tenantID,
 		AppKey:       &appKey,
 		ProvisionLog: &logOutput,
-	})
+	}); err != nil {
+		log.Printf("[provisioner] FAILED to mark tenant %s active: %v", tenant.Slug, err)
+		return
+	}
 
-	user, _ := q.GetUserByID(ctx, tenant.UserID)
+	user, err := q.GetUserByID(ctx, tenant.UserID)
+	if err != nil {
+		log.Printf("[provisioner] WARNING: failed to load user for %s: %v", tenant.Slug, err)
+		return
+	}
 	go e.mail.SendTenantReady(user.Email, user.Name, "https://"+tenant.Domain)
 
 	log.Printf("[provisioner] SUCCESS tenant %s live at https://%s", tenant.Slug, tenant.Domain)

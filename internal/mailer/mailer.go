@@ -17,7 +17,10 @@ func New(cfg *config.Config) *Mailer {
 }
 
 func (m *Mailer) send(to, subject, body string) error {
-	port, _ := strconv.Atoi(m.cfg.SMTPPort)
+	port, err := strconv.Atoi(m.cfg.SMTPPort)
+	if err != nil {
+		return fmt.Errorf("invalid SMTP port: %w", err)
+	}
 	d := gomail.NewDialer(m.cfg.SMTPHost, port, m.cfg.SMTPUser, m.cfg.SMTPPass)
 
 	msg := gomail.NewMessage()

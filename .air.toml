@@ -1,0 +1,23 @@
+root = "."
+
+tmp_dir = "tmp"
+
+[build]
+  cmd = "go build -o ./tmp/main.exe ."
+  bin = "tmp/main.exe"
+  delay = 200
+  include_ext = ["go", "templ", "html", "css", "js"]
+  exclude_dir = ["tmp", "vendor", "uploads", "data"]
+  stop_on_error = true
+
+[log]
+  time = true
+
+[color]
+  main = "yellow"
+  watcher = "cyan"
+  build = "green"
+  runner = "magenta"
+
+[misc]
+  clean_on_exit = true

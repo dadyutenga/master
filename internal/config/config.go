@@ -20,6 +20,7 @@ type Config struct {
 	SMTPPass        string
 	SMTPFrom        string
 	SessionSecret   string
+	CookieSecure    bool
 	ProvisionScript string
 	TenantDir       string
 	HMSSource       string
@@ -50,6 +51,7 @@ func Load() *Config {
 		SMTPPass:        getEnv("SMTP_PASS", ""),
 		SMTPFrom:        getEnv("SMTP_FROM", "noreply@hms.co.tz"),
 		SessionSecret:   getEnv("SESSION_SECRET", "change-me-32-chars-minimum"),
+		CookieSecure:    getEnv("COOKIE_SECURE", "true") == "true",
 		ProvisionScript: getEnv("PROVISION_SCRIPT", "/opt/hms-control/scripts/provision.sh"),
 		TenantDir:       getEnv("TENANT_DIR", "/opt/tenants"),
 		HMSSource:       getEnv("HMS_SOURCE", "/opt/hms-source"),

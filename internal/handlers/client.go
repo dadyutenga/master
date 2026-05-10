@@ -8,8 +8,15 @@ import (
 )
 
 func (h *Handler) ClientDashboard(c *fiber.Ctx) error {
-	sess, _ := h.store.Get(c)
-	userID := sess.Get("userID").(int64)
+	sess, err := h.store.Get(c)
+	if err != nil {
+		return c.Redirect("/login")
+	}
+
+	userID, ok := sess.Get("userID").(int64)
+	if !ok {
+		return c.Redirect("/login")
+	}
 
 	q := generated.New(h.db)
 	tenant, err := q.GetTenantByUserID(c.Context(), userID)
@@ -17,7 +24,10 @@ func (h *Handler) ClientDashboard(c *fiber.Ctx) error {
 		return c.Status(404).SendString("No tenant found")
 	}
 
-	user, _ := q.GetUserByID(c.Context(), userID)
+	user, err := q.GetUserByID(c.Context(), userID)
+	if err != nil {
+		return c.Status(500).SendString("Failed to load user.")
+	}
 
 	return render(c, client.Dashboard(client.DashboardProps{
 		Tenant: tenant,

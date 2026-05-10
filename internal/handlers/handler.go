@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"database/sql"
-	"io"
 
 	"github.com/dadyutenga/hms-control/internal/config"
 	"github.com/dadyutenga/hms-control/internal/mailer"
@@ -45,5 +44,3 @@ func ErrorHandler(c *fiber.Ctx, err error) error {
 	return c.Status(code).SendString(err.Error())
 }
 
-// Ensure io is used (needed by templ)
-var _ io.Writer = (io.Writer)(nil)

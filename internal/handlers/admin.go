@@ -63,7 +63,9 @@ func (h *Handler) ApproveTenant(c *fiber.Ctx) error {
 		return c.Status(409).SendString("Tenant not in pending_approval state")
 	}
 
-	q.ApproveTenant(c.Context(), id)
+	if err := q.ApproveTenant(c.Context(), id); err != nil {
+		return c.Status(500).SendString("Failed to approve tenant.")
+	}
 
 	h.eng.Enqueue(id)
 
@@ -74,12 +76,26 @@ func (h *Handler) ApproveTenant(c *fiber.Ctx) error {
 }
 
 func (h *Handler) SuspendTenant(c *fiber.Ctx) error {
-	id, _ := uuid.Parse(c.Params("id"))
+	id, err := uuid.Parse(c.Params("id"))
+	if err != nil {
+		return c.Status(400).SendString("Invalid tenant ID")
+	}
+
 	q := generated.New(h.db)
-	q.UpdateTenantStatus(c.Context(), generated.UpdateTenantStatusParams{
+	tenant, err := q.GetTenantByID(c.Context(), id)
+	if err != nil {
+		return fiber.ErrNotFound
+	}
+	if tenant.Status != generated.TenantStatusActive {
+		return c.Status(409).SendString("Only active tenants can be suspended")
+	}
+
+	if err := q.UpdateTenantStatus(c.Context(), generated.UpdateTenantStatusParams{
 		ID:     id,
 		Status: generated.TenantStatusSuspended,
-	})
+	}); err != nil {
+		return c.Status(500).SendString("Failed to suspend tenant.")
+	}
 
 	if c.Get("HX-Request") == "true" {
 		return render(c, admin.StatusBadge(generated.TenantStatusSuspended))
@@ -88,15 +104,23 @@ func (h *Handler) SuspendTenant(c *fiber.Ctx) error {
 }
 
 func (h *Handler) RetryProvision(c *fiber.Ctx) error {
-	id, _ := uuid.Parse(c.Params("id"))
-	q := generated.New(h.db)
+	id, err := uuid.Parse(c.Params("id"))
+	if err != nil {
+		return c.Status(400).SendString("Invalid tenant ID")
+	}
 
-	tenant, _ := q.GetTenantByID(c.Context(), id)
+	q := generated.New(h.db)
+	tenant, err := q.GetTenantByID(c.Context(), id)
+	if err != nil {
+		return fiber.ErrNotFound
+	}
 	if tenant.Status != generated.TenantStatusFailed {
 		return c.Status(409).SendString("Only failed tenants can be retried")
 	}
 
-	q.SetTenantProvisioning(c.Context(), id)
+	if err := q.SetTenantProvisioning(c.Context(), id); err != nil {
+		return c.Status(500).SendString("Failed to reset tenant status.")
+	}
 	h.eng.Enqueue(id)
 
 	if c.Get("HX-Request") == "true" {

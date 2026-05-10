@@ -27,7 +27,7 @@ func main() {
 
 	store := session.New(session.Config{
 		KeyLookup:    "cookie:hms_session",
-		CookieSecure: true,
+		CookieSecure: cfg.CookieSecure,
 	})
 
 	app := fiber.New(fiber.Config{

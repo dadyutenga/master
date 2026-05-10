@@ -70,6 +70,7 @@ func runMigrationsUp(db *sql.DB) {
 
 func runMigrationsDown(db *sql.DB) {
 	drops := []string{
+		"DROP TABLE IF EXISTS documents",
 		"DROP TABLE IF EXISTS verify_tokens",
 		"DROP TABLE IF EXISTS tenants",
 		"DROP TABLE IF EXISTS users",
@@ -90,7 +91,7 @@ func seedSuperadmin(db *sql.DB, cfg *config.Config) {
 		 VALUES (?, ?, ?, ?, 'superadmin', 1)
 		 ON CONFLICT(email) DO NOTHING`,
 		"Super Admin", "admin@hms.co.tz", "HMS Platform",
-		"$2a$10$dummyhashforsetup—change-me-on-first-login",
+		"$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy",
 	)
 	if err != nil {
 		log.Printf("Warning seeding superadmin: %v", err)

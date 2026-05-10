@@ -308,6 +308,9 @@ func (q *Queries) ListTenants(ctx context.Context, arg ListTenantsParams) ([]Lis
 		}
 		result = append(result, r)
 	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
 	return result, nil
 }
 
@@ -395,6 +398,9 @@ func (q *Queries) GetDocumentsByUserID(ctx context.Context, userID int64) ([]Doc
 			return nil, err
 		}
 		docs = append(docs, d)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
 	}
 	return docs, nil
 }

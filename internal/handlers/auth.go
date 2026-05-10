@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/rand"
 	"encoding/hex"
+	"fmt"
 	"io"
 	"mime/multipart"
 	"os"
@@ -129,14 +130,23 @@ func (h *Handler) RegisterStep3(c *fiber.Ctx) error {
 		return render(c, auth.RegisterStep3(auth.Step3Props{Error: "Only image files are accepted."}))
 	}
 
-	tin, _ := sess.Get("reg_tin").(string)
+	tin, ok := sess.Get("reg_tin").(string)
+	if !ok || tin == "" {
+		return render(c, auth.RegisterStep3(auth.Step3Props{Error: "Registration session expired. Please start over."}))
+	}
 	brela, _ := sess.Get("reg_brela").(string)
 	hotelName, _ := sess.Get("reg_hotel_name").(string)
+	if hotelName == "" {
+		return render(c, auth.RegisterStep3(auth.Step3Props{Error: "Registration session expired. Please start over."}))
+	}
 	address, _ := sess.Get("reg_address").(string)
 	city, _ := sess.Get("reg_city").(string)
 	country, _ := sess.Get("reg_country").(string)
 
-	hash, _ := bcrypt.GenerateFromPassword([]byte(pass), bcrypt.DefaultCost)
+	hash, err := bcrypt.GenerateFromPassword([]byte(pass), bcrypt.DefaultCost)
+	if err != nil {
+		return render(c, auth.RegisterStep3(auth.Step3Props{Error: "Registration failed."}))
+	}
 
 	var phonePtr *string
 	if phone != "" { phonePtr = &phone }
@@ -155,7 +165,10 @@ func (h *Handler) RegisterStep3(c *fiber.Ctx) error {
 
 	slug := generateSlug(q, c.Context(), hotelName)
 	domain := slug + "." + h.cfg.BaseDomain
-	dbPass := randomHex(16)
+	dbPass, err := randomHex(16)
+	if err != nil {
+		return render(c, auth.RegisterStep3(auth.Step3Props{Error: "Registration failed."}))
+	}
 
 	_, err = q.CreateTenant(c.Context(), generated.CreateTenantParams{
 		UserID: user.ID, CompanyName: hotelName, Slug: slug, Domain: domain,
@@ -167,23 +180,39 @@ func (h *Handler) RegisterStep3(c *fiber.Ctx) error {
 	}
 
 	uploadDir := filepath.Join(h.cfg.UploadDir, strconv.FormatInt(user.ID, 10))
-	os.MkdirAll(uploadDir, 0755)
+	if err := os.MkdirAll(uploadDir, 0755); err != nil {
+		return render(c, auth.RegisterStep3(auth.Step3Props{Error: "Failed to create upload directory."}))
+	}
 
-	brelaPath, _ := saveFile(brelaFile, uploadDir, "brela_")
-	q.CreateDocument(c.Context(), generated.CreateDocumentParams{
+	brelaPath, err := saveFile(brelaFile, uploadDir, "brela_")
+	if err != nil {
+		return render(c, auth.RegisterStep3(auth.Step3Props{Error: "Failed to save BRELA certificate."}))
+	}
+	if _, err := q.CreateDocument(c.Context(), generated.CreateDocumentParams{
 		UserID: user.ID, DocType: "brela_certificate", Filename: brelaPath,
 		OriginalName: brelaFile.Filename, MimeType: brelaFile.Header.Get("Content-Type"), SizeBytes: brelaFile.Size,
-	})
-	traPath, _ := saveFile(traFile, uploadDir, "tra_")
-	q.CreateDocument(c.Context(), generated.CreateDocumentParams{
+	}); err != nil {
+		return render(c, auth.RegisterStep3(auth.Step3Props{Error: "Failed to record BRELA certificate."}))
+	}
+	traPath, err := saveFile(traFile, uploadDir, "tra_")
+	if err != nil {
+		return render(c, auth.RegisterStep3(auth.Step3Props{Error: "Failed to save TRA certificate."}))
+	}
+	if _, err := q.CreateDocument(c.Context(), generated.CreateDocumentParams{
 		UserID: user.ID, DocType: "tra_certificate", Filename: traPath,
 		OriginalName: traFile.Filename, MimeType: traFile.Header.Get("Content-Type"), SizeBytes: traFile.Size,
-	})
+	}); err != nil {
+		return render(c, auth.RegisterStep3(auth.Step3Props{Error: "Failed to record TRA certificate."}))
+	}
 
 	tokenBytes := make([]byte, 32)
-	rand.Read(tokenBytes)
+	if _, err := rand.Read(tokenBytes); err != nil {
+		return render(c, auth.RegisterStep3(auth.Step3Props{Error: "Failed to generate verification token."}))
+	}
 	token := hex.EncodeToString(tokenBytes)
-	q.CreateVerifyToken(c.Context(), generated.CreateVerifyTokenParams{UserID: user.ID, Token: token})
+	if _, err := q.CreateVerifyToken(c.Context(), generated.CreateVerifyTokenParams{UserID: user.ID, Token: token}); err != nil {
+		return render(c, auth.RegisterStep3(auth.Step3Props{Error: "Failed to create verification token."}))
+	}
 	go h.mail.SendVerification(user.Email, user.Name, h.cfg.AppURL+"/verify/"+token)
 
 	sess.Destroy()
@@ -205,12 +234,18 @@ func (h *Handler) VerifyEmail(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(400).SendString("Invalid or expired verification link.")
 	}
-	q.VerifyUser(c.Context(), row.Uid)
-	q.UseVerifyToken(c.Context(), token)
-	tenant, _ := q.GetTenantByUserID(c.Context(), row.Uid)
-	q.UpdateTenantStatus(c.Context(), generated.UpdateTenantStatusParams{
-		ID: tenant.ID, Status: generated.TenantStatusPendingApproval,
-	})
+	if err := q.VerifyUser(c.Context(), row.Uid); err != nil {
+		return c.Status(500).SendString("Failed to verify user.")
+	}
+	if err := q.UseVerifyToken(c.Context(), token); err != nil {
+		return c.Status(500).SendString("Failed to use verification token.")
+	}
+	tenant, err := q.GetTenantByUserID(c.Context(), row.Uid)
+	if err == nil {
+		q.UpdateTenantStatus(c.Context(), generated.UpdateTenantStatusParams{
+			ID: tenant.ID, Status: generated.TenantStatusPendingApproval,
+		})
+	}
 	return c.Redirect("/login?verified=1")
 }
 
@@ -231,7 +266,9 @@ func (h *Handler) Login(c *fiber.Ctx) error {
 	sess, _ := h.store.Get(c)
 	sess.Set("userID", user.ID)
 	sess.Set("role", user.Role)
-	sess.Save()
+	if err := sess.Save(); err != nil {
+		return render(c, auth.Login(auth.LoginProps{Error: "Session error."}))
+	}
 	if user.Role == "superadmin" {
 		return c.Redirect("/admin")
 	}
@@ -248,7 +285,9 @@ func (h *Handler) Logout(c *fiber.Ctx) error {
 
 func saveFile(fh *multipart.FileHeader, dir, prefix string) (string, error) {
 	ext := filepath.Ext(fh.Filename)
-	target := filepath.Join(dir, prefix+randomHex(8)+ext)
+	randSuffix, err := randomHex(8)
+	if err != nil { return "", err }
+	target := filepath.Join(dir, prefix+randSuffix+ext)
 	src, err := fh.Open()
 	if err != nil { return "", err }
 	defer src.Close()
@@ -262,6 +301,9 @@ func saveFile(fh *multipart.FileHeader, dir, prefix string) (string, error) {
 func generateSlug(q *generated.Queries, ctx context.Context, company string) string {
 	re := strings.NewReplacer(" ", "", "-", "", "_", "")
 	base := strings.ToLower(re.Replace(company))
+	if base == "" {
+		return "hotel"
+	}
 	if len(base) > 12 { base = base[:12] }
 	slug := base
 	i := 2
@@ -269,17 +311,19 @@ func generateSlug(q *generated.Queries, ctx context.Context, company string) str
 		_, err := q.GetTenantBySlug(ctx, slug)
 		if err != nil { break }
 		suffix := base
-		if len(base) > 10 { suffix = base[:10] }
-		slug = suffix + string(rune('0'+i))
+		if len(suffix) > 10 { suffix = base[:10] }
+		slug = fmt.Sprintf("%s%d", suffix, i)
 		i++
 	}
 	return slug
 }
 
-func randomHex(n int) string {
+func randomHex(n int) (string, error) {
 	b := make([]byte, n)
-	rand.Read(b)
-	return hex.EncodeToString(b)
+	if _, err := rand.Read(b); err != nil {
+		return "", err
+	}
+	return hex.EncodeToString(b), nil
 }
 
 func nullString(s string) *string {
