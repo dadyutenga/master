@@ -1,0 +1,60 @@
+package client
+
+import (
+	"github.com/dadyutenga/hms-control/internal/db/generated"
+	"github.com/dadyutenga/hms-control/internal/views/layout"
+)
+
+type PendingProps struct {
+	Tenant generated.Tenant
+	User   generated.User
+}
+
+templ Pending(props PendingProps) {
+	@layout.Base("Verification Pending") {
+		<div class="max-w-4xl mx-auto p-6">
+			<div class="flex justify-between items-center mb-6">
+				<h1 class="text-2xl font-bold" style="color: var(--color-fg); font-family: var(--font-heading);">Hello, { props.User.Name }</h1>
+				<form method="POST" action="/logout">
+					<button type="submit" class="px-4 py-2 rounded text-sm hover:[background-color:var(--color-muted)]" style="background: var(--color-secondary); color: var(--color-fg);">Logout</button>
+				</form>
+			</div>
+
+			<div class="rounded-xl border p-6" style="background: var(--color-card); border-color: var(--color-border);">
+				<div style="display:flex; flex-direction:column; gap:1rem;">
+					<div style="display:flex; align-items:center; gap:0.75rem;">
+						<span class="material-symbols-outlined" style="color: var(--color-brand-blue);">hourglass_top</span>
+						<h2 class="text-lg font-semibold" style="color: var(--color-fg); font-family: var(--font-heading);">Verification in progress</h2>
+					</div>
+					<p style="color: var(--color-muted-fg);">
+						Your hotel registration is pending verification. Once approved, you will get full access to the dashboard.
+					</p>
+
+					<div class="rounded-lg border p-4" style="border-color: var(--color-border); background: var(--color-bg);">
+						<dl class="space-y-2 text-sm">
+							<div class="flex justify-between">
+								<dt style="color: var(--color-muted-fg);">Company</dt>
+								<dd style="color: var(--color-fg);">{ props.Tenant.CompanyName }</dd>
+							</div>
+							<div class="flex justify-between">
+								<dt style="color: var(--color-muted-fg);">Status</dt>
+								<dd>
+									<span class="px-2 py-1 rounded text-xs" style="background: hsl(270, 50%, 95%); color: hsl(270, 50%, 40%);">{ string(props.Tenant.Status) }</span>
+								</dd>
+							</div>
+						</dl>
+					</div>
+
+					<div class="rounded-lg border p-4" style="border-color: var(--color-border); background: var(--color-secondary);">
+						<h3 class="text-sm font-semibold" style="color: var(--color-fg);">What happens next?</h3>
+						<ul class="text-sm" style="margin-top:0.5rem; color: var(--color-muted-fg);">
+							<li>Our team reviews your documents.</li>
+							<li>We approve the account and activate your system.</li>
+							<li>You will see the full dashboard once approved.</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	}
+}

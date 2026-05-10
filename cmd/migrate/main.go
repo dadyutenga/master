@@ -9,6 +9,7 @@ import (
 	"github.com/dadyutenga/hms-control/internal/config"
 	"github.com/dadyutenga/hms-control/internal/db"
 
+	"golang.org/x/crypto/bcrypt"
 	_ "modernc.org/sqlite"
 )
 
@@ -86,12 +87,21 @@ func runMigrationsDown(db *sql.DB) {
 }
 
 func seedSuperadmin(db *sql.DB, cfg *config.Config) {
+	if cfg.SuperAdminEmail == "" || cfg.SuperAdminPass == "" || cfg.SuperAdminName == "" {
+		fmt.Println("Superadmin seed skipped: set SUPERADMIN_NAME, SUPERADMIN_EMAIL, SUPERADMIN_PASSWORD")
+		return
+	}
+	hash, err := bcrypt.GenerateFromPassword([]byte(cfg.SuperAdminPass), bcrypt.DefaultCost)
+	if err != nil {
+		log.Printf("Warning seeding superadmin: %v", err)
+		return
+	}
 	_, err := db.Exec(
 		`INSERT INTO users (name, email, company, password, role, verified)
 		 VALUES (?, ?, ?, ?, 'superadmin', 1)
 		 ON CONFLICT(email) DO NOTHING`,
-		"Super Admin", "admin@hms.co.tz", "HMS Platform",
-		"$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy",
+		cfg.SuperAdminName, cfg.SuperAdminEmail, "HMS Platform",
+		string(hash),
 	)
 	if err != nil {
 		log.Printf("Warning seeding superadmin: %v", err)

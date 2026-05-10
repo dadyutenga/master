@@ -25,6 +25,9 @@ type Config struct {
 	TenantDir       string
 	HMSSource       string
 	WorkerCount     int
+	SuperAdminName  string
+	SuperAdminEmail string
+	SuperAdminPass  string
 }
 
 func Load() *Config {
@@ -56,6 +59,9 @@ func Load() *Config {
 		TenantDir:       getEnv("TENANT_DIR", "/opt/tenants"),
 		HMSSource:       getEnv("HMS_SOURCE", "/opt/hms-source"),
 		WorkerCount:     workerCount,
+		SuperAdminName:  getEnv("SUPERADMIN_NAME", ""),
+		SuperAdminEmail: getEnv("SUPERADMIN_EMAIL", ""),
+		SuperAdminPass:  getEnv("SUPERADMIN_PASSWORD", ""),
 	}
 }
 

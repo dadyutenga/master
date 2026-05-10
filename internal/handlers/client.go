@@ -29,6 +29,13 @@ func (h *Handler) ClientDashboard(c *fiber.Ctx) error {
 		return c.Status(500).SendString("Failed to load user.")
 	}
 
+	if tenant.Status == generated.TenantStatusPendingVerification || tenant.Status == generated.TenantStatusPendingApproval {
+		return render(c, client.Pending(client.PendingProps{
+			Tenant: tenant,
+			User:   user,
+		}))
+	}
+
 	return render(c, client.Dashboard(client.DashboardProps{
 		Tenant: tenant,
 		User:   user,

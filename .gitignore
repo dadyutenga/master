@@ -1,0 +1,10 @@
+.env
+/data/
+/uploads/
+/tmp/
+*.log
+hms.log
+
+# OS
+.DS_Store
+Thumbs.db
