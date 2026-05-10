@@ -61,6 +61,8 @@ func main() {
 
 	client := app.Group("/dashboard", middleware.Auth(store, database))
 	client.Get("/", h.ClientDashboard)
+	client.Get("/change-password", h.ShowChangePassword)
+	client.Post("/change-password", h.ChangePassword)
 
 	admin := app.Group("/admin",
 		middleware.Auth(store, database),

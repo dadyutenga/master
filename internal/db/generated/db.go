@@ -36,6 +36,11 @@ type UpdateUserParams struct {
 	BrelaNumber *string
 }
 
+type UpdateUserPasswordParams struct {
+	ID       int64
+	Password string
+}
+
 type CreateTenantParams struct {
 	UserID      int64
 	CompanyName string
@@ -148,6 +153,14 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) error {
 	_, err := q.db.ExecContext(ctx,
 		`UPDATE users SET tin = ?, brela_number = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`,
 		arg.TIN, arg.BrelaNumber, arg.ID,
+	)
+	return err
+}
+
+func (q *Queries) UpdateUserPassword(ctx context.Context, arg UpdateUserPasswordParams) error {
+	_, err := q.db.ExecContext(ctx,
+		`UPDATE users SET password = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`,
+		arg.Password, arg.ID,
 	)
 	return err
 }

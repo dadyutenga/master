@@ -51,126 +51,139 @@ func Dashboard(props DashboardProps) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"max-w-4xl mx-auto p-6\"><div class=\"flex justify-between items-center mb-6\"><h1 class=\"text-2xl font-bold\" style=\"color: var(--color-fg); font-family: var(--font-heading);\">Welcome, ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!-- Fixed Header --> <header style=\"position: fixed; top: 0; left: 0; right: 0; z-index: 50; background: var(--color-bg); border-bottom: 1px solid var(--color-border); height: 4rem;\"><div class=\"max-w-5xl mx-auto px-6\" style=\"display: flex; align-items: center; justify-content: space-between; height: 4rem; overflow: hidden;\"><!-- Logo at START --><a href=\"/dashboard\" style=\"font-family: var(--font-heading); font-weight: 800; font-size: 1.125rem; text-decoration: none; color: var(--color-fg); white-space: nowrap; flex-shrink: 0;\">Hotel Management System</a><!-- User dropdown at END --><details style=\"position: relative;\"><summary style=\"list-style: none; display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.875rem; color: var(--color-fg); white-space: nowrap;\"><span class=\"material-symbols-outlined\" style=\"font-size: 1.1rem; color: var(--color-muted-fg);\">account_circle</span> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(props.User.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/dashboard.templ`, Line: 17, Col: 127}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/dashboard.templ`, Line: 24, Col: 23}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</h1><form method=\"POST\" action=\"/logout\"><button type=\"submit\" class=\"px-4 py-2 rounded text-sm hover:[background-color:var(--color-muted)]\" style=\"background: var(--color-secondary); color: var(--color-fg);\">Logout</button></form></div><div class=\"rounded-xl border p-6 mb-6\" style=\"background: var(--color-card); border-color: var(--color-border);\"><h2 class=\"text-lg font-semibold mb-4\" style=\"color: var(--color-fg); font-family: var(--font-heading);\">Your Hotel Management System</h2><dl class=\"space-y-3 text-sm\"><div class=\"flex justify-between\"><dt style=\"color: var(--color-muted-fg);\">Company</dt><dd style=\"color: var(--color-fg);\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, " <span class=\"material-symbols-outlined\" style=\"font-size: 1rem; color: var(--color-muted-fg);\">expand_more</span></summary><div style=\"position: absolute; top: 2.5rem; right: 0; min-width: 180px; background: var(--color-bg); border: 1px solid var(--color-border); border-radius: 0.75rem; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); padding: 0.5rem;\"><a href=\"/dashboard/change-password\" style=\"display: block; padding: 0.5rem 0.75rem; font-size: 0.875rem; text-decoration: none; color: var(--color-fg); border-radius: 0.5rem;\" onmouseover=\"this.style.background='var(--color-secondary)'\" onmouseout=\"this.style.background='transparent'\">Change password</a><form method=\"POST\" action=\"/logout\"><button type=\"submit\" style=\"width: 100%; text-align: left; padding: 0.5rem 0.75rem; font-size: 0.875rem; background: transparent; border: none; color: var(--color-fg); cursor: pointer; border-radius: 0.5rem;\" onmouseover=\"this.style.background='var(--color-secondary)'\" onmouseout=\"this.style.background='transparent'\">Logout</button></form></div></details></div></header><!-- Main Content with top offset for fixed header --> <main style=\"padding-top: 5rem;\"><!-- Greeting at START (left-aligned, full width) --><div style=\"max-width: 1400px; margin: 0 auto; padding: 1.5rem 1.5rem 0.5rem;\"><h1 style=\"font-size: 1.5rem; font-weight: 700; color: var(--color-fg); font-family: var(--font-heading);\">Hello, ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var4 string
-			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(props.Tenant.CompanyName)
+			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(props.User.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/dashboard.templ`, Line: 28, Col: 68}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/dashboard.templ`, Line: 41, Col: 135}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</dd></div><div class=\"flex justify-between\"><dt style=\"color: var(--color-muted-fg);\">Domain</dt><dd>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</h1></div><!-- Dashboard cards centered --><div class=\"max-w-4xl mx-auto p-6\"><div class=\"rounded-xl border p-6 mb-6\" style=\"background: var(--color-card); border-color: var(--color-border);\"><h2 class=\"text-lg font-semibold mb-4\" style=\"color: var(--color-fg); font-family: var(--font-heading);\">Your Hotel Management System</h2><dl class=\"space-y-3 text-sm\"><div class=\"flex justify-between\"><dt style=\"color: var(--color-muted-fg);\">Company</dt><dd style=\"color: var(--color-fg);\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var5 string
+			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(props.Tenant.CompanyName)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/dashboard.templ`, Line: 51, Col: 69}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</dd></div><div class=\"flex justify-between\"><dt style=\"color: var(--color-muted-fg);\">Domain</dt><dd>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if props.Tenant.Status == generated.TenantStatusActive {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<a href=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<a href=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				var templ_7745c5c3_Var5 templ.SafeURL
-				templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinURLErrs(templ.URL("https://" + props.Tenant.Domain))
+				var templ_7745c5c3_Var6 templ.SafeURL
+				templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinURLErrs(templ.URL("https://" + props.Tenant.Domain))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/dashboard.templ`, Line: 34, Col: 61}
-				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\" class=\"hover:underline\" style=\"color: var(--color-brand-blue);\">")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				var templ_7745c5c3_Var6 string
-				templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(props.Tenant.Domain)
-				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/dashboard.templ`, Line: 34, Col: 149}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/dashboard.templ`, Line: 57, Col: 62}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</a>")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<span style=\"color: var(--color-muted-fg);\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" class=\"hover:underline\" style=\"color: var(--color-brand-blue);\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var7 string
 				templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(props.Tenant.Domain)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/dashboard.templ`, Line: 36, Col: 73}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/dashboard.templ`, Line: 57, Col: 150}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</span>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</a>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</dd></div><div class=\"flex justify-between\"><dt style=\"color: var(--color-muted-fg);\">Status</dt><dd>")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			switch string(props.Tenant.Status) {
-			case "active":
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<span class=\"px-2 py-1 rounded text-xs\" style=\"background: hsl(140, 60%, 95%); color: hsl(140, 60%, 35%);\">active</span>")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-			case "provisioning":
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<span class=\"px-2 py-1 rounded text-xs animate-pulse\" style=\"background: hsl(200, 80%, 95%); color: hsl(200, 80%, 40%);\">provisioning</span>")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-			case "pending_approval":
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<span class=\"px-2 py-1 rounded text-xs\" style=\"background: hsl(270, 50%, 95%); color: hsl(270, 50%, 40%);\">pending approval</span>")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-			default:
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<span class=\"px-2 py-1 rounded text-xs\" style=\"background: var(--color-secondary); color: var(--color-muted-fg);\">")
+			} else {
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<span style=\"color: var(--color-muted-fg);\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var8 string
-				templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(string(props.Tenant.Status))
+				templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(props.Tenant.Domain)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/dashboard.templ`, Line: 51, Col: 152}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/dashboard.templ`, Line: 59, Col: 74}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "</span>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</span>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "</dd></div></dl></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</dd></div><div class=\"flex justify-between\"><dt style=\"color: var(--color-muted-fg);\">Status</dt><dd>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			switch string(props.Tenant.Status) {
+			case "active":
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<span class=\"px-2 py-1 rounded text-xs\" style=\"background: hsl(140, 60%, 95%); color: hsl(140, 60%, 35%);\">active</span>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			case "provisioning":
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<span class=\"px-2 py-1 rounded text-xs animate-pulse\" style=\"background: hsl(200, 80%, 95%); color: hsl(200, 80%, 40%);\">provisioning</span>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			case "pending_approval":
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<span class=\"px-2 py-1 rounded text-xs\" style=\"background: hsl(270, 50%, 95%); color: hsl(270, 50%, 40%);\">pending approval</span>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			default:
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<span class=\"px-2 py-1 rounded text-xs\" style=\"background: var(--color-secondary); color: var(--color-muted-fg);\">")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var9 string
+				templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(string(props.Tenant.Status))
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/dashboard.templ`, Line: 74, Col: 153}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "</span>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</dd></div></dl></div></div></main>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

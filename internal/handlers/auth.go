@@ -13,7 +13,9 @@ import (
 	"strings"
 
 	"github.com/dadyutenga/hms-control/internal/db/generated"
+	"github.com/dadyutenga/hms-control/internal/middleware"
 	"github.com/dadyutenga/hms-control/internal/views/auth"
+	"github.com/dadyutenga/hms-control/internal/views/client"
 	"github.com/dadyutenga/hms-control/internal/views/home"
 
 	"github.com/gofiber/fiber/v2"
@@ -288,6 +290,50 @@ func (h *Handler) Logout(c *fiber.Ctx) error {
 	sess, _ := h.store.Get(c)
 	sess.Destroy()
 	return c.Redirect("/login")
+}
+
+func (h *Handler) ShowChangePassword(c *fiber.Ctx) error {
+	user, ok := middleware.GetUser(c)
+	if !ok {
+		return c.Redirect("/login")
+	}
+	return render(c, client.ChangePassword(client.ChangePasswordProps{User: user}))
+}
+
+func (h *Handler) ChangePassword(c *fiber.Ctx) error {
+	user, ok := middleware.GetUser(c)
+	if !ok {
+		return c.Redirect("/login")
+	}
+
+	current := c.FormValue("current_password")
+	newPass := c.FormValue("new_password")
+	confirm := c.FormValue("confirm_password")
+
+	if newPass == "" || current == "" {
+		return render(c, client.ChangePassword(client.ChangePasswordProps{User: user, Error: "All fields are required."}))
+	}
+	if newPass != confirm {
+		return render(c, client.ChangePassword(client.ChangePasswordProps{User: user, Error: "Passwords do not match."}))
+	}
+	if len(newPass) < 8 {
+		return render(c, client.ChangePassword(client.ChangePasswordProps{User: user, Error: "Password must be at least 8 characters."}))
+	}
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(current)); err != nil {
+		return render(c, client.ChangePassword(client.ChangePasswordProps{User: user, Error: "Current password is incorrect."}))
+	}
+
+	hash, err := bcrypt.GenerateFromPassword([]byte(newPass), bcrypt.DefaultCost)
+	if err != nil {
+		return render(c, client.ChangePassword(client.ChangePasswordProps{User: user, Error: "Failed to update password."}))
+	}
+
+	q := generated.New(h.db)
+	if err := q.UpdateUserPassword(c.Context(), generated.UpdateUserPasswordParams{ID: user.ID, Password: string(hash)}); err != nil {
+		return render(c, client.ChangePassword(client.ChangePasswordProps{User: user, Error: "Failed to update password."}))
+	}
+
+	return render(c, client.ChangePassword(client.ChangePasswordProps{User: user, Success: true}))
 }
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
