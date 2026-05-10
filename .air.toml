@@ -3,7 +3,7 @@ root = "."
 tmp_dir = "tmp"
 
 [build]
-  cmd = "go build -o ./tmp/main.exe ."
+  cmd = "cmd /c \"templ generate && go build -o ./tmp/main.exe .\""
   bin = "tmp/main.exe"
   delay = 200
   include_ext = ["go", "templ", "html", "css", "js"]

@@ -37,6 +37,7 @@ func main() {
 	app.Use(logger.New())
 	app.Use(recover.New())
 	app.Static("/static", "./static")
+	app.Static("/img", "./public/img")
 
 	h := handlers.New(cfg, database, mail, store, eng)
 
