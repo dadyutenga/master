@@ -14,41 +14,41 @@ templ Dashboard(props DashboardProps) {
 	@layout.Base("Dashboard") {
 		<div class="max-w-4xl mx-auto p-6">
 			<div class="flex justify-between items-center mb-6">
-				<h1 class="text-2xl font-bold text-white">Welcome, { props.User.Name }</h1>
+				<h1 class="text-2xl font-bold" style="color: var(--color-fg); font-family: var(--font-heading);">Welcome, { props.User.Name }</h1>
 				<form method="POST" action="/logout">
-					<button type="submit" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded text-sm">Logout</button>
+					<button type="submit" class="px-4 py-2 rounded text-sm hover:[background-color:var(--color-muted)]" style="background: var(--color-secondary); color: var(--color-fg);">Logout</button>
 				</form>
 			</div>
 
-			<div class="bg-slate-900 rounded-xl border border-slate-800 p-6 mb-6">
-				<h2 class="text-lg font-semibold text-white mb-4">Your Hotel Management System</h2>
+			<div class="rounded-xl border p-6 mb-6" style="background: var(--color-card); border-color: var(--color-border);">
+				<h2 class="text-lg font-semibold mb-4" style="color: var(--color-fg); font-family: var(--font-heading);">Your Hotel Management System</h2>
 				<dl class="space-y-3 text-sm">
 					<div class="flex justify-between">
-						<dt class="text-slate-400">Company</dt>
-						<dd class="text-white">{ props.Tenant.CompanyName }</dd>
+						<dt style="color: var(--color-muted-fg);">Company</dt>
+						<dd style="color: var(--color-fg);">{ props.Tenant.CompanyName }</dd>
 					</div>
 					<div class="flex justify-between">
-						<dt class="text-slate-400">Domain</dt>
+						<dt style="color: var(--color-muted-fg);">Domain</dt>
 						<dd>
 							if props.Tenant.Status == generated.TenantStatusActive {
-								<a href={ templ.URL("https://" + props.Tenant.Domain) } class="text-indigo-400 hover:underline">{ props.Tenant.Domain }</a>
+								<a href={ templ.URL("https://" + props.Tenant.Domain) } class="hover:underline" style="color: var(--color-brand-blue);">{ props.Tenant.Domain }</a>
 							} else {
-								<span class="text-slate-500">{ props.Tenant.Domain }</span>
+								<span style="color: var(--color-muted-fg);">{ props.Tenant.Domain }</span>
 							}
 						</dd>
 					</div>
 					<div class="flex justify-between">
-						<dt class="text-slate-400">Status</dt>
+						<dt style="color: var(--color-muted-fg);">Status</dt>
 						<dd>
 							switch string(props.Tenant.Status) {
 								case "active":
-									<span class="px-2 py-1 bg-green-900 text-green-300 rounded text-xs">active</span>
+									<span class="px-2 py-1 rounded text-xs" style="background: hsl(140, 60%, 95%); color: hsl(140, 60%, 35%);">active</span>
 								case "provisioning":
-									<span class="px-2 py-1 bg-cyan-900 text-cyan-300 rounded text-xs animate-pulse">provisioning</span>
+									<span class="px-2 py-1 rounded text-xs animate-pulse" style="background: hsl(200, 80%, 95%); color: hsl(200, 80%, 40%);">provisioning</span>
 								case "pending_approval":
-									<span class="px-2 py-1 bg-purple-900 text-purple-300 rounded text-xs">pending approval</span>
+									<span class="px-2 py-1 rounded text-xs" style="background: hsl(270, 50%, 95%); color: hsl(270, 50%, 40%);">pending approval</span>
 								default:
-									<span class="px-2 py-1 bg-slate-700 text-slate-400 rounded text-xs">{ string(props.Tenant.Status) }</span>
+									<span class="px-2 py-1 rounded text-xs" style="background: var(--color-secondary); color: var(--color-muted-fg);">{ string(props.Tenant.Status) }</span>
 							}
 						</dd>
 					</div>

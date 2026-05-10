@@ -54,7 +54,7 @@ templ Base(title string) {
 				position: fixed; inset: 0; z-index: 9999;
 				display: flex; flex-direction: column;
 				align-items: center; justify-content: center;
-				background: #ffffff;
+				background: var(--color-bg);
 				transition: opacity 0.45s ease;
 				gap: 20px;
 			}
@@ -68,7 +68,7 @@ templ Base(title string) {
 			}
 			#app-splash .dots { display: flex; gap: 6px; }
 			#app-splash .dots span {
-				width: 6px; height: 6px; border-radius: 9999px; background: #1f2937; opacity: 0.25;
+				width: 6px; height: 6px; border-radius: 9999px; background: var(--color-fg); opacity: 0.25;
 				animation: splash-dot 1.2s ease-in-out infinite;
 			}
 			#app-splash .dots span:nth-child(2) { animation-delay: 0.15s; }
@@ -227,7 +227,7 @@ templ Base(title string) {
 			}
 			@media (min-width: 768px) { .cat-circle { width: 6rem; height: 6rem; } }
 			.cat-circle:hover {
-				box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 0 0 4px hsl(0, 0%, 96%);
+				box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 0 0 4px var(--color-secondary);
 			}
 			.cat-circle svg, .cat-circle .material-symbols-outlined {
 				width: 1.5rem; height: 1.5rem; color: var(--color-muted-fg);
@@ -252,7 +252,7 @@ templ Base(title string) {
 			}
 			.card-badge { position: absolute; top: 1rem; right: 1rem; }
 			.card-icon-box {
-				width: 2.5rem; height: 2.5rem; border-radius: 0.75rem;
+				width: 2.5rem; height: 2.5rem; border-radius: var(--radius);
 				background: var(--color-secondary);
 				display: flex; align-items: center; justify-content: center;
 				margin-bottom: 1rem; color: var(--color-muted-fg);
@@ -327,7 +327,7 @@ templ Base(title string) {
 			.reveal.revealed { opacity: 1; transform: translateY(0); }
 		</style>
 	</head>
-	<body class="antialiased text-black bg-white">
+	<body class="antialiased">
 		{ children... }
 		<script>
 			// Splash screen

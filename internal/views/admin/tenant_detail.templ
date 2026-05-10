@@ -9,57 +9,57 @@ templ TenantDetail(tenant generated.Tenant, user generated.User) {
 	@layout.Base("Tenant Detail") {
 		<div class="max-w-4xl mx-auto p-6">
 			<div class="flex items-center gap-4 mb-6">
-				<a href="/admin/tenants" class="text-slate-400 hover:text-white">&larr; Back</a>
-				<h1 class="text-2xl font-bold text-white">{ tenant.CompanyName }</h1>
+				<a href="/admin/tenants" class="hover:[color:var(--color-fg)]" style="color: var(--color-muted-fg);">&larr; Back</a>
+				<h1 class="text-2xl font-bold" style="color: var(--color-fg); font-family: var(--font-heading);">{ tenant.CompanyName }</h1>
 				@StatusBadge(string(tenant.Status))
 			</div>
 
 			<div class="grid grid-cols-2 gap-6">
-				<div class="bg-slate-900 rounded-xl border border-slate-800 p-6">
-					<h2 class="text-lg font-semibold text-white mb-4">Tenant Info</h2>
+				<div class="rounded-xl border p-6" style="background: var(--color-card); border-color: var(--color-border);">
+					<h2 class="text-lg font-semibold mb-4" style="color: var(--color-fg); font-family: var(--font-heading);">Tenant Info</h2>
 					<dl class="space-y-3 text-sm">
 						<div class="flex justify-between">
-							<dt class="text-slate-400">Slug</dt>
-							<dd class="text-white">{ tenant.Slug }</dd>
+							<dt style="color: var(--color-muted-fg);">Slug</dt>
+							<dd style="color: var(--color-fg);">{ tenant.Slug }</dd>
 						</div>
 						<div class="flex justify-between">
-							<dt class="text-slate-400">Domain</dt>
-							<dd><a href={ templ.URL("https://" + tenant.Domain) } class="text-indigo-400 hover:underline">{ tenant.Domain }</a></dd>
+							<dt style="color: var(--color-muted-fg);">Domain</dt>
+							<dd><a href={ templ.URL("https://" + tenant.Domain) } class="hover:underline" style="color: var(--color-brand-blue);">{ tenant.Domain }</a></dd>
 						</div>
 						<div class="flex justify-between">
-							<dt class="text-slate-400">Status</dt>
-							<dd>{ string(tenant.Status) }</dd>
+							<dt style="color: var(--color-muted-fg);">Status</dt>
+							<dd style="color: var(--color-fg);">{ string(tenant.Status) }</dd>
 						</div>
 						<div class="flex justify-between">
-							<dt class="text-slate-400">Created</dt>
-							<dd class="text-white">{ tenant.CreatedAt.Format("02 Jan 2006 15:04") }</dd>
+							<dt style="color: var(--color-muted-fg);">Created</dt>
+							<dd style="color: var(--color-fg);">{ tenant.CreatedAt.Format("02 Jan 2006 15:04") }</dd>
 						</div>
 					</dl>
 				</div>
 
-				<div class="bg-slate-900 rounded-xl border border-slate-800 p-6">
-					<h2 class="text-lg font-semibold text-white mb-4">Owner</h2>
+				<div class="rounded-xl border p-6" style="background: var(--color-card); border-color: var(--color-border);">
+					<h2 class="text-lg font-semibold mb-4" style="color: var(--color-fg); font-family: var(--font-heading);">Owner</h2>
 					<dl class="space-y-3 text-sm">
 						<div class="flex justify-between">
-							<dt class="text-slate-400">Name</dt>
-							<dd class="text-white">{ user.Name }</dd>
+							<dt style="color: var(--color-muted-fg);">Name</dt>
+							<dd style="color: var(--color-fg);">{ user.Name }</dd>
 						</div>
 						<div class="flex justify-between">
-							<dt class="text-slate-400">Email</dt>
-							<dd class="text-white">{ user.Email }</dd>
+							<dt style="color: var(--color-muted-fg);">Email</dt>
+							<dd style="color: var(--color-fg);">{ user.Email }</dd>
 						</div>
 						<div class="flex justify-between">
-							<dt class="text-slate-400">Company</dt>
-							<dd class="text-white">{ user.Company }</dd>
+							<dt style="color: var(--color-muted-fg);">Company</dt>
+							<dd style="color: var(--color-fg);">{ user.Company }</dd>
 						</div>
 					</dl>
 				</div>
 			</div>
 
 			if tenant.ProvisionLog != nil {
-				<div class="mt-6 bg-slate-900 rounded-xl border border-slate-800 p-6">
-					<h2 class="text-lg font-semibold text-white mb-4">Provision Log</h2>
-					<pre class="bg-slate-950 rounded p-4 text-xs text-slate-300 overflow-x-auto whitespace-pre-wrap">{ *tenant.ProvisionLog }</pre>
+				<div class="mt-6 rounded-xl border p-6" style="background: var(--color-card); border-color: var(--color-border);">
+					<h2 class="text-lg font-semibold mb-4" style="color: var(--color-fg); font-family: var(--font-heading);">Provision Log</h2>
+					<pre class="rounded p-4 text-xs overflow-x-auto whitespace-pre-wrap" style="background: var(--color-secondary); color: var(--color-muted-fg);">{ *tenant.ProvisionLog }</pre>
 				</div>
 			}
 		</div>

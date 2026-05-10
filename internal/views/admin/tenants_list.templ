@@ -11,8 +11,8 @@ templ TenantList(tenants []generated.ListTenantsRow) {
 	@layout.Base("Tenants") {
 		<div class="max-w-7xl mx-auto p-6">
 			<div class="flex justify-between items-center mb-6">
-				<h1 class="text-2xl font-bold text-white">Tenants</h1>
-				<span class="text-slate-400">{ fmt.Sprintf("%d", len(tenants)) } total</span>
+				<h1 class="text-2xl font-bold" style="color: var(--color-fg); font-family: var(--font-heading);">Tenants</h1>
+				<span style="color: var(--color-muted-fg);">{ fmt.Sprintf("%d", len(tenants)) } total</span>
 			</div>
 			@TenantTable(tenants)
 		</div>
@@ -21,9 +21,9 @@ templ TenantList(tenants []generated.ListTenantsRow) {
 
 templ TenantTable(tenants []generated.ListTenantsRow) {
 	<div id="tenant-table">
-		<table class="w-full text-sm">
+		<table class="w-full text-sm" style="font-family: var(--font-body);">
 			<thead>
-				<tr class="border-b border-slate-800 text-slate-400">
+				<tr class="border-b" style="border-color: var(--color-border); color: var(--color-muted-fg);">
 					<th class="text-left py-3">Company</th>
 					<th class="text-left py-3">Domain</th>
 					<th class="text-left py-3">Status</th>
@@ -33,21 +33,21 @@ templ TenantTable(tenants []generated.ListTenantsRow) {
 			</thead>
 			<tbody>
 				for _, t := range tenants {
-					<tr class="border-b border-slate-800/50 hover:bg-slate-900/50">
+					<tr class="border-b hover:[background-color:var(--color-secondary)]" style="border-color: var(--color-border);">
 						<td class="py-3">
-							<div class="font-medium">{ t.CompanyName }</div>
-							<div class="text-slate-500 text-xs">{ t.UserEmail }</div>
+							<div class="font-medium" style="color: var(--color-fg);">{ t.CompanyName }</div>
+							<div class="text-xs" style="color: var(--color-muted-fg);">{ t.UserEmail }</div>
 						</td>
 						<td class="py-3">
 							<a href={ templ.URL("https://" + t.Domain) }
-							   class="text-indigo-400 hover:underline" target="_blank">
+							   class="hover:underline" target="_blank" style="color: var(--color-brand-blue);">
 								{ t.Domain }
 							</a>
 						</td>
 						<td class="py-3" id={ "status-" + t.ID.String() }>
 							@StatusBadge(string(t.Status))
 						</td>
-						<td class="py-3 text-slate-400">
+						<td class="py-3" style="color: var(--color-muted-fg);">
 							{ t.CreatedAt.Format("02 Jan 2006") }
 						</td>
 						<td class="py-3">
@@ -68,7 +68,8 @@ templ TenantActions(t generated.ListTenantsRow) {
 				hx-target={ "#status-" + t.ID.String() }
 				hx-swap="innerHTML"
 				hx-confirm="Approve and provision this tenant?"
-				class="px-3 py-1 bg-indigo-600 hover:bg-indigo-500 rounded text-xs font-medium">
+				class="px-3 py-1 rounded text-xs font-medium hover:opacity-90"
+				style="background: var(--color-brand-blue); color: var(--color-primary-fg);">
 				Approve
 			</button>
 		}
@@ -77,7 +78,8 @@ templ TenantActions(t generated.ListTenantsRow) {
 				hx-post={ "/admin/tenants/" + t.ID.String() + "/suspend" }
 				hx-target={ "#status-" + t.ID.String() }
 				hx-swap="innerHTML"
-				class="px-3 py-1 bg-red-700 hover:bg-red-600 rounded text-xs font-medium">
+				class="px-3 py-1 rounded text-xs font-medium hover:opacity-90"
+				style="background: var(--color-destructive); color: var(--color-primary-fg);">
 				Suspend
 			</button>
 		}
@@ -86,12 +88,14 @@ templ TenantActions(t generated.ListTenantsRow) {
 				hx-post={ "/admin/tenants/" + t.ID.String() + "/retry" }
 				hx-target={ "#status-" + t.ID.String() }
 				hx-swap="innerHTML"
-				class="px-3 py-1 bg-orange-600 hover:bg-orange-500 rounded text-xs font-medium">
+				class="px-3 py-1 rounded text-xs font-medium hover:opacity-90"
+				style="background: hsl(25, 80%, 50%); color: var(--color-primary-fg);">
 				Retry
 			</button>
 		}
 		<a href={ templ.URL("/admin/tenants/" + t.ID.String()) }
-		   class="px-3 py-1 bg-slate-700 hover:bg-slate-600 rounded text-xs font-medium">
+		   class="px-3 py-1 rounded text-xs font-medium hover:[background-color:var(--color-muted)]"
+		   style="background: var(--color-secondary); color: var(--color-fg);">
 			Logs
 		</a>
 	</div>
@@ -100,18 +104,18 @@ templ TenantActions(t generated.ListTenantsRow) {
 templ StatusBadge(status string) {
 	switch status {
 		case "pending_verification":
-			<span class="px-2 py-1 bg-slate-700 text-slate-300 rounded text-xs">unverified</span>
+			<span class="px-2 py-1 rounded text-xs" style="background: hsl(35, 90%, 95%); color: hsl(35, 90%, 35%);">unverified</span>
 		case "pending_approval":
-			<span class="px-2 py-1 bg-purple-900 text-purple-300 rounded text-xs">pending</span>
+			<span class="px-2 py-1 rounded text-xs" style="background: hsl(270, 50%, 95%); color: hsl(270, 50%, 40%);">pending</span>
 		case "provisioning":
-			<span class="px-2 py-1 bg-cyan-900 text-cyan-300 rounded text-xs animate-pulse">provisioning</span>
+			<span class="px-2 py-1 rounded text-xs animate-pulse" style="background: hsl(200, 80%, 95%); color: hsl(200, 80%, 40%);">provisioning</span>
 		case "active":
-			<span class="px-2 py-1 bg-green-900 text-green-300 rounded text-xs">active</span>
+			<span class="px-2 py-1 rounded text-xs" style="background: hsl(140, 60%, 95%); color: hsl(140, 60%, 35%);">active</span>
 		case "suspended":
-			<span class="px-2 py-1 bg-red-900 text-red-300 rounded text-xs">suspended</span>
+			<span class="px-2 py-1 rounded text-xs" style="background: hsl(0, 70%, 95%); color: hsl(0, 70%, 40%);">suspended</span>
 		case "failed":
-			<span class="px-2 py-1 bg-orange-900 text-orange-300 rounded text-xs">failed</span>
+			<span class="px-2 py-1 rounded text-xs" style="background: hsl(0, 70%, 95%); color: hsl(0, 70%, 40%);">failed</span>
 		default:
-			<span class="px-2 py-1 bg-slate-700 text-slate-400 rounded text-xs">{ status }</span>
+			<span class="px-2 py-1 rounded text-xs" style="background: var(--color-secondary); color: var(--color-muted-fg);">{ status }</span>
 	}
 }
