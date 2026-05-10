@@ -4,10 +4,10 @@ import "github.com/dadyutenga/hms-control/internal/views/layout"
 
 templ RegisterStep2(props RegisterProps) {
 	@layout.Base("Hotel Information") {
-		<header style="background-color: var(--color-bg); border-bottom: 1px solid var(--color-border); box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);" class="sticky top-0 z-50">
-			<div class="flex items-center justify-between max-w-[1120px] mx-auto h-16 px-6">
-				<div class="text-xl font-bold tracking-tight" style="color: var(--color-fg); font-family: var(--font-heading);">Hotel Management System</div>
-				<nav class="hidden md:flex items-center space-x-8 h-full">
+		<header style="background-color: var(--color-bg); border-bottom: 1px solid var(--color-border); box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); position: fixed; top: 0; left: 0; right: 0; z-index: 50; height: 4rem;">
+			<div class="flex items-center justify-between max-w-[1120px] mx-auto h-16 px-6" style="overflow: hidden;">
+				<div class="text-xl font-bold tracking-tight" style="color: var(--color-fg); font-family: var(--font-heading); white-space: nowrap; flex-shrink: 0;">Hotel Management System</div>
+				<nav class="hidden lg:flex items-center space-x-8 h-full">
 					<a class="transition text-sm font-medium flex items-center h-full px-1" href="#" style="color: var(--color-muted-fg); font-family: var(--font-heading);">Overview</a>
 					<a class="border-b-2 font-semibold flex items-center h-full px-1 text-sm" href="#" style="border-color: var(--color-brand-blue); color: var(--color-brand-blue); font-family: var(--font-heading);">Registration</a>
 					<a class="transition text-sm font-medium flex items-center h-full px-1" href="#" style="color: var(--color-muted-fg); font-family: var(--font-heading);">Compliance</a>
@@ -19,7 +19,7 @@ templ RegisterStep2(props RegisterProps) {
 				</div>
 			</div>
 		</header>
-		<main class="max-w-[1120px] mx-auto px-6 py-12">
+		<main class="max-w-[1120px] mx-auto px-6 pt-24 pb-12">
 			<div class="mb-12">
 				<div class="flex items-center justify-between max-w-3xl mx-auto">
 					<div class="flex flex-col items-center flex-1 relative">

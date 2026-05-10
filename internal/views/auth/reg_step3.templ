@@ -16,10 +16,10 @@ type Step3Props struct {
 
 templ RegisterStep3(props Step3Props) {
 	@layout.Base("Contact & Documents") {
-		<header style="background-color: var(--color-bg); box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); border-bottom: 1px solid var(--color-border);" class="sticky top-0 z-50">
-			<div class="flex items-center justify-between max-w-[1280px] mx-auto h-16 px-6">
-				<div class="text-xl font-bold tracking-tight" style="color: var(--color-fg); font-family: var(--font-heading);">Hotel Management System</div>
-				<nav class="hidden md:flex items-center gap-8 h-full">
+		<header style="background-color: var(--color-bg); box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); border-bottom: 1px solid var(--color-border); position: fixed; top: 0; left: 0; right: 0; z-index: 50; height: 4rem;">
+			<div class="flex items-center justify-between max-w-[1280px] mx-auto h-16 px-6" style="overflow: hidden;">
+				<div class="text-xl font-bold tracking-tight" style="color: var(--color-fg); font-family: var(--font-heading); white-space: nowrap; flex-shrink: 0;">Hotel Management System</div>
+				<nav class="hidden lg:flex items-center gap-8 h-full">
 					<a class="text-sm font-medium flex items-center h-full px-1" href="#" style="color: var(--color-muted-fg); font-family: var(--font-heading);">Company Info</a>
 					<a class="text-sm font-medium flex items-center h-full px-1" href="#" style="color: var(--color-muted-fg); font-family: var(--font-heading);">Legal Structure</a>
 					<a class="border-b-2 font-semibold flex items-center h-full px-1 text-sm" href="#" style="border-color: var(--color-brand-blue); color: var(--color-brand-blue); font-family: var(--font-heading);">Documents</a>
@@ -30,7 +30,7 @@ templ RegisterStep3(props Step3Props) {
 				</div>
 			</div>
 		</header>
-		<main class="max-w-[1280px] mx-auto px-6 py-12">
+		<main class="max-w-[1280px] mx-auto px-6 pt-24 pb-12">
 			<div class="mb-12">
 				<div class="flex items-center justify-between mb-8 overflow-x-auto pb-4">
 					<div class="flex items-center min-w-max">
@@ -67,8 +67,8 @@ templ RegisterStep3(props Step3Props) {
 					<div class="h-full w-3/4" style="background-color: var(--color-brand-blue);"></div>
 				</div>
 			</div>
-			<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-				<section class="lg:col-span-9 space-y-8">
+			<div class="grid grid-cols-1 gap-8 items-start">
+				<section class="space-y-8">
 					<div style="background-color: var(--color-bg); border: 1px solid var(--color-border); padding: 2rem; border-radius: 0.75rem; box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);">
 						<h2 class="text-2xl font-semibold mb-6 flex items-center gap-2" style="color: var(--color-fg); font-family: var(--font-heading);">
 							<span class="material-symbols-outlined">contact_mail</span>
@@ -112,31 +112,129 @@ templ RegisterStep3(props Step3Props) {
 									<span class="text-sm font-semibold" style="color: var(--color-fg);">BRELA Certificate</span>
 									<span class="text-xs font-bold uppercase tracking-widest px-2 py-0.5 rounded" style="color: var(--color-muted-fg); background-color: var(--color-border);">Mandatory</span>
 								</div>
-								<div class="border-2 border-dashed rounded-lg p-10 transition cursor-pointer group flex flex-col items-center justify-center gap-4" style="border-color: var(--color-border); background-color: var(--color-secondary);" onmouseover="this.style.backgroundColor='color-mix(in srgb, var(--color-brand-blue) 5%, var(--color-bg))'; this.style.borderColor='var(--color-fg)'" onmouseout="this.style.backgroundColor='var(--color-secondary)'; this.style.borderColor='var(--color-border)'">
-									<div class="w-12 h-12 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform" style="background-color: var(--color-bg);">
-										<span class="material-symbols-outlined group-hover:text-[var(--color-fg)]" style="color: var(--color-muted-fg);">image</span>
+								<div id="brela-dropzone" class="border-2 border-dashed rounded-lg p-6 transition cursor-pointer flex flex-col items-center justify-center gap-4 relative overflow-hidden" style="border-color: var(--color-border); background-color: var(--color-secondary); min-height: 220px;">
+									<!-- Preview Container -->
+									<div id="brela-preview" class="hidden flex-col items-center gap-3 w-full">
+										<div class="relative w-full max-w-xs">
+											<img id="brela-preview-img" src="" alt="BRELA Preview" class="w-full h-40 object-contain rounded-lg" style="border: 1px solid var(--color-border);"/>
+											<button type="button" onclick="clearFile('brela')" class="absolute -top-2 -right-2 w-7 h-7 rounded-full flex items-center justify-center shadow-sm hover:scale-110 transition" style="background-color: var(--color-destructive); color: var(--color-primary-fg);">
+												<span class="material-symbols-outlined text-sm">close</span>
+											</button>
+										</div>
+										<p id="brela-filename" class="text-sm font-medium truncate max-w-xs" style="color: var(--color-fg);"></p>
+										<p id="brela-filesize" class="text-xs" style="color: var(--color-muted-fg);"></p>
 									</div>
-									<div class="text-center">
-										<input type="file" name="brela_certificate" accept="image/*" required class="block w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold hover:file:opacity-90" style="color: var(--color-muted-fg); file-background-color: var(--color-fg); file-color: var(--color-primary-fg);"/>
-										<p class="text-xs mt-2" style="color: var(--color-muted-fg);">Images only (PNG, JPG, JPEG) up to 10MB</p>
+									<!-- Upload Placeholder -->
+									<div id="brela-placeholder" class="flex flex-col items-center gap-3">
+										<div class="w-12 h-12 rounded-full flex items-center justify-center" style="background-color: var(--color-bg);">
+											<span class="material-symbols-outlined" style="color: var(--color-muted-fg);">image</span>
+										</div>
+										<div class="text-center">
+											<p class="text-sm font-semibold" style="color: var(--color-fg);">Click to upload or drag and drop</p>
+											<p class="text-xs mt-1" style="color: var(--color-muted-fg);">PNG, JPG, JPEG up to 10MB</p>
+										</div>
 									</div>
+									<input type="file" id="brela-input" name="brela_certificate" accept="image/png,image/jpg,image/jpeg" required class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onchange="handleFileSelect(this, 'brela')"/>
 								</div>
+								<p id="brela-error" class="text-xs hidden mt-1" style="color: var(--color-destructive);"></p>
 							</div>
 							<div class="flex flex-col gap-3 mt-6">
 								<div class="flex items-center justify-between">
 									<span class="text-sm font-semibold" style="color: var(--color-fg);">TRA Certificate</span>
 									<span class="text-xs font-bold uppercase tracking-widest px-2 py-0.5 rounded" style="color: var(--color-muted-fg); background-color: var(--color-border);">Mandatory</span>
 								</div>
-								<div class="border-2 border-dashed rounded-lg p-10 transition cursor-pointer group flex flex-col items-center justify-center gap-4" style="border-color: var(--color-border); background-color: var(--color-secondary);" onmouseover="this.style.backgroundColor='color-mix(in srgb, var(--color-brand-blue) 5%, var(--color-bg))'; this.style.borderColor='var(--color-fg)'" onmouseout="this.style.backgroundColor='var(--color-secondary)'; this.style.borderColor='var(--color-border)'">
-									<div class="w-12 h-12 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform" style="background-color: var(--color-bg);">
-										<span class="material-symbols-outlined group-hover:text-[var(--color-fg)]" style="color: var(--color-muted-fg);">image</span>
+								<div id="tra-dropzone" class="border-2 border-dashed rounded-lg p-6 transition cursor-pointer flex flex-col items-center justify-center gap-4 relative overflow-hidden" style="border-color: var(--color-border); background-color: var(--color-secondary); min-height: 220px;">
+									<!-- Preview Container -->
+									<div id="tra-preview" class="hidden flex-col items-center gap-3 w-full">
+										<div class="relative w-full max-w-xs">
+											<img id="tra-preview-img" src="" alt="TRA Preview" class="w-full h-40 object-contain rounded-lg" style="border: 1px solid var(--color-border);"/>
+											<button type="button" onclick="clearFile('tra')" class="absolute -top-2 -right-2 w-7 h-7 rounded-full flex items-center justify-center shadow-sm hover:scale-110 transition" style="background-color: var(--color-destructive); color: var(--color-primary-fg);">
+												<span class="material-symbols-outlined text-sm">close</span>
+											</button>
+										</div>
+										<p id="tra-filename" class="text-sm font-medium truncate max-w-xs" style="color: var(--color-fg);"></p>
+										<p id="tra-filesize" class="text-xs" style="color: var(--color-muted-fg);"></p>
 									</div>
-									<div class="text-center">
-										<input type="file" name="tra_certificate" accept="image/*" required class="block w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold hover:file:opacity-90" style="color: var(--color-muted-fg); file-background-color: var(--color-fg); file-color: var(--color-primary-fg);"/>
-										<p class="text-xs mt-2" style="color: var(--color-muted-fg);">Images only (PNG, JPG, JPEG) up to 10MB</p>
+									<!-- Upload Placeholder -->
+									<div id="tra-placeholder" class="flex flex-col items-center gap-3">
+										<div class="w-12 h-12 rounded-full flex items-center justify-center" style="background-color: var(--color-bg);">
+											<span class="material-symbols-outlined" style="color: var(--color-muted-fg);">image</span>
+										</div>
+										<div class="text-center">
+											<p class="text-sm font-semibold" style="color: var(--color-fg);">Click to upload or drag and drop</p>
+											<p class="text-xs mt-1" style="color: var(--color-muted-fg);">PNG, JPG, JPEG up to 10MB</p>
+										</div>
 									</div>
+									<input type="file" id="tra-input" name="tra_certificate" accept="image/png,image/jpg,image/jpeg" required class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onchange="handleFileSelect(this, 'tra')"/>
 								</div>
+								<p id="tra-error" class="text-xs hidden mt-1" style="color: var(--color-destructive);"></p>
 							</div>
+							<script>
+								(function() {
+									const MAX_SIZE = 10 * 1024 * 1024;
+									const ALLOWED_TYPES = ['image/png', 'image/jpeg', 'image/jpg'];
+
+									window.handleFileSelect = function(input, id) {
+										const file = input.files[0];
+										const errorEl = document.getElementById(id + '-error');
+										const previewEl = document.getElementById(id + '-preview');
+										const placeholderEl = document.getElementById(id + '-placeholder');
+										const imgEl = document.getElementById(id + '-preview-img');
+										const nameEl = document.getElementById(id + '-filename');
+										const sizeEl = document.getElementById(id + '-filesize');
+										const dropzone = document.getElementById(id + '-dropzone');
+
+										errorEl.classList.add('hidden');
+										errorEl.textContent = '';
+
+										if (!file) return;
+
+										// Type validation
+										if (!ALLOWED_TYPES.includes(file.type)) {
+											errorEl.textContent = 'Only PNG, JPG, and JPEG files are allowed.';
+											errorEl.classList.remove('hidden');
+											input.value = '';
+											return;
+										}
+
+										// Size validation
+										if (file.size > MAX_SIZE) {
+											errorEl.textContent = 'File size must not exceed 10MB.';
+											errorEl.classList.remove('hidden');
+											input.value = '';
+											return;
+										}
+
+										// Preview
+										const reader = new FileReader();
+										reader.onload = function(e) {
+											imgEl.src = e.target.result;
+											nameEl.textContent = file.name;
+											sizeEl.textContent = (file.size / (1024 * 1024)).toFixed(2) + ' MB';
+											placeholderEl.classList.add('hidden');
+											previewEl.classList.remove('hidden');
+											previewEl.classList.add('flex');
+											dropzone.style.backgroundColor = 'var(--color-bg)';
+										};
+										reader.readAsDataURL(file);
+									};
+
+									window.clearFile = function(id) {
+										const input = document.getElementById(id + '-input');
+										const previewEl = document.getElementById(id + '-preview');
+										const placeholderEl = document.getElementById(id + '-placeholder');
+										const errorEl = document.getElementById(id + '-error');
+										const dropzone = document.getElementById(id + '-dropzone');
+
+										input.value = '';
+										previewEl.classList.add('hidden');
+										previewEl.classList.remove('flex');
+										placeholderEl.classList.remove('hidden');
+										errorEl.classList.add('hidden');
+										dropzone.style.backgroundColor = '';
+									};
+								})();
+							</script>
 							if props.Error != "" {
 								<div class="p-4 rounded-lg text-sm" style="background-color: color-mix(in srgb, var(--color-destructive) 8%, var(--color-bg)); border: 1px solid color-mix(in srgb, var(--color-destructive) 25%, var(--color-border)); color: var(--color-destructive);">{ props.Error }</div>
 							}
@@ -153,42 +251,6 @@ templ RegisterStep3(props Step3Props) {
 						</form>
 					</div>
 				</section>
-				<aside class="lg:col-span-3 space-y-6">
-					<div class="p-8 rounded-lg" style="background-color: var(--color-fg); color: var(--color-primary-fg);">
-						<h3 class="text-xs font-bold uppercase tracking-widest mb-4" style="color: var(--color-muted-fg);">Guidance</h3>
-						<div class="space-y-6">
-							<div class="flex gap-4">
-								<span class="material-symbols-outlined" style="color: var(--color-brand-blue);">info</span>
-								<div class="flex-1">
-									<p class="font-semibold mb-1">BRELA Requirements</p>
-									<p class="text-sm leading-relaxed" style="color: var(--color-muted-fg);">Ensure the Business Registration and Licensing Authority (BRELA) certificate shows a clear stamp and the current date of incorporation.</p>
-								</div>
-							</div>
-							<div class="flex gap-4">
-								<span class="material-symbols-outlined" style="color: var(--color-brand-blue);">security</span>
-								<div class="flex-1">
-									<p class="font-semibold mb-1">Data Privacy</p>
-									<p class="text-sm leading-relaxed" style="color: var(--color-muted-fg);">Your documents are encrypted using AES-256 standards before being stored in our secure vault.</p>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div style="background-color: var(--color-bg); border: 1px solid var(--color-border); border-radius: 0.75rem; overflow: hidden;">
-						<div class="relative h-48">
-							<img alt="Support Office" class="object-cover w-full h-full" src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=600&h=400&fit=crop"/>
-							<div class="absolute inset-0 flex flex-col justify-end p-6" style="background: linear-gradient(to top, rgba(0,0,0,0.6), transparent);">
-								<p class="text-white font-semibold">Need help with registration?</p>
-								<p class="text-white/80 text-sm">Our compliance officers are available 24/7</p>
-							</div>
-						</div>
-						<div class="p-6">
-							<button class="w-full h-10 border rounded font-semibold text-sm hover:opacity-90 transition flex items-center justify-center gap-2 btn btn-outline" style="border-color: var(--color-border); color: var(--color-fg);">
-								<span class="material-symbols-outlined text-lg">headset_mic</span>
-								Speak to an Advisor
-							</button>
-						</div>
-					</div>
-				</aside>
 			</div>
 		</main>
 		<footer class="mt-20 py-12" style="background-color: var(--color-muted); border-top: 1px solid var(--color-border);">

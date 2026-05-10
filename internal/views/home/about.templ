@@ -15,8 +15,8 @@ templ About() {
 
 		<div id="page" style="min-height:100vh; display:flex; flex-direction:column;">
 			<!-- HEADER -->
-			<header id="header" style="position:sticky; top:0; z-index:50; background:var(--color-bg); border-bottom:1px solid var(--color-border);">
-				<div class="ds-container" style="display:flex; align-items:center; justify-content:space-between; height:4rem;">
+			<header id="header" style="position:fixed; top:0; left:0; right:0; z-index:50; background:var(--color-bg); border-bottom:1px solid var(--color-border); height:4rem;">
+				<div class="ds-container" style="display:flex; align-items:center; justify-content:space-between; height:4rem; overflow:hidden;">
 					<a href="/" style="font-family:var(--font-heading); font-weight:800; font-size:1.25rem; text-decoration:none; color:var(--color-fg); display:flex; align-items:center; gap:0.5rem;">
 						<img src="/img/hotel.png" alt="Logo" style="width:2rem; height:2rem; object-fit:contain; border-radius:0.375rem;"/>
 						Hotel Management System
@@ -36,7 +36,7 @@ templ About() {
 			</header>
 
 			<!-- MAIN CONTENT -->
-			<main style="flex:1;">
+			<main style="flex:1; padding-top:4rem;">
 
 				<!-- HERO SECTION -->
 				<section style="background: var(--color-elevated);" class="section-hero">

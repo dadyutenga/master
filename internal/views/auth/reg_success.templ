@@ -4,10 +4,10 @@ import "github.com/dadyutenga/hms-control/internal/views/layout"
 
 templ RegisterSuccess() {
 	@layout.Base("Registration Submitted") {
-		<header style="background-color: var(--color-bg); box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); border-bottom: 1px solid var(--color-border);" class="sticky top-0 z-50">
-			<div class="flex items-center justify-between max-w-[1120px] mx-auto h-16 px-6">
-				<div class="text-xl font-bold tracking-tight" style="color: var(--color-fg); font-family: var(--font-heading);">Hotel Management System</div>
-				<nav class="hidden md:flex space-x-8">
+		<header style="background-color: var(--color-bg); box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); border-bottom: 1px solid var(--color-border); position: fixed; top: 0; left: 0; right: 0; z-index: 50; height: 4rem;">
+			<div class="flex items-center justify-between max-w-[1120px] mx-auto h-16 px-6" style="overflow: hidden;">
+				<div class="text-xl font-bold tracking-tight" style="color: var(--color-fg); font-family: var(--font-heading); white-space: nowrap; flex-shrink: 0;">Hotel Management System</div>
+				<nav class="hidden lg:flex space-x-8">
 					<a class="text-sm font-medium px-3 py-2 rounded transition" href="#" style="color: var(--color-muted-fg); font-family: var(--font-heading);">Dashboard</a>
 					<a class="text-sm font-medium px-3 py-2 rounded transition" href="#" style="color: var(--color-muted-fg); font-family: var(--font-heading);">Compliance</a>
 					<a class="text-sm font-medium px-3 py-2 rounded transition" href="#" style="color: var(--color-muted-fg); font-family: var(--font-heading);">Documents</a>
@@ -17,7 +17,7 @@ templ RegisterSuccess() {
 				</div>
 			</div>
 		</header>
-		<main class="max-w-[1120px] mx-auto px-6 py-16 md:py-24">
+		<main class="max-w-[1120px] mx-auto px-6 pt-24 pb-16 md:pt-32 md:pb-24">
 			<div class="max-w-2xl mx-auto text-center" style="background-color: var(--color-bg); border: 1px solid var(--color-border); border-radius: 0.75rem; box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); padding: 2rem;">
 				<div class="flex items-center justify-center mb-12">
 					<div class="flex items-center">
