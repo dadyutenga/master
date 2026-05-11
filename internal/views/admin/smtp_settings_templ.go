@@ -8,9 +8,7 @@ package admin
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-import ()
-
-func SMTPSettingsPage(settings map[string]string) templ.Component {
+func SMTPSettingsPage(s map[string]string, saved bool) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -43,65 +41,182 @@ func SMTPSettingsPage(settings map[string]string) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"max-w-3xl mx-auto p-6\"><h1 class=\"text-2xl font-bold mb-6\" style=\"color: var(--color-fg); font-family: var(--font-heading);\">SMTP Settings</h1><form method=\"POST\" action=\"/admin/settings/smtp\" class=\"space-y-4\"><div><label style=\"color: var(--color-muted-fg); font-size:0.875rem;\">SMTP Host</label> <input type=\"text\" name=\"smtp_host\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div style=\"max-width:480px; margin:0 auto;\"><h1 style=\"font-family:var(--font-heading); font-size:1.5rem; font-weight:700; letter-spacing:-0.025em; color:var(--color-fg); margin-bottom:1.5rem;\">SMTP Settings</h1>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var3 string
-			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.ResolveAttributeValue(settings["smtp_host"])
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/smtp_settings.templ`, Line: 13, Col: 70}
+			if saved {
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div style=\"padding:0.75rem 1rem; border-radius:0.5rem; margin-bottom:1rem; font-size:0.875rem; background:#d1fae5; color:#065f46; border:1px solid #6ee7b7;\">Settings saved successfully.</div>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var3)
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\" class=\"w-full rounded-lg border px-3 py-2 text-sm\" style=\"border-color: var(--color-border); background: var(--color-bg); color: var(--color-fg);\"></div><div><label style=\"color: var(--color-muted-fg); font-size:0.875rem;\">SMTP Port</label> <input type=\"text\" name=\"smtp_port\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<form method=\"POST\" action=\"/admin/settings/smtp\" style=\"display:flex; flex-direction:column; gap:1rem;\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var4 string
-			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.ResolveAttributeValue(settings["smtp_port"])
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/smtp_settings.templ`, Line: 17, Col: 70}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var4)
+			templ_7745c5c3_Err = settingField("Host", "smtp_host", s["smtp_host"], "mail.example.com", "text").Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\" class=\"w-full rounded-lg border px-3 py-2 text-sm\" style=\"border-color: var(--color-border); background: var(--color-bg); color: var(--color-fg);\"></div><div><label style=\"color: var(--color-muted-fg); font-size:0.875rem;\">SMTP User</label> <input type=\"text\" name=\"smtp_user\" value=\"")
+			templ_7745c5c3_Err = settingField("Port", "smtp_port", s["smtp_port"], "587", "text").Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var5 string
-			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.ResolveAttributeValue(settings["smtp_user"])
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/smtp_settings.templ`, Line: 21, Col: 70}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var5)
+			templ_7745c5c3_Err = settingField("Username", "smtp_user", s["smtp_user"], "user@example.com", "text").Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\" class=\"w-full rounded-lg border px-3 py-2 text-sm\" style=\"border-color: var(--color-border); background: var(--color-bg); color: var(--color-fg);\"></div><div><label style=\"color: var(--color-muted-fg); font-size:0.875rem;\">SMTP Password (leave blank to keep current)</label> <input type=\"password\" name=\"smtp_pass\" class=\"w-full rounded-lg border px-3 py-2 text-sm\" style=\"border-color: var(--color-border); background: var(--color-bg); color: var(--color-fg);\"></div><div><label style=\"color: var(--color-muted-fg); font-size:0.875rem;\">From Address</label> <input type=\"text\" name=\"smtp_from\" value=\"")
+			templ_7745c5c3_Err = settingField("Password", "smtp_pass", "", "leave blank to keep current", "password").Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var6 string
-			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.ResolveAttributeValue(settings["smtp_from"])
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/smtp_settings.templ`, Line: 29, Col: 70}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var6)
+			templ_7745c5c3_Err = settingField("From Address", "smtp_from", s["smtp_from"], "noreply@example.com", "email").Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\" class=\"w-full rounded-lg border px-3 py-2 text-sm\" style=\"border-color: var(--color-border); background: var(--color-bg); color: var(--color-fg);\"></div><div class=\"flex gap-3\"><button type=\"submit\" class=\"btn btn-primary\" style=\"height:2.5rem;padding:0 1.5rem;font-size:0.875rem;\">Save Settings</button> <button type=\"button\" onclick=\"testSMTP()\" class=\"btn btn-outline\" style=\"height:2.5rem;padding:0 1.5rem;font-size:0.875rem;\">Test SMTP</button></div></form><div id=\"smtp-test-result\" class=\"mt-4\"></div></div><script>\n\t\t\tfunction testSMTP() {\n\t\t\t\tvar email = prompt('Enter test email address:');\n\t\t\t\tif (!email) return;\n\t\t\t\tvar result = document.getElementById('smtp-test-result');\n\t\t\t\tresult.textContent = 'Sending test...';\n\t\t\t\tfetch('/admin/settings/smtp/test', {\n\t\t\t\t\tmethod: 'POST',\n\t\t\t\t\theaders: { 'Content-Type': 'application/x-www-form-urlencoded' },\n\t\t\t\t\tbody: 'test_email=' + encodeURIComponent(email)\n\t\t\t\t})\n\t\t\t\t.then(r => r.json())\n\t\t\t\t.then(d => {\n\t\t\t\t\tresult.textContent = d.ok ? 'Test email sent successfully!' : 'Error: ' + d.error;\n\t\t\t\t\tresult.style.color = d.ok ? 'hsl(140, 60%, 40%)' : 'hsl(0, 70%, 40%)';\n\t\t\t\t});\n\t\t\t}\n\t\t</script>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div style=\"display:flex; flex-direction:column; gap:0.375rem;\"><label style=\"font-size:0.875rem; font-weight:500; color:var(--color-fg);\">TLS</label> <select name=\"smtp_tls\" style=\"padding:0.5rem 0.75rem; border:1px solid var(--color-border); border-radius:0.5rem; font-size:0.875rem; font-family:var(--font-body); background:var(--color-bg); color:var(--color-fg); outline:none;\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			if s["smtp_tls"] == "true" || s["smtp_tls"] == "" {
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<option value=\"true\" selected>Enabled</option> <option value=\"false\">Disabled</option>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			} else {
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<option value=\"true\">Enabled</option> <option value=\"false\" selected>Disabled</option>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</select></div><div style=\"display:flex; gap:0.75rem; margin-top:1.5rem;\"><button type=\"submit\" style=\"padding:0.625rem 1.5rem; border-radius:9999px; border:none; font-size:0.875rem; font-weight:600; cursor:pointer; background:var(--color-fg); color:var(--color-primary-fg); transition:opacity 0.15s ease;\">Save Settings</button></div></form><!-- Test Connection --><section style=\"margin-top:2rem; max-width:480px;\"><h2 style=\"font-family:var(--font-heading); font-size:1.125rem; font-weight:600; color:var(--color-fg); margin-bottom:0.75rem;\">Test Connection</h2><div style=\"display:flex; gap:0.75rem; align-items:center; flex-wrap:wrap;\"><input id=\"test-email\" type=\"email\" placeholder=\"you@example.com\" style=\"flex:1; padding:0.5rem 0.75rem; border:1px solid var(--color-border); border-radius:0.5rem; font-size:0.875rem; font-family:var(--font-body); background:var(--color-bg); color:var(--color-fg); outline:none;\"> <button onclick=\"testSMTP()\" style=\"padding:0.5rem 1.25rem; border-radius:9999px; border:1px solid var(--color-border); font-size:0.8125rem; font-weight:600; cursor:pointer; background:var(--color-bg); color:var(--color-fg); transition:all 0.15s ease;\" onmouseover=\"this.style.background='var(--color-secondary)'\" onmouseout=\"this.style.background='var(--color-bg)'\">Send Test</button></div><p id=\"test-result\" style=\"font-size:0.875rem; margin-top:0.5rem;\"></p></section></div><script>\n\t\t\tfunction testSMTP() {\n\t\t\t\tvar to = document.getElementById('test-email').value.trim();\n\t\t\t\tvar result = document.getElementById('test-result');\n\t\t\t\tif (!to) { result.textContent = 'Enter an email address first.'; return; }\n\t\t\t\tresult.textContent = 'Sending…';\n\t\t\t\tvar body = new FormData();\n\t\t\t\tbody.append('test_email', to);\n\t\t\t\tfetch('/admin/settings/smtp/test', { method: 'POST', body: body })\n\t\t\t\t\t.then(function(r) { return r.json(); })\n\t\t\t\t\t.then(function(d) {\n\t\t\t\t\t\tresult.textContent = d.ok ? d.message : d.error;\n\t\t\t\t\t\tresult.style.color = d.ok ? '#065f46' : '#991b1b';\n\t\t\t\t\t})\n\t\t\t\t\t.catch(function() { result.textContent = 'Request failed'; result.style.color = '#991b1b'; });\n\t\t\t}\n\t\t</script>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			return nil
 		})
 		templ_7745c5c3_Err = AdminLayout("SMTP Settings", "").Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		return nil
+	})
+}
+
+func settingField(label, name, value, placeholder, inputType string) templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
+			return templ_7745c5c3_CtxErr
+		}
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var3 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var3 == nil {
+			templ_7745c5c3_Var3 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<div style=\"display:flex; flex-direction:column; gap:0.375rem;\"><label for=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var4 string
+		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.ResolveAttributeValue(name)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/smtp_settings.templ`, Line: 79, Col: 19}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var4)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\" style=\"font-size:0.875rem; font-weight:500; color:var(--color-fg);\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var5 string
+		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(label)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/smtp_settings.templ`, Line: 79, Col: 97}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</label> <input id=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var6 string
+		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.ResolveAttributeValue(name)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/smtp_settings.templ`, Line: 80, Col: 18}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var6)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\" type=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var7 string
+		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.ResolveAttributeValue(inputType)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/smtp_settings.templ`, Line: 80, Col: 37}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var7)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\" name=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var8 string
+		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.ResolveAttributeValue(name)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/smtp_settings.templ`, Line: 80, Col: 51}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var8)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "\" value=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var9 string
+		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.ResolveAttributeValue(value)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/smtp_settings.templ`, Line: 80, Col: 67}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var9)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "\" placeholder=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var10 string
+		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.ResolveAttributeValue(placeholder)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/smtp_settings.templ`, Line: 80, Col: 95}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var10)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "\" style=\"padding:0.5rem 0.75rem; border:1px solid var(--color-border); border-radius:0.5rem; font-size:0.875rem; font-family:var(--font-body); background:var(--color-bg); color:var(--color-fg); outline:none; transition:border-color 0.15s;\" onfocus=\"this.style.borderColor='var(--color-fg)'\" onblur=\"this.style.borderColor='var(--color-border)'\"></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

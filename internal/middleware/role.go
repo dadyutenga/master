@@ -6,12 +6,13 @@ import (
 
 func RequireRole(role string) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		user, ok := GetUser(c)
-		if !ok {
-			return c.Status(401).SendString("Unauthorized")
+		// Block access during impersonation — admin is acting as a tenant
+		if imp, _ := c.Locals("impersonating").(bool); imp {
+			return fiber.ErrForbidden
 		}
-		if user.Role != role {
-			return c.Status(403).SendString("Forbidden")
+		r, _ := c.Locals("user_role").(string)
+		if r != role {
+			return fiber.ErrForbidden
 		}
 		return c.Next()
 	}

@@ -12,38 +12,104 @@ templ DashboardPage(stats models.DashboardStats) {
 			<h1 style="font-family:var(--font-heading); font-size:1.5rem; font-weight:700; letter-spacing:-0.025em; color:var(--color-fg); margin-bottom:1.5rem;">Dashboard</h1>
 
 			<!-- Stat cards row -->
-			<div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:1rem; margin-bottom:1.5rem;">
-				@statCard(strconv.Itoa(stats.TotalTenants), "Total Tenants", "#3b82f6")
-				@statCard(strconv.Itoa(stats.ActiveTenants), "Active", "#22c55e")
-				@statCard(strconv.Itoa(stats.PendingTenants), "Pending", "#8b5cf6")
-				@statCard(strconv.Itoa(stats.SuspendedTenants), "Suspended", "#ef4444")
+			<div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(180px, 1fr)); gap:1rem; margin-bottom:1.5rem;">
+				@statCard(strconv.Itoa(stats.TotalTenants), "Total Tenants", "👥", "#3b82f6")
+				@statCard(strconv.Itoa(stats.ActiveTenants), "Active", "✅", "#22c55e")
+				@statCard(strconv.Itoa(stats.PendingTenants), "Pending", "⏳", "#8b5cf6")
+				@statCard(strconv.Itoa(stats.SuspendedTenants), "Suspended", "🚫", "#ef4444")
+				@statCard(strconv.Itoa(stats.RunningDeployments), "Running Deploys", "🚀", "#06b6d4")
+				@statCard(strconv.Itoa(stats.FailedDeployments), "Failed Deploys", "💥", "#f97316")
 			</div>
 
-			<!-- Middle row -->
-			<div style="display:grid; grid-template-columns:1fr; gap:1rem; margin-bottom:1.5rem;">
-				if stats.RunningDeployments > 0 || stats.FailedDeployments > 0 {
-					<div style="background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.5rem;">
-						<h2 style="font-family:var(--font-heading); font-size:1rem; font-weight:700; color:var(--color-fg); margin-bottom:1rem;">Deployments</h2>
-						<div style="display:flex; gap:2rem;">
-							<div>
-								<div style="font-size:1.5rem; font-weight:700; color:#22c55e;">{ strconv.Itoa(stats.RunningDeployments) }</div>
-								<div style="font-size:0.75rem; color:var(--color-muted-fg);">Active</div>
-							</div>
-							<div>
-								<div style="font-size:1.5rem; font-weight:700; color:#ef4444;">{ strconv.Itoa(stats.FailedDeployments) }</div>
-								<div style="font-size:0.75rem; color:var(--color-muted-fg);">Failed</div>
-							</div>
-						</div>
-					</div>
-				}
+			<!-- Quick links -->
+			<div style="display:flex; gap:0.75rem; flex-wrap:wrap; margin-bottom:2rem;">
+				<a href={ templ.URL("/admin/tenants?status=pending_approval") }
+				   style="display:inline-flex; align-items:center; gap:0.5rem; padding:0.625rem 1.5rem; border-radius:9999px; font-size:0.875rem; font-weight:600; cursor:pointer; background:var(--color-brand-blue); color:#fff; text-decoration:none; transition:opacity 0.15s ease;"
+				   onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+					Review Pending ({ strconv.Itoa(stats.PendingTenants) })
+				</a>
+				<a href="/admin/audit"
+				   style="display:inline-flex; align-items:center; padding:0.625rem 1.5rem; border-radius:9999px; border:1px solid var(--color-border); font-size:0.875rem; font-weight:600; cursor:pointer; background:var(--color-bg); color:var(--color-fg); text-decoration:none; transition:all 0.15s ease;"
+				   onmouseover="this.style.background='var(--color-secondary)'" onmouseout="this.style.background='var(--color-bg)'">
+					Audit Log
+				</a>
+				<a href="/admin/tenants/export"
+				   style="display:inline-flex; align-items:center; padding:0.625rem 1.5rem; border-radius:9999px; border:1px solid var(--color-border); font-size:0.875rem; font-weight:600; cursor:pointer; background:var(--color-bg); color:var(--color-fg); text-decoration:none; transition:all 0.15s ease;"
+				   onmouseover="this.style.background='var(--color-secondary)'" onmouseout="this.style.background='var(--color-bg)'">
+					Export CSV
+				</a>
 			</div>
+
+			<!-- Recent Activity -->
+			if len(stats.RecentActions) > 0 {
+				<section style="margin-top:2rem;">
+					<h2 style="font-family:var(--font-heading); font-size:1.125rem; font-weight:600; color:var(--color-fg); margin-bottom:1rem;">Recent Activity</h2>
+					<div style="overflow-x:auto; border-radius:0.75rem; border:1px solid var(--color-border);">
+						<table style="width:100%; font-size:0.875rem; border-collapse:collapse;">
+							<thead>
+								<tr style="border-bottom:2px solid var(--color-border); background:var(--color-elevated);">
+									<th style="text-align:left; padding:0.625rem 0.875rem; font-weight:600; color:var(--color-muted-fg); white-space:nowrap;">When</th>
+									<th style="text-align:left; padding:0.625rem 0.875rem; font-weight:600; color:var(--color-muted-fg); white-space:nowrap;">Admin</th>
+									<th style="text-align:left; padding:0.625rem 0.875rem; font-weight:600; color:var(--color-muted-fg); white-space:nowrap;">Action</th>
+									<th style="text-align:left; padding:0.625rem 0.875rem; font-weight:600; color:var(--color-muted-fg); white-space:nowrap;">Tenant</th>
+								</tr>
+							</thead>
+							<tbody>
+								for _, l := range stats.RecentActions {
+									<tr style="border-bottom:1px solid var(--color-border);">
+										<td style="padding:0.625rem 0.875rem; color:var(--color-muted-fg); font-size:0.8125rem;">{ l.CreatedAt.Format("02 Jan 15:04") }</td>
+										<td style="padding:0.625rem 0.875rem; color:var(--color-fg);">{ l.AdminEmail }</td>
+										<td style="padding:0.625rem 0.875rem;">
+											<span class={ "badge " + ActionBadgeClass(l.Action) }>{ l.Action }</span>
+										</td>
+										<td style="padding:0.625rem 0.875rem; color:var(--color-muted-fg);">
+											if l.TenantName != nil && *l.TenantName != "" {
+												{ *l.TenantName }
+											} else if l.TenantID != nil {
+												{ *l.TenantID }
+											} else {
+												—
+											}
+										</td>
+									</tr>
+								}
+							</tbody>
+						</table>
+					</div>
+					<div style="margin-top:1rem;">
+						<a href="/admin/audit" style="color:var(--color-brand-blue); font-size:0.875rem; text-decoration:none;">View all audit logs →</a>
+					</div>
+				</section>
+			}
 		</div>
 	}
 }
 
-templ statCard(value string, label string, color string) {
-	<div style="background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.5rem;">
-		<div style="font-size:2rem; font-weight:700; color:{ color }; margin-bottom:0.25rem;">{ value }</div>
+templ statCard(value string, label string, icon string, color string) {
+	<div style="background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.25rem; display:flex; flex-direction:column; gap:0.25rem;">
+		<div style="font-size:1.5rem;">{ icon }</div>
+		<div style="font-size:2rem; font-weight:700; color:{ color }; line-height:1;">{ value }</div>
 		<div style="font-size:0.75rem; color:var(--color-muted-fg);">{ label }</div>
 	</div>
+}
+
+func ActionBadgeClass(action string) string {
+	switch action {
+	case "tenant.approved":
+		return "badge-green"
+	case "tenant.suspended":
+		return "badge-red"
+	case "tenant.impersonated":
+		return "badge-yellow"
+	case "deployment.start":
+		return "badge-blue"
+	case "deployment.stop":
+		return "badge-orange"
+	default:
+		return "badge-gray"
+	}
+}
+
+templ ActionBadgeSpan(action string) {
+	<span class={ "badge " + ActionBadgeClass(action) }>{ action }</span>
 }

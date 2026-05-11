@@ -1,23 +1,35 @@
 package admin
 
-import (
-	)
-
-templ ProvisionerSettingsPage(settings map[string]string) {
+templ ProvisionerSettingsPage(s map[string]string, saved bool) {
 	@AdminLayout("Provisioner Settings", "") {
-		<div class="max-w-3xl mx-auto p-6">
-			<h1 class="text-2xl font-bold mb-6" style="color: var(--color-fg); font-family: var(--font-heading);">Provisioner Settings</h1>
-			<form method="POST" action="/admin/settings/provisioner" class="space-y-4">
-				<div>
-					<label style="color: var(--color-muted-fg); font-size:0.875rem;">Provision Script Path</label>
-					<input type="text" name="provision_script" value={ settings["provision_script"] } class="w-full rounded-lg border px-3 py-2 text-sm" style="border-color: var(--color-border); background: var(--color-bg); color: var(--color-fg);"/>
+		<div style="max-width:480px; margin:0 auto;">
+			<h1 style="font-family:var(--font-heading); font-size:1.5rem; font-weight:700; letter-spacing:-0.025em; color:var(--color-fg); margin-bottom:1.5rem;">Provisioner Settings</h1>
+
+			if saved {
+				<div style="padding:0.75rem 1rem; border-radius:0.5rem; margin-bottom:1rem; font-size:0.875rem; background:#d1fae5; color:#065f46; border:1px solid #6ee7b7;">
+					Settings saved successfully.
 				</div>
-				<div>
-					<label style="color: var(--color-muted-fg); font-size:0.875rem;">Docker Template</label>
-					<input type="text" name="docker_template" value={ settings["docker_template"] } class="w-full rounded-lg border px-3 py-2 text-sm" style="border-color: var(--color-border); background: var(--color-bg); color: var(--color-fg);"/>
-				</div>
-				<div>
-					<button type="submit" class="btn btn-primary" style="height:2.5rem;padding:0 1.5rem;font-size:0.875rem;">Save Settings</button>
+			}
+
+			<form method="POST" action="/admin/settings/provisioner" style="display:flex; flex-direction:column; gap:1rem;">
+				@settingField("Provision Script Path", "provision_script",
+					s["provision_script"], "./scripts/provision.sh", "text")
+				@settingField("Docker Template Name", "docker_template",
+					s["docker_template"], "default", "text")
+				@settingField("Provision Timeout (seconds)", "provision_timeout",
+					s["provision_timeout"], "300", "number")
+
+				<p style="color:var(--color-muted-fg); font-size:0.8125rem; margin-top:0.5rem;">
+					Script receives: <code style="background:var(--color-secondary); padding:0.125rem 0.375rem; border-radius:0.25rem; font-size:0.75rem;">TENANT_ID</code>,
+					<code style="background:var(--color-secondary); padding:0.125rem 0.375rem; border-radius:0.25rem; font-size:0.75rem;">TENANT_DOMAIN</code>,
+					<code style="background:var(--color-secondary); padding:0.125rem 0.375rem; border-radius:0.25rem; font-size:0.75rem;">DOCKER_TEMPLATE</code> as env vars.
+				</p>
+
+				<div style="display:flex; gap:0.75rem; margin-top:1.5rem;">
+					<button type="submit"
+					        style="padding:0.625rem 1.5rem; border-radius:9999px; border:none; font-size:0.875rem; font-weight:600; cursor:pointer; background:var(--color-fg); color:var(--color-primary-fg); transition:opacity 0.15s ease;">
+						Save Settings
+					</button>
 				</div>
 			</form>
 		</div>

@@ -14,3 +14,11 @@ body {
     0%, 100% { opacity: 1; }
     50% { opacity: .5; }
 }
+
+/* ── Admin Badge Variants ──────────────────────────── */
+.badge-green  { background:#d1fae5 !important; color:#065f46 !important; }
+.badge-red    { background:#fee2e2 !important; color:#991b1b !important; }
+.badge-yellow { background:#fef3c7 !important; color:#92400e !important; }
+.badge-blue   { background:#dbeafe !important; color:#1e40af !important; }
+.badge-orange { background:#ffedd5 !important; color:#9a3412 !important; }
+.badge-gray   { background:var(--color-secondary) !important; color:var(--color-muted-fg) !important; }

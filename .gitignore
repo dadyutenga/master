@@ -1,6 +1,7 @@
 .env
 /data/
-/uploads/
+/uploads/*
+!uploads/.gitkeep
 /tmp/
 *.log
 hms.log

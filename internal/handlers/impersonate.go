@@ -1,47 +1,52 @@
 package handlers
 
 import (
+	"database/sql"
+	"fmt"
 	"time"
-
-	"github.com/dadyutenga/hms-control/internal/db/generated"
-	"github.com/dadyutenga/hms-control/internal/middleware"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 )
 
+// POST /admin/tenants/:id/impersonate
 func (h *Handler) ImpersonateTenant(c *fiber.Ctx) error {
-	sess, err := h.store.Get(c)
-	if err != nil {
-		return c.Redirect("/login")
-	}
-
 	id, err := uuid.Parse(c.Params("id"))
 	if err != nil {
 		return c.Status(400).SendString("Invalid tenant ID")
 	}
 
-	q := generated.New(h.db)
-	tenant, err := q.GetTenantByID(c.Context(), id)
+	var email string
+	var userID int64
+	err = h.db.QueryRow(
+		`SELECT u.id, u.email FROM users u
+		 JOIN tenants t ON t.user_id = u.id
+		 WHERE t.id = ? AND u.role = 'client'`, id.String(),
+	).Scan(&userID, &email)
+	if err == sql.ErrNoRows {
+		return c.Status(404).SendString("tenant user not found")
+	}
 	if err != nil {
-		return fiber.ErrNotFound
+		return fmt.Errorf("impersonate lookup: %w", err)
 	}
 
-	user, ok := middleware.GetUser(c)
-	if !ok {
-		return c.Redirect("/login")
+	sess, err := h.store.Get(c)
+	if err != nil {
+		return err
 	}
 
-	sess.Set("original_admin_id", user.ID)
+	adminID := c.Locals("user_id").(int64)
+
+	sess.Set("original_admin_id", adminID)
 	sess.Set("impersonating_tenant_id", id.String())
-
-	tid := id.String()
-	LogAction(h.db, user.ID, "tenant.impersonated", &tid, "", c.IP())
-
-	sess.Set("userID", tenant.UserID)
+	sess.Set("userID", userID)
 	if err := sess.Save(); err != nil {
 		return err
 	}
+
+	tid := id.String()
+	h.audit.Log(adminID, "tenant.impersonated", &tid,
+		fmt.Sprintf("impersonating %s", email), c.IP())
 
 	c.Cookie(&fiber.Cookie{
 		Name:    "hms_impersonated",
@@ -53,17 +58,19 @@ func (h *Handler) ImpersonateTenant(c *fiber.Ctx) error {
 	return c.Redirect("/dashboard")
 }
 
+// POST /impersonate/stop
 func (h *Handler) StopImpersonation(c *fiber.Ctx) error {
 	sess, err := h.store.Get(c)
 	if err != nil {
 		return c.Redirect("/login")
 	}
 
-	sess.Delete("impersonating_tenant_id")
-	if origID := sess.Get("original_admin_id"); origID != nil {
+	origID := sess.Get("original_admin_id")
+	if origID != nil {
 		sess.Set("userID", origID)
-		sess.Delete("original_admin_id")
 	}
+	sess.Delete("impersonating_tenant_id")
+	sess.Delete("original_admin_id")
 	if err := sess.Save(); err != nil {
 		return err
 	}

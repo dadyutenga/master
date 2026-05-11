@@ -1,0 +1,36 @@
+package views
+
+import "fmt"
+
+// Pagination renders prev/next links preserving existing query params.
+templ Pagination(page, totalPages int, base string, params map[string]string) {
+	if totalPages > 1 {
+		<div style="display:flex; align-items:center; gap:1rem; justify-content:center; padding:1.5rem 0;">
+			if page > 1 {
+				<a href={ templ.SafeURL(buildPageURL(base, page-1, params)) }
+				   style="display:inline-flex; align-items:center; padding:0.375rem 0.875rem; border-radius:9999px; border:1px solid var(--color-border); font-size:0.8rem; font-weight:600; cursor:pointer; background:var(--color-bg); color:var(--color-fg); text-decoration:none;">
+					← Prev
+				</a>
+			}
+			<span style="color:var(--color-muted-fg); font-size:0.875rem;">
+				{ fmt.Sprintf("Page %d of %d", page, totalPages) }
+			</span>
+			if page < totalPages {
+				<a href={ templ.SafeURL(buildPageURL(base, page+1, params)) }
+				   style="display:inline-flex; align-items:center; padding:0.375rem 0.875rem; border-radius:9999px; border:1px solid var(--color-border); font-size:0.8rem; font-weight:600; cursor:pointer; background:var(--color-bg); color:var(--color-fg); text-decoration:none;">
+					Next →
+				</a>
+			}
+		</div>
+	}
+}
+
+func buildPageURL(base string, page int, params map[string]string) string {
+	q := fmt.Sprintf("?page=%d", page)
+	for k, v := range params {
+		if v != "" {
+			q += fmt.Sprintf("&%s=%s", k, v)
+		}
+	}
+	return base + q
+}

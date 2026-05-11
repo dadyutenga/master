@@ -8,9 +8,7 @@ package admin
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-import ()
-
-func ProvisionerSettingsPage(settings map[string]string) templ.Component {
+func ProvisionerSettingsPage(s map[string]string, saved bool) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -43,33 +41,36 @@ func ProvisionerSettingsPage(settings map[string]string) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"max-w-3xl mx-auto p-6\"><h1 class=\"text-2xl font-bold mb-6\" style=\"color: var(--color-fg); font-family: var(--font-heading);\">Provisioner Settings</h1><form method=\"POST\" action=\"/admin/settings/provisioner\" class=\"space-y-4\"><div><label style=\"color: var(--color-muted-fg); font-size:0.875rem;\">Provision Script Path</label> <input type=\"text\" name=\"provision_script\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div style=\"max-width:480px; margin:0 auto;\"><h1 style=\"font-family:var(--font-heading); font-size:1.5rem; font-weight:700; letter-spacing:-0.025em; color:var(--color-fg); margin-bottom:1.5rem;\">Provisioner Settings</h1>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var3 string
-			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.ResolveAttributeValue(settings["provision_script"])
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/provisioner_settings.templ`, Line: 13, Col: 84}
+			if saved {
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div style=\"padding:0.75rem 1rem; border-radius:0.5rem; margin-bottom:1rem; font-size:0.875rem; background:#d1fae5; color:#065f46; border:1px solid #6ee7b7;\">Settings saved successfully.</div>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var3)
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\" class=\"w-full rounded-lg border px-3 py-2 text-sm\" style=\"border-color: var(--color-border); background: var(--color-bg); color: var(--color-fg);\"></div><div><label style=\"color: var(--color-muted-fg); font-size:0.875rem;\">Docker Template</label> <input type=\"text\" name=\"docker_template\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<form method=\"POST\" action=\"/admin/settings/provisioner\" style=\"display:flex; flex-direction:column; gap:1rem;\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var4 string
-			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.ResolveAttributeValue(settings["docker_template"])
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/provisioner_settings.templ`, Line: 17, Col: 82}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var4)
+			templ_7745c5c3_Err = settingField("Provision Script Path", "provision_script",
+				s["provision_script"], "./scripts/provision.sh", "text").Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\" class=\"w-full rounded-lg border px-3 py-2 text-sm\" style=\"border-color: var(--color-border); background: var(--color-bg); color: var(--color-fg);\"></div><div><button type=\"submit\" class=\"btn btn-primary\" style=\"height:2.5rem;padding:0 1.5rem;font-size:0.875rem;\">Save Settings</button></div></form></div>")
+			templ_7745c5c3_Err = settingField("Docker Template Name", "docker_template",
+				s["docker_template"], "default", "text").Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = settingField("Provision Timeout (seconds)", "provision_timeout",
+				s["provision_timeout"], "300", "number").Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<p style=\"color:var(--color-muted-fg); font-size:0.8125rem; margin-top:0.5rem;\">Script receives: <code style=\"background:var(--color-secondary); padding:0.125rem 0.375rem; border-radius:0.25rem; font-size:0.75rem;\">TENANT_ID</code>, <code style=\"background:var(--color-secondary); padding:0.125rem 0.375rem; border-radius:0.25rem; font-size:0.75rem;\">TENANT_DOMAIN</code>, <code style=\"background:var(--color-secondary); padding:0.125rem 0.375rem; border-radius:0.25rem; font-size:0.75rem;\">DOCKER_TEMPLATE</code> as env vars.</p><div style=\"display:flex; gap:0.75rem; margin-top:1.5rem;\"><button type=\"submit\" style=\"padding:0.625rem 1.5rem; border-radius:9999px; border:none; font-size:0.875rem; font-weight:600; cursor:pointer; background:var(--color-fg); color:var(--color-primary-fg); transition:opacity 0.15s ease;\">Save Settings</button></div></form></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

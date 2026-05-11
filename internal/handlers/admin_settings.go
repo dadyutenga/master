@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"strings"
 	"time"
 
@@ -44,9 +45,8 @@ func (h *Handler) UpdateContactSettings(c *fiber.Ctx) error {
 		}))
 	}
 
-	user, ok := middleware.GetUser(c)
-	if ok {
-		LogAction(h.db, user.ID, "settings.contact", nil, "", c.IP())
+	if uid, ok := middleware.GetUserID(c); ok {
+		h.audit.Log(uid, "settings.contact", nil, "", c.IP())
 	}
 
 	return render(c, admin.ContactSettings(admin.ContactSettingsProps{
@@ -108,10 +108,9 @@ func (h *Handler) UpdateTenantBilling(c *fiber.Ctx) error {
 		h.runDeploymentAction(c, tenant, "start")
 	}
 
-	user, ok := middleware.GetUser(c)
-	if ok {
+	if uid, ok := middleware.GetUserID(c); ok {
 		tid := id.String()
-		LogAction(h.db, user.ID, "billing.updated", &tid, status, c.IP())
+		h.audit.Log(uid, "billing.updated", &tid, status, c.IP())
 	}
 
 	return c.Redirect("/admin/tenants/" + id.String())
@@ -167,10 +166,9 @@ func (h *Handler) handleDeploymentAction(c *fiber.Ctx, action string) error {
 		return c.Status(500).SendString("Deployment action failed.")
 	}
 
-	user, ok := middleware.GetUser(c)
-	if ok {
+	if uid, ok := middleware.GetUserID(c); ok {
 		tid := id.String()
-		LogAction(h.db, user.ID, "deployment."+action, &tid, "", c.IP())
+		h.audit.Log(uid, "deployment."+action, &tid, "", c.IP())
 	}
 
 	return c.Redirect("/admin/tenants/" + id.String())
@@ -216,84 +214,77 @@ func (h *Handler) runDeploymentAction(c *fiber.Ctx, tenant generated.Tenant, act
 	return &deployment, err
 }
 
-func (h *Handler) getSetting(key string) string {
-	var value string
-	h.db.QueryRow(`SELECT value FROM settings WHERE key = ?`, key).Scan(&value)
-	return value
-}
+// ── SMTP Settings ──────────────────────────────────────────────────
 
-func (h *Handler) setSetting(key, value string) error {
-	_, err := h.db.Exec(`
-		INSERT INTO settings (key, value, updated_at)
-		VALUES (?, ?, CURRENT_TIMESTAMP)
-		ON CONFLICT(key) DO UPDATE SET value=excluded.value, updated_at=excluded.updated_at
-	`, key, value)
-	return err
-}
-
+// GET /admin/settings/smtp
 func (h *Handler) AdminSMTPSettings(c *fiber.Ctx) error {
-	settings := map[string]string{
-		"smtp_host": h.getSetting("smtp_host"),
-		"smtp_port": h.getSetting("smtp_port"),
-		"smtp_user": h.getSetting("smtp_user"),
-		"smtp_from": h.getSetting("smtp_from"),
+	s, err := h.settings.All()
+	if err != nil {
+		return err
 	}
-	return render(c, admin.SMTPSettingsPage(settings))
+	saved := c.Query("saved") == "1"
+	return render(c, admin.SMTPSettingsPage(s, saved))
 }
 
+// POST /admin/settings/smtp
 func (h *Handler) UpdateSMTPSettings(c *fiber.Ctx) error {
 	fields := map[string]string{
 		"smtp_host": c.FormValue("smtp_host"),
 		"smtp_port": c.FormValue("smtp_port"),
 		"smtp_user": c.FormValue("smtp_user"),
 		"smtp_from": c.FormValue("smtp_from"),
+		"smtp_tls":  c.FormValue("smtp_tls"),
 	}
 	if pass := c.FormValue("smtp_pass"); pass != "" {
 		fields["smtp_pass"] = pass
 	}
-	for key, value := range fields {
-		if err := h.setSetting(key, value); err != nil {
-			return err
+	for k, v := range fields {
+		if err := h.settings.Set(k, v); err != nil {
+			return fmt.Errorf("save setting %s: %w", k, err)
 		}
 	}
-	sess, _ := h.store.Get(c)
-	adminID := sess.Get("userID").(int64)
-	LogAction(h.db, adminID, "settings.smtp_updated", nil, "", c.IP())
-	return c.Redirect("/admin/settings/smtp")
+
+	if uid, ok := middleware.GetUserID(c); ok {
+		h.audit.Log(uid, "settings.smtp", nil, "SMTP settings updated", c.IP())
+	}
+	return c.Redirect("/admin/settings/smtp?saved=1")
 }
 
+// POST /admin/settings/smtp/test
 func (h *Handler) TestSMTP(c *fiber.Ctx) error {
 	to := c.FormValue("test_email")
 	if to == "" {
-		return c.JSON(fiber.Map{"ok": false, "error": "test_email is required"})
+		return c.JSON(fiber.Map{"ok": false, "error": "provide a test email address"})
 	}
 	err := h.mail.Send(to, "HMS SMTP Test", "If you see this, SMTP is configured correctly.")
 	if err != nil {
 		return c.JSON(fiber.Map{"ok": false, "error": err.Error()})
 	}
-	return c.JSON(fiber.Map{"ok": true})
+	return c.JSON(fiber.Map{"ok": true, "message": "Test email sent to " + to})
 }
 
+// ── Provisioner Settings ───────────────────────────────────────────
+
+// GET /admin/settings/provisioner
 func (h *Handler) AdminProvisionerSettings(c *fiber.Ctx) error {
-	settings := map[string]string{
-		"provision_script": h.getSetting("provision_script"),
-		"docker_template":  h.getSetting("docker_template"),
+	s, err := h.settings.All()
+	if err != nil {
+		return err
 	}
-	return render(c, admin.ProvisionerSettingsPage(settings))
+	saved := c.Query("saved") == "1"
+	return render(c, admin.ProvisionerSettingsPage(s, saved))
 }
 
+// POST /admin/settings/provisioner
 func (h *Handler) UpdateProvisionerSettings(c *fiber.Ctx) error {
-	fields := map[string]string{
-		"provision_script": c.FormValue("provision_script"),
-		"docker_template":  c.FormValue("docker_template"),
-	}
-	for key, value := range fields {
-		if err := h.setSetting(key, value); err != nil {
-			return err
+	for _, k := range []string{"provision_script", "docker_template", "provision_timeout"} {
+		if err := h.settings.Set(k, c.FormValue(k)); err != nil {
+			return fmt.Errorf("save setting %s: %w", k, err)
 		}
 	}
-	sess, _ := h.store.Get(c)
-	adminID := sess.Get("userID").(int64)
-	LogAction(h.db, adminID, "settings.provisioner_updated", nil, "", c.IP())
-	return c.Redirect("/admin/settings/provisioner")
+
+	if uid, ok := middleware.GetUserID(c); ok {
+		h.audit.Log(uid, "settings.provisioner", nil, "Provisioner settings updated", c.IP())
+	}
+	return c.Redirect("/admin/settings/provisioner?saved=1")
 }

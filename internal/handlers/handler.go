@@ -6,6 +6,7 @@ import (
 	"github.com/dadyutenga/hms-control/internal/config"
 	"github.com/dadyutenga/hms-control/internal/db/generated"
 	"github.com/dadyutenga/hms-control/internal/mailer"
+	"github.com/dadyutenga/hms-control/internal/models"
 	"github.com/dadyutenga/hms-control/internal/provisioner"
 
 	"github.com/a-h/templ"
@@ -14,20 +15,24 @@ import (
 )
 
 type Handler struct {
-	cfg   *config.Config
-	db    *sql.DB
-	mail  *mailer.Mailer
-	store *session.Store
-	eng   *provisioner.Engine
+	cfg      *config.Config
+	db       *sql.DB
+	mail     *mailer.Mailer
+	store    *session.Store
+	eng      *provisioner.Engine
+	audit    *models.AuditStore
+	settings *models.SettingsStore
 }
 
 func New(cfg *config.Config, db *sql.DB, mail *mailer.Mailer, store *session.Store, eng *provisioner.Engine) *Handler {
 	return &Handler{
-		cfg:   cfg,
-		db:    db,
-		mail:  mail,
-		store: store,
-		eng:   eng,
+		cfg:      cfg,
+		db:       db,
+		mail:     mail,
+		store:    store,
+		eng:      eng,
+		audit:    models.NewAuditStore(db),
+		settings: models.NewSettingsStore(db),
 	}
 }
 

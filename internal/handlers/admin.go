@@ -53,31 +53,8 @@ func (h *Handler) AdminDashboard(c *fiber.Ctx) error {
 		return err
 	}
 
-	rows, err := h.db.Query(`
-		SELECT a.id, u.email, a.action, a.tenant_id, a.detail, a.ip_address, a.created_at
-		FROM audit_logs a
-		JOIN users u ON u.id = a.admin_id
-		ORDER BY a.created_at DESC
-		LIMIT 10
-	`)
-	if err != nil {
-		return err
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var l models.AuditLog
-		if err := rows.Scan(
-			&l.ID, &l.AdminEmail, &l.Action,
-			&l.TenantID, &l.Detail, &l.IPAddress, &l.CreatedAt,
-		); err != nil {
-			return err
-		}
-		stats.RecentActions = append(stats.RecentActions, l)
-	}
-	if err := rows.Err(); err != nil {
-		return err
-	}
+	recentPage, _ := h.audit.List(1, 10, "", "")
+	stats.RecentActions = recentPage.Logs
 
 	return render(c, admin.DashboardPage(stats))
 }
@@ -164,6 +141,9 @@ func (h *Handler) ListTenants(c *fiber.Ctx) error {
 	}
 
 	totalPages := (total + limit - 1) / limit
+	if totalPages == 0 {
+		totalPages = 1
+	}
 	return render(c, admin.TenantList(tenants, search, status, page, totalPages))
 }
 
@@ -226,10 +206,9 @@ func (h *Handler) ApproveTenant(c *fiber.Ctx) error {
 
 	h.eng.Enqueue(id)
 
-	user, ok := middleware.GetUser(c)
-	if ok {
+	if uid, ok := middleware.GetUserID(c); ok {
 		tid := id.String()
-		LogAction(h.db, user.ID, "tenant.approved", &tid, "", c.IP())
+		h.audit.Log(uid, "tenant.approved", &tid, "", c.IP())
 	}
 
 	if c.Get("HX-Request") == "true" {
@@ -260,10 +239,9 @@ func (h *Handler) SuspendTenant(c *fiber.Ctx) error {
 		return c.Status(500).SendString("Failed to suspend tenant.")
 	}
 
-	user, ok := middleware.GetUser(c)
-	if ok {
+	if uid, ok := middleware.GetUserID(c); ok {
 		tid := id.String()
-		LogAction(h.db, user.ID, "tenant.suspended", &tid, "", c.IP())
+		h.audit.Log(uid, "tenant.suspended", &tid, "", c.IP())
 	}
 
 	if c.Get("HX-Request") == "true" {
@@ -299,10 +277,9 @@ func (h *Handler) RetryProvision(c *fiber.Ctx) error {
 	}
 	h.eng.Enqueue(id)
 
-	user, ok := middleware.GetUser(c)
-	if ok {
+	if uid, ok := middleware.GetUserID(c); ok {
 		tid := id.String()
-		LogAction(h.db, user.ID, "provision.retry", &tid, "", c.IP())
+		h.audit.Log(uid, "provision.retry", &tid, "", c.IP())
 	}
 
 	if c.Get("HX-Request") == "true" {
@@ -311,109 +288,95 @@ func (h *Handler) RetryProvision(c *fiber.Ctx) error {
 	return c.Redirect("/admin/tenants/" + id.String())
 }
 
+// GET /admin/audit
 func (h *Handler) AuditLog(c *fiber.Ctx) error {
 	page, _ := strconv.Atoi(c.Query("page", "1"))
+	action := c.Query("action", "")
+	search := c.Query("q", "")
 	if page < 1 {
 		page = 1
 	}
-	const limit = 50
-	offset := (page - 1) * limit
 
-	rows, err := h.db.Query(`
-		SELECT a.id, u.email, a.action, a.tenant_id, a.detail, a.ip_address, a.created_at
-		FROM audit_logs a
-		JOIN users u ON u.id = a.admin_id
-		ORDER BY a.created_at DESC
-		LIMIT ? OFFSET ?
-	`, limit, offset)
+	result, err := h.audit.List(page, 50, action, search)
 	if err != nil {
-		return err
+		return fmt.Errorf("audit list: %w", err)
 	}
-	defer rows.Close()
-
-	var logs []models.AuditLog
-	for rows.Next() {
-		var l models.AuditLog
-		if err := rows.Scan(
-			&l.ID, &l.AdminEmail, &l.Action,
-			&l.TenantID, &l.Detail, &l.IPAddress, &l.CreatedAt,
-		); err != nil {
-			return err
-		}
-		logs = append(logs, l)
-	}
-	if err := rows.Err(); err != nil {
-		return err
-	}
-
-	return render(c, admin.AuditLogPage(logs, page))
+	return render(c, admin.AuditLogPage(result, action, search))
 }
 
+// GET /admin/audit/export
 func (h *Handler) ExportAuditCSV(c *fiber.Ctx) error {
-	c.Set("Content-Type", "text/csv")
-	c.Set("Content-Disposition", `attachment; filename="audit_log.csv"`)
+	c.Set("Content-Type", "text/csv; charset=utf-8")
+	c.Set("Content-Disposition",
+		fmt.Sprintf(`attachment; filename="audit-%s.csv"`, time.Now().Format("2006-01-02")))
 
-	rows, err := h.db.Query(`
-		SELECT a.id, u.email, a.action, a.tenant_id, a.detail, a.ip_address, a.created_at
-		FROM audit_logs a
-		JOIN users u ON u.id = a.admin_id
-		ORDER BY a.created_at DESC
-	`)
+	result, err := h.audit.List(1, 100000, "", "")
 	if err != nil {
 		return err
 	}
-	defer rows.Close()
 
 	w := csv.NewWriter(c.Response().BodyWriter())
-	w.Write([]string{"ID", "Admin Email", "Action", "Tenant ID", "Detail", "IP", "Created At"})
-
-	for rows.Next() {
-		var (
-			id                                 int64
-			adminEmail, action, detail, ip, ts string
-			tenantID                           *string
-		)
-		if err := rows.Scan(&id, &adminEmail, &action, &tenantID, &detail, &ip, &ts); err != nil {
-			return err
+	w.Write([]string{"ID", "Admin", "Action", "Tenant ID", "Tenant", "Detail", "IP", "Created At"})
+	for _, l := range result.Logs {
+		tid, tname := "", ""
+		if l.TenantID != nil {
+			tid = *l.TenantID
 		}
-		tid := ""
-		if tenantID != nil {
-			tid = *tenantID
+		if l.TenantName != nil {
+			tname = *l.TenantName
 		}
 		w.Write([]string{
-			strconv.FormatInt(id, 10), adminEmail, action, tid, detail, ip, ts,
+			strconv.FormatInt(l.ID, 10),
+			l.AdminEmail, l.Action, tid, tname,
+			l.Detail, l.IPAddress, l.CreatedAt.Format(time.RFC3339),
 		})
 	}
-
 	w.Flush()
 	return w.Error()
 }
 
 func (h *Handler) TenantHealthCheck(c *fiber.Ctx) error {
-	id, err := uuid.Parse(c.Params("id"))
-	if err != nil {
-		return c.Status(400).JSON(fiber.Map{"status": "DOWN", "reason": "invalid tenant id"})
-	}
+	tenantID := c.Params("id")
 
-	q := generated.New(h.db)
-	tenant, err := q.GetTenantByID(c.Context(), id)
-	if err != nil {
-		return c.JSON(fiber.Map{"status": "DOWN", "tenant_id": c.Params("id"), "reason": "tenant not found"})
-	}
+	var endpoint string
+	err := h.db.QueryRow(
+		`SELECT COALESCE(d.endpoint, '') FROM deployments d
+		 WHERE d.tenant_id = ? AND d.status = 'active'
+		 ORDER BY d.created_at DESC LIMIT 1`,
+		tenantID,
+	).Scan(&endpoint)
 
-	count, err := q.ListDeploymentsByTenantID(c.Context(), tenant.ID)
-	if err != nil || len(count) == 0 {
-		return c.JSON(fiber.Map{"status": "DOWN", "tenant_id": tenant.ID.String(), "reason": "no running deployment"})
+	if err == sql.ErrNoRows || endpoint == "" {
+		var domain string
+		h.db.QueryRow(`SELECT domain FROM tenants WHERE id = ?`, tenantID).Scan(&domain)
+		if domain == "" {
+			return c.JSON(fiber.Map{"status": "UNKNOWN", "tenant_id": tenantID, "error": "no deployment or domain found"})
+		}
+		endpoint = "https://" + domain
 	}
 
 	client := &http.Client{Timeout: 5 * time.Second}
-	resp, err := client.Get("https://" + tenant.Domain)
-	status := "DOWN"
-	if err == nil {
-		status = "UP"
-		resp.Body.Close()
+	start := time.Now()
+	resp, reqErr := client.Get(endpoint + "/health")
+	latency := time.Since(start).Milliseconds()
+
+	if reqErr != nil {
+		return c.JSON(fiber.Map{
+			"status": "DOWN", "tenant_id": tenantID,
+			"endpoint": endpoint, "latency_ms": latency,
+			"error": reqErr.Error(),
+		})
 	}
-	return c.JSON(fiber.Map{"status": status, "tenant_id": tenant.ID.String()})
+	resp.Body.Close()
+
+	status := "DOWN"
+	if resp.StatusCode >= 200 && resp.StatusCode < 300 {
+		status = "UP"
+	}
+	return c.JSON(fiber.Map{
+		"status": status, "tenant_id": tenantID,
+		"endpoint": endpoint, "status_code": resp.StatusCode, "latency_ms": latency,
+	})
 }
 
 func (h *Handler) StreamProvisionLogs(c *fiber.Ctx) error {
@@ -428,29 +391,48 @@ func (h *Handler) StreamProvisionLogs(c *fiber.Ctx) error {
 	c.Context().SetBodyStreamWriter(func(w *bufio.Writer) {
 		f, err := os.Open(logPath)
 		if err != nil {
-			fmt.Fprintf(w, "data: log file not found for tenant %s\n\n", tenantID)
+			fmt.Fprintf(w, "data: [error] log file not found for tenant %s\n\n", tenantID)
 			w.Flush()
 			return
 		}
 		defer f.Close()
 
-		reader := bufio.NewReader(f)
+		heartbeat := time.NewTicker(15 * time.Second)
+		defer heartbeat.Stop()
+
+		reader := bufio.NewReaderSize(f, 4096)
 		for {
 			select {
-			case <-c.Context().Done():
-				return
+			case <-heartbeat.C:
+				fmt.Fprintf(w, ": heartbeat\n\n")
+				w.Flush()
 			default:
-			}
+				line, err := reader.ReadString('\n')
+				if len(line) > 0 {
+					line = strings.TrimRight(line, "\r\n")
+					fmt.Fprintf(w, "data: %s\n\n", line)
+					w.Flush()
+				}
+				if err != nil {
+					if err.Error() == "EOF" {
+						var provStatus string
+						h.db.QueryRow(
+							`SELECT status FROM deployments WHERE tenant_id = ?
+							 ORDER BY created_at DESC LIMIT 1`, tenantID,
+						).Scan(&provStatus)
 
-			line, err := reader.ReadString('\n')
-			if len(line) > 0 {
-				fmt.Fprintf(w, "data: %s\n\n", strings.TrimRight(line, "\r\n"))
-				if flushErr := w.Flush(); flushErr != nil {
+						if provStatus == "active" || provStatus == "failed" {
+							fmt.Fprintf(w, "event: done\ndata: %s\n\n", provStatus)
+							w.Flush()
+							return
+						}
+						time.Sleep(500 * time.Millisecond)
+						continue
+					}
+					fmt.Fprintf(w, "data: [stream error] %s\n\n", err.Error())
+					w.Flush()
 					return
 				}
-			}
-			if err != nil {
-				time.Sleep(500 * time.Millisecond)
 			}
 		}
 	})
@@ -459,33 +441,35 @@ func (h *Handler) StreamProvisionLogs(c *fiber.Ctx) error {
 }
 
 func (h *Handler) ExportTenantsCSV(c *fiber.Ctx) error {
-	c.Set("Content-Type", "text/csv")
-	c.Set("Content-Disposition", `attachment; filename="tenants.csv"`)
+	c.Set("Content-Type", "text/csv; charset=utf-8")
+	c.Set("Content-Disposition",
+		fmt.Sprintf(`attachment; filename="tenants-%s.csv"`, time.Now().Format("2006-01-02")))
 
-	rows, err := h.db.Query(
-		`SELECT t.id, t.company_name, u.email, t.status, t.created_at FROM tenants t JOIN users u ON t.user_id = u.id ORDER BY t.created_at DESC`,
-	)
+	rows, err := h.db.Query(`
+		SELECT
+			t.id,
+			t.company_name,
+			u.email,
+			t.status,
+			COALESCE(t.billing_status, 'none'),
+			COALESCE(t.domain, ''),
+			t.created_at
+		FROM tenants t
+		JOIN users u ON t.user_id = u.id
+		ORDER BY t.created_at DESC
+	`)
 	if err != nil {
 		return err
 	}
 	defer rows.Close()
 
 	w := csv.NewWriter(c.Response().BodyWriter())
-	if err := w.Write([]string{"ID", "Name", "Email", "Status", "Created At"}); err != nil {
-		return err
-	}
+	w.Write([]string{"ID", "Name", "Email", "Status", "Billing", "Domain", "Registered At"})
 
 	for rows.Next() {
-		var (
-			id                             string
-			name, email, status, createdAt string
-		)
-		if err := rows.Scan(&id, &name, &email, &status, &createdAt); err != nil {
-			return err
-		}
-		if err := w.Write([]string{id, name, email, status, createdAt}); err != nil {
-			return err
-		}
+		var id, name, email, status, billing, domain, createdAt string
+		rows.Scan(&id, &name, &email, &status, &billing, &domain, &createdAt)
+		w.Write([]string{id, name, email, status, billing, domain, createdAt})
 	}
 
 	w.Flush()

@@ -16,6 +16,7 @@ templ TenantDetail(tenant generated.Tenant, user generated.User, deployments []g
 				@StatusBadge(string(tenant.Status))
 				@BillingStatusBadge(tenant.BillingStatus)
 				<span id="health-badge" style="display:inline-flex; align-items:center; padding:0.125rem 0.625rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:var(--color-secondary); color:var(--color-muted-fg);">checking...</span>
+			<span id="health-latency" style="font-size:0.75rem; color:var(--color-muted-fg);"></span>
 			</div>
 
 			<!-- Verification Actions -->
@@ -262,17 +263,31 @@ templ TenantDetail(tenant generated.Tenant, user generated.User, deployments []g
 		</div>
 
 		<script>
-			fetch('/admin/tenants/{ tenant.ID.String() }/health')
-				.then(r => r.json())
-				.then(d => {
-					const badge = document.getElementById('health-badge');
-					badge.textContent = d.status;
-					badge.style.background = d.status === 'UP' ? 'hsl(140, 60%, 95%)' : 'hsl(0, 70%, 95%)';
-					badge.style.color = d.status === 'UP' ? 'hsl(140, 60%, 35%)' : 'hsl(0, 70%, 40%)';
-				})
-				.catch(() => {
-					document.getElementById('health-badge').textContent = 'ERROR';
-				});
+			(function() {
+				var badge = document.getElementById('health-badge');
+				var latency = document.getElementById('health-latency');
+				var tid = '{ tenant.ID.String() }';
+
+				function check() {
+					fetch('/admin/tenants/' + tid + '/health')
+						.then(function(r) { return r.json(); })
+						.then(function(d) {
+							badge.textContent = d.status;
+							badge.style.background = d.status === 'UP' ? 'hsl(140, 60%, 95%)' : 'hsl(0, 70%, 95%)';
+							badge.style.color = d.status === 'UP' ? 'hsl(140, 60%, 35%)' : 'hsl(0, 70%, 40%)';
+							if (d.latency_ms) latency.textContent = d.latency_ms + 'ms';
+							if (d.error) latency.textContent = d.error;
+						})
+						.catch(function() {
+							badge.textContent = 'ERR';
+							badge.style.background = 'hsl(0, 70%, 95%)';
+							badge.style.color = 'hsl(0, 70%, 40%)';
+						});
+				}
+
+				check();
+				setInterval(check, 30000);
+			})();
 		</script>
 	}
 }
