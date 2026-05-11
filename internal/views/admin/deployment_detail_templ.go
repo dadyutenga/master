@@ -189,7 +189,7 @@ func DeploymentDetail(props DeploymentDetailProps) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "</div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<div class=\"rounded-xl border p-6 mt-6\" style=\"background: var(--color-card); border-color: var(--color-border);\"><h2 class=\"text-lg font-semibold mb-4\" style=\"color: var(--color-fg); font-family: var(--font-heading);\">Live Provisioning Log</h2><pre id=\"log-output\" style=\"height:300px;overflow-y:auto;background:#1e1e1e;color:#d4d4d4;padding:1rem;font-family:monospace;font-size:0.75rem;border-radius:0.5rem;\"></pre></div><script>\r\n\t\t\t\t(function() {\r\n\t\t\t\t\tconst out = document.getElementById('log-output');\r\n\t\t\t\t\tconst es = new EventSource('/admin/tenants/{ props.Tenant.ID.String() }/logs/stream');\r\n\t\t\t\t\tes.onmessage = function(e) {\r\n\t\t\t\t\t\tout.textContent += e.data + '\\n';\r\n\t\t\t\t\t\tout.scrollTop = out.scrollHeight;\r\n\t\t\t\t\t};\r\n\t\t\t\t\tes.onerror = function() {\r\n\t\t\t\t\t\tout.textContent += '\\n[stream closed]\\n';\r\n\t\t\t\t\t\tes.close();\r\n\t\t\t\t\t};\r\n\t\t\t\t})();\r\n\t\t\t</script></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

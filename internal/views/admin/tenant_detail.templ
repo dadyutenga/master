@@ -12,6 +12,7 @@ templ TenantDetail(tenant generated.Tenant, user generated.User, deployments []g
 				<a href="/admin/tenants" class="hover:[color:var(--color-fg)]" style="color: var(--color-muted-fg);">&larr; Back</a>
 				<h1 class="text-2xl font-bold" style="color: var(--color-fg); font-family: var(--font-heading);">{ tenant.CompanyName }</h1>
 				@StatusBadge(string(tenant.Status))
+				<span id="health-badge" class="badge" style="background: var(--color-secondary); color: var(--color-muted-fg);">checking...</span>
 			</div>
 
 		<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -181,6 +182,19 @@ templ TenantDetail(tenant generated.Tenant, user generated.User, deployments []g
 				</div>
 			}
 		</div>
+		<script>
+			fetch('/admin/tenants/{ tenant.ID.String() }/health')
+				.then(r => r.json())
+				.then(d => {
+					const badge = document.getElementById('health-badge');
+					badge.textContent = d.status;
+					badge.style.background = d.status === 'UP' ? 'hsl(140, 60%, 95%)' : 'hsl(0, 70%, 95%)';
+					badge.style.color = d.status === 'UP' ? 'hsl(140, 60%, 35%)' : 'hsl(0, 70%, 40%)';
+				})
+				.catch(() => {
+					document.getElementById('health-badge').textContent = 'ERROR';
+				});
+		</script>
 	}
 }
 

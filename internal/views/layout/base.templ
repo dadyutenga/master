@@ -328,8 +328,31 @@ templ Base(title string) {
 		</style>
 	</head>
 	<body class="antialiased">
+		<div id="impersonation-banner" style="display:none;"></div>
 		{ children... }
 		<script>
+			// Impersonation banner
+			(function() {
+				function getCookie(name) {
+					var match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+					return match ? decodeURIComponent(match[2]) : null;
+				}
+				var tid = getCookie('hms_impersonated');
+				var banner = document.getElementById('impersonation-banner');
+				if (tid && banner) {
+					banner.style.display = 'block';
+					banner.style.background = '#f59e0b';
+					banner.style.color = '#000';
+					banner.style.padding = '0.5rem 1rem';
+					banner.style.textAlign = 'center';
+					banner.style.fontSize = '0.875rem';
+					banner.style.fontWeight = '600';
+					banner.innerHTML = 'WARNING: You are impersonating tenant #' + tid + ' ' +
+						'<form method="POST" action="/admin/impersonate/stop" style="display:inline;margin-left:1rem;">' +
+						'<button type="submit" style="border:1px solid #000;border-radius:9999px;background:transparent;color:#000;padding:0.25rem 1rem;font-size:0.75rem;cursor:pointer;">Stop Impersonation</button>' +
+						'</form>';
+				}
+			})();
 			// Splash screen
 			window.addEventListener('load', function () {
 				setTimeout(function () {

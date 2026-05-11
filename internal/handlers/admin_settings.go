@@ -215,3 +215,85 @@ func (h *Handler) runDeploymentAction(c *fiber.Ctx, tenant generated.Tenant, act
 	}
 	return &deployment, err
 }
+
+func (h *Handler) getSetting(key string) string {
+	var value string
+	h.db.QueryRow(`SELECT value FROM settings WHERE key = ?`, key).Scan(&value)
+	return value
+}
+
+func (h *Handler) setSetting(key, value string) error {
+	_, err := h.db.Exec(`
+		INSERT INTO settings (key, value, updated_at)
+		VALUES (?, ?, CURRENT_TIMESTAMP)
+		ON CONFLICT(key) DO UPDATE SET value=excluded.value, updated_at=excluded.updated_at
+	`, key, value)
+	return err
+}
+
+func (h *Handler) AdminSMTPSettings(c *fiber.Ctx) error {
+	settings := map[string]string{
+		"smtp_host": h.getSetting("smtp_host"),
+		"smtp_port": h.getSetting("smtp_port"),
+		"smtp_user": h.getSetting("smtp_user"),
+		"smtp_from": h.getSetting("smtp_from"),
+	}
+	return render(c, admin.SMTPSettingsPage(settings))
+}
+
+func (h *Handler) UpdateSMTPSettings(c *fiber.Ctx) error {
+	fields := map[string]string{
+		"smtp_host": c.FormValue("smtp_host"),
+		"smtp_port": c.FormValue("smtp_port"),
+		"smtp_user": c.FormValue("smtp_user"),
+		"smtp_from": c.FormValue("smtp_from"),
+	}
+	if pass := c.FormValue("smtp_pass"); pass != "" {
+		fields["smtp_pass"] = pass
+	}
+	for key, value := range fields {
+		if err := h.setSetting(key, value); err != nil {
+			return err
+		}
+	}
+	sess, _ := h.store.Get(c)
+	adminID := sess.Get("userID").(int64)
+	LogAction(h.db, adminID, "settings.smtp_updated", nil, "", c.IP())
+	return c.Redirect("/admin/settings/smtp")
+}
+
+func (h *Handler) TestSMTP(c *fiber.Ctx) error {
+	to := c.FormValue("test_email")
+	if to == "" {
+		return c.JSON(fiber.Map{"ok": false, "error": "test_email is required"})
+	}
+	err := h.mail.Send(to, "HMS SMTP Test", "If you see this, SMTP is configured correctly.")
+	if err != nil {
+		return c.JSON(fiber.Map{"ok": false, "error": err.Error()})
+	}
+	return c.JSON(fiber.Map{"ok": true})
+}
+
+func (h *Handler) AdminProvisionerSettings(c *fiber.Ctx) error {
+	settings := map[string]string{
+		"provision_script": h.getSetting("provision_script"),
+		"docker_template":  h.getSetting("docker_template"),
+	}
+	return render(c, admin.ProvisionerSettingsPage(settings))
+}
+
+func (h *Handler) UpdateProvisionerSettings(c *fiber.Ctx) error {
+	fields := map[string]string{
+		"provision_script": c.FormValue("provision_script"),
+		"docker_template":  c.FormValue("docker_template"),
+	}
+	for key, value := range fields {
+		if err := h.setSetting(key, value); err != nil {
+			return err
+		}
+	}
+	sess, _ := h.store.Get(c)
+	adminID := sess.Get("userID").(int64)
+	LogAction(h.db, adminID, "settings.provisioner_updated", nil, "", c.IP())
+	return c.Redirect("/admin/settings/provisioner")
+}

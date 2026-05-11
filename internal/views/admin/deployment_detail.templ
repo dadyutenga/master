@@ -59,6 +59,26 @@ templ DeploymentDetail(props DeploymentDetailProps) {
 					<pre class="rounded p-4 text-xs overflow-x-auto whitespace-pre-wrap" style="background: var(--color-secondary); color: var(--color-muted-fg);">{ *props.Deployment.Log }</pre>
 				</div>
 			}
+			<div class="rounded-xl border p-6 mt-6" style="background: var(--color-card); border-color: var(--color-border);">
+				<h2 class="text-lg font-semibold mb-4" style="color: var(--color-fg); font-family: var(--font-heading);">Live Provisioning Log</h2>
+				<pre id="log-output"
+					style="height:300px;overflow-y:auto;background:#1e1e1e;color:#d4d4d4;padding:1rem;font-family:monospace;font-size:0.75rem;border-radius:0.5rem;">
+				</pre>
+			</div>
+			<script>
+				(function() {
+					const out = document.getElementById('log-output');
+					const es = new EventSource('/admin/tenants/{ props.Tenant.ID.String() }/logs/stream');
+					es.onmessage = function(e) {
+						out.textContent += e.data + '\n';
+						out.scrollTop = out.scrollHeight;
+					};
+					es.onerror = function() {
+						out.textContent += '\n[stream closed]\n';
+						es.close();
+					};
+				})();
+			</script>
 		</div>
 	}
 }

@@ -16,7 +16,7 @@ func New(cfg *config.Config) *Mailer {
 	return &Mailer{cfg: cfg}
 }
 
-func (m *Mailer) send(to, subject, body string) error {
+func (m *Mailer) Send(to, subject, body string) error {
 	port, err := strconv.Atoi(m.cfg.SMTPPort)
 	if err != nil {
 		return fmt.Errorf("invalid SMTP port: %w", err)
@@ -44,7 +44,7 @@ func (m *Mailer) SendVerification(to, name, verifyURL string) error {
 		<p>This link expires in 24 hours.</p>
 	`, name, verifyURL)
 
-	return m.send(to, "Verify Your Email — HMS Platform", body)
+	return m.Send(to, "Verify Your Email — HMS Platform", body)
 }
 
 func (m *Mailer) SendTenantReady(to, name, hmsURL string) error {
@@ -59,5 +59,5 @@ func (m *Mailer) SendTenantReady(to, name, hmsURL string) error {
 		<p>Need help? Email support@hms.co.tz</p>
 	`, name, hmsURL)
 
-	return m.send(to, "Your HMS is Ready!", body)
+	return m.Send(to, "Your HMS is Ready!", body)
 }

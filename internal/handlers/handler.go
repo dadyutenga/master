@@ -41,6 +41,21 @@ func (h *Handler) contactDetails(c *fiber.Ctx) (generated.ContactDetails, error)
 	return q.GetContactDetails(c.Context())
 }
 
+func (h *Handler) impersonatedTenantID(c *fiber.Ctx) string {
+	sess, err := h.store.Get(c)
+	if err != nil {
+		return ""
+	}
+	tid := sess.Get("impersonating_tenant_id")
+	if tid == nil {
+		return ""
+	}
+	if s, ok := tid.(string); ok {
+		return s
+	}
+	return ""
+}
+
 func ErrorHandler(c *fiber.Ctx, err error) error {
 	code := fiber.StatusInternalServerError
 	if e, ok := err.(*fiber.Error); ok {

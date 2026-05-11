@@ -1,9 +1,15 @@
 package handlers
 
 import (
+	"bufio"
 	"database/sql"
 	"encoding/csv"
+	"fmt"
+	"net/http"
+	"os"
 	"strconv"
+	"strings"
+	"time"
 
 	"github.com/dadyutenga/hms-control/internal/db/generated"
 	"github.com/dadyutenga/hms-control/internal/middleware"
@@ -372,6 +378,109 @@ func (h *Handler) ExportAuditCSV(c *fiber.Ctx) error {
 		w.Write([]string{
 			strconv.FormatInt(id, 10), adminEmail, action, tid, detail, ip, ts,
 		})
+	}
+
+	w.Flush()
+	return w.Error()
+}
+
+func (h *Handler) TenantHealthCheck(c *fiber.Ctx) error {
+	id, err := uuid.Parse(c.Params("id"))
+	if err != nil {
+		return c.Status(400).JSON(fiber.Map{"status": "DOWN", "reason": "invalid tenant id"})
+	}
+
+	q := generated.New(h.db)
+	tenant, err := q.GetTenantByID(c.Context(), id)
+	if err != nil {
+		return c.JSON(fiber.Map{"status": "DOWN", "tenant_id": c.Params("id"), "reason": "tenant not found"})
+	}
+
+	count, err := q.ListDeploymentsByTenantID(c.Context(), tenant.ID)
+	if err != nil || len(count) == 0 {
+		return c.JSON(fiber.Map{"status": "DOWN", "tenant_id": tenant.ID.String(), "reason": "no running deployment"})
+	}
+
+	client := &http.Client{Timeout: 5 * time.Second}
+	resp, err := client.Get("https://" + tenant.Domain)
+	status := "DOWN"
+	if err == nil {
+		status = "UP"
+		resp.Body.Close()
+	}
+	return c.JSON(fiber.Map{"status": status, "tenant_id": tenant.ID.String()})
+}
+
+func (h *Handler) StreamProvisionLogs(c *fiber.Ctx) error {
+	tenantID := c.Params("id")
+	logPath := fmt.Sprintf("./tmp/provision-%s.log", tenantID)
+
+	c.Set("Content-Type", "text/event-stream")
+	c.Set("Cache-Control", "no-cache")
+	c.Set("Connection", "keep-alive")
+	c.Set("X-Accel-Buffering", "no")
+
+	c.Context().SetBodyStreamWriter(func(w *bufio.Writer) {
+		f, err := os.Open(logPath)
+		if err != nil {
+			fmt.Fprintf(w, "data: log file not found for tenant %s\n\n", tenantID)
+			w.Flush()
+			return
+		}
+		defer f.Close()
+
+		reader := bufio.NewReader(f)
+		for {
+			select {
+			case <-c.Context().Done():
+				return
+			default:
+			}
+
+			line, err := reader.ReadString('\n')
+			if len(line) > 0 {
+				fmt.Fprintf(w, "data: %s\n\n", strings.TrimRight(line, "\r\n"))
+				if flushErr := w.Flush(); flushErr != nil {
+					return
+				}
+			}
+			if err != nil {
+				time.Sleep(500 * time.Millisecond)
+			}
+		}
+	})
+
+	return nil
+}
+
+func (h *Handler) ExportTenantsCSV(c *fiber.Ctx) error {
+	c.Set("Content-Type", "text/csv")
+	c.Set("Content-Disposition", `attachment; filename="tenants.csv"`)
+
+	rows, err := h.db.Query(
+		`SELECT t.id, t.company_name, u.email, t.status, t.created_at FROM tenants t JOIN users u ON t.user_id = u.id ORDER BY t.created_at DESC`,
+	)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+
+	w := csv.NewWriter(c.Response().BodyWriter())
+	if err := w.Write([]string{"ID", "Name", "Email", "Status", "Created At"}); err != nil {
+		return err
+	}
+
+	for rows.Next() {
+		var (
+			id                             string
+			name, email, status, createdAt string
+		)
+		if err := rows.Scan(&id, &name, &email, &status, &createdAt); err != nil {
+			return err
+		}
+		if err := w.Write([]string{id, name, email, status, createdAt}); err != nil {
+			return err
+		}
 	}
 
 	w.Flush()

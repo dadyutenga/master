@@ -1,0 +1,58 @@
+package admin
+
+import (
+	"github.com/dadyutenga/hms-control/internal/views/layout"
+)
+
+templ SMTPSettingsPage(settings map[string]string) {
+	@layout.Base("SMTP Settings") {
+		<div class="max-w-3xl mx-auto p-6">
+			<h1 class="text-2xl font-bold mb-6" style="color: var(--color-fg); font-family: var(--font-heading);">SMTP Settings</h1>
+			<form method="POST" action="/admin/settings/smtp" class="space-y-4">
+				<div>
+					<label style="color: var(--color-muted-fg); font-size:0.875rem;">SMTP Host</label>
+					<input type="text" name="smtp_host" value={ settings["smtp_host"] } class="w-full rounded-lg border px-3 py-2 text-sm" style="border-color: var(--color-border); background: var(--color-bg); color: var(--color-fg);"/>
+				</div>
+				<div>
+					<label style="color: var(--color-muted-fg); font-size:0.875rem;">SMTP Port</label>
+					<input type="text" name="smtp_port" value={ settings["smtp_port"] } class="w-full rounded-lg border px-3 py-2 text-sm" style="border-color: var(--color-border); background: var(--color-bg); color: var(--color-fg);"/>
+				</div>
+				<div>
+					<label style="color: var(--color-muted-fg); font-size:0.875rem;">SMTP User</label>
+					<input type="text" name="smtp_user" value={ settings["smtp_user"] } class="w-full rounded-lg border px-3 py-2 text-sm" style="border-color: var(--color-border); background: var(--color-bg); color: var(--color-fg);"/>
+				</div>
+				<div>
+					<label style="color: var(--color-muted-fg); font-size:0.875rem;">SMTP Password (leave blank to keep current)</label>
+					<input type="password" name="smtp_pass" class="w-full rounded-lg border px-3 py-2 text-sm" style="border-color: var(--color-border); background: var(--color-bg); color: var(--color-fg);"/>
+				</div>
+				<div>
+					<label style="color: var(--color-muted-fg); font-size:0.875rem;">From Address</label>
+					<input type="text" name="smtp_from" value={ settings["smtp_from"] } class="w-full rounded-lg border px-3 py-2 text-sm" style="border-color: var(--color-border); background: var(--color-bg); color: var(--color-fg);"/>
+				</div>
+				<div class="flex gap-3">
+					<button type="submit" class="btn btn-primary" style="height:2.5rem;padding:0 1.5rem;font-size:0.875rem;">Save Settings</button>
+					<button type="button" onclick="testSMTP()" class="btn btn-outline" style="height:2.5rem;padding:0 1.5rem;font-size:0.875rem;">Test SMTP</button>
+				</div>
+			</form>
+			<div id="smtp-test-result" class="mt-4"></div>
+		</div>
+		<script>
+			function testSMTP() {
+				var email = prompt('Enter test email address:');
+				if (!email) return;
+				var result = document.getElementById('smtp-test-result');
+				result.textContent = 'Sending test...';
+				fetch('/admin/settings/smtp/test', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+					body: 'test_email=' + encodeURIComponent(email)
+				})
+				.then(r => r.json())
+				.then(d => {
+					result.textContent = d.ok ? 'Test email sent successfully!' : 'Error: ' + d.error;
+					result.style.color = d.ok ? 'hsl(140, 60%, 40%)' : 'hsl(0, 70%, 40%)';
+				});
+			}
+		</script>
+	}
+}
