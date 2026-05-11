@@ -11,6 +11,7 @@
 2. [Audit Log](#2-audit-log)
 3. [Admin Dashboard Stats](#3-admin-dashboard-stats)
 4. [Tenant List — Search, Filter, Pagination](#4-tenant-list--search-filter-pagination)
+4a. [Tenant Domain Handling — Disable Auto Domain](#4a-tenant-domain-handling--disable-auto-domain)
 5. [Deployment Health Check](#5-deployment-health-check)
 6. [SSE Live Provisioning Logs](#6-sse-live-provisioning-logs)
 7. [Settings Expansion](#7-settings-expansion)
@@ -722,6 +723,34 @@ func StatusBadgeClass(status string) string {
     }
 }
 ```
+
+    ### 4a. Tenant Domain Handling — Disable Auto Domain
+
+    Goal:
+    Stop automatically generating or showing a domain for a tenant until the tenant has explicitly provided the subdomain. The admin UI must not display a domain that the user never set.
+
+    Required behavior:
+    - During registration, do not auto-create the tenant domain from `BaseDomain`.
+    - Store only the user-provided `requested_subdomain` (from the tenant details form) and leave the final `domain` unset or clearly marked as pending.
+    - In admin lists and detail pages, show a clear placeholder (e.g., "Not set") when no subdomain has been provided.
+    - Only set `domain` after the tenant submits the subdomain and the admin approves or provisioning runs.
+
+    Implementation notes:
+    - If `tenants.domain` is currently required, adjust schema to allow NULL or use a safe placeholder that is never shown in the UI (e.g., `pending-<tenant-id>`), then render "Not set" in the admin UI when `requested_subdomain` is empty.
+    - The UI should read `requested_subdomain` as the source of truth for the user-entered value.
+    - Do not backfill or auto-generate `requested_subdomain` from `company_name`.
+
+    Suggested changes (high level):
+    - Registration flow: remove `domain := slug + "." + BaseDomain` assignment and do not set `domain` there.
+    - Tenant details form: require `requested_subdomain` input and store it in `tenants.requested_subdomain`.
+    - Admin views: if `requested_subdomain` is empty, show "Not set" and avoid showing the domain column.
+    - Provisioner: only finalize `domain` once a valid `requested_subdomain` exists.
+
+    Acceptance criteria:
+    1) New tenants do not show a domain in admin UI until a subdomain is entered.
+    2) Entered subdomain is visible as "requested subdomain" before approval.
+    3) No auto-generated domain is shown anywhere in the admin UI.
+    4) Domain is only set after the admin approves or provisioning runs.
 
 ---
 
@@ -1807,6 +1836,7 @@ func pageURL(base string, page int, params map[string]string) string {
 | 2 | Audit log | `migrations/006_audit_log.sql`, `models/audit.go`, `handlers/audit.go`, `views/audit_log.templ` | 2h |
 | 3 | Dashboard stats | `models/dashboard.go`, `handlers/dashboard.go`, `views/admin_dashboard.templ` | 1h |
 | 4 | Tenant list | `models/tenant_list.go`, update `handlers/tenants.go`, `views/tenant_list.templ` | 2h |
+| 4a | Tenant domain handling | registration flow, tenant details form, admin views | 1h |
 | 5 | Health check | `handlers/health.go`, update `show_tenant.templ` | 1h |
 | 6 | SSE live logs | `handlers/logs.go`, `views/log_viewer.templ` | 2h |
 | 7 | Settings | `migrations/007_settings.sql`, `models/settings.go`, `handlers/settings.go`, `views/smtp_settings.templ`, `views/provisioner_settings.templ` | 3h |
