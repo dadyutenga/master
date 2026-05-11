@@ -1,0 +1,76 @@
+package client
+
+import (
+	"github.com/dadyutenga/hms-control/internal/db/generated"
+	"github.com/dadyutenga/hms-control/internal/views/layout"
+)
+
+type BillingBlockedProps struct {
+	Tenant  generated.Tenant
+	User    generated.User
+	Contact generated.ContactDetails
+}
+
+templ BillingBlocked(props BillingBlockedProps) {
+	@layout.Base("Billing Required") {
+		<header style="position:sticky; top:0; z-index:50; background: var(--color-bg); border-bottom:1px solid var(--color-border);">
+			<div class="max-w-5xl mx-auto px-6" style="display:flex; align-items:center; justify-content:space-between; height:4rem;">
+				<a href="/dashboard" style="font-family: var(--font-heading); font-weight: 800; font-size: 1.125rem; text-decoration:none; color: var(--color-fg);">Hotel Management System</a>
+				<details style="position:relative;">
+					<summary style="list-style:none; display:flex; align-items:center; gap:0.5rem; cursor:pointer; font-size:0.875rem; color: var(--color-fg);">
+						<span class="material-symbols-outlined" style="font-size:1.1rem; color: var(--color-muted-fg);">account_circle</span>
+						{ props.User.Name }
+						<span class="material-symbols-outlined" style="font-size:1rem; color: var(--color-muted-fg);">expand_more</span>
+					</summary>
+					<div style="position:absolute; top:2rem; left:0; min-width:180px; background: var(--color-bg); border:1px solid var(--color-border); border-radius:0.75rem; box-shadow:0 10px 15px -3px rgba(0,0,0,0.1); padding:0.5rem;">
+						<a href="/dashboard/details" style="display:block; padding:0.5rem 0.75rem; font-size:0.875rem; text-decoration:none; color: var(--color-fg);">Tenant details</a>
+						<a href="/dashboard/change-password" style="display:block; padding:0.5rem 0.75rem; font-size:0.875rem; text-decoration:none; color: var(--color-fg);">Change password</a>
+						<form method="POST" action="/logout">
+							<button type="submit" style="width:100%; text-align:left; padding:0.5rem 0.75rem; font-size:0.875rem; background:transparent; border:none; color: var(--color-fg); cursor:pointer;">Logout</button>
+						</form>
+					</div>
+				</details>
+			</div>
+		</header>
+
+		<div class="max-w-5xl mx-auto p-6" style="padding-top:2rem;">
+			<div class="rounded-2xl border" style="background: color-mix(in srgb, var(--color-destructive) 6%, var(--color-bg)); border-color: var(--color-border); box-shadow: 0 12px 24px rgba(0,0,0,0.08); padding:2rem;">
+				<div style="display:flex; flex-direction:column; align-items:center; gap:0.75rem; text-align:center;">
+					<div style="width:64px; height:64px; border-radius:16px; display:flex; align-items:center; justify-content:center; background: var(--color-destructive); color: white; box-shadow: 0 8px 16px rgba(220, 38, 38, 0.25);">
+						<span class="material-symbols-outlined" style="font-size:28px;">payments</span>
+					</div>
+					<h2 class="text-xl font-semibold" style="color: var(--color-fg); font-family: var(--font-heading);">Billing action required</h2>
+					<p style="color: var(--color-muted-fg); max-width:460px;">
+						Your subscription is currently { props.Tenant.BillingStatus }. Please settle your balance to restore access to your tenant environment.
+					</p>
+				</div>
+				<div class="rounded-xl border" style="margin-top:1.5rem; border-color: var(--color-border); background: var(--color-bg); padding:1rem 1.25rem;">
+					<dl class="text-sm" style="display:flex; flex-direction:column; gap:0.75rem;">
+						<div style="display:flex; justify-content:space-between; align-items:center;">
+							<dt style="color: var(--color-muted-fg);">Company</dt>
+							<dd style="color: var(--color-fg); font-weight:600;">{ props.Tenant.CompanyName }</dd>
+						</div>
+						<div style="display:flex; justify-content:space-between; align-items:center;">
+							<dt style="color: var(--color-muted-fg);">Status</dt>
+							<dd style="color: var(--color-destructive); font-weight:600;">{ props.Tenant.BillingStatus }</dd>
+						</div>
+					</dl>
+				</div>
+			</div>
+
+			<div class="rounded-xl border" style="margin-top:1.5rem; border-color: var(--color-border); background: var(--color-bg); padding:1rem 1.25rem;">
+				<h3 class="text-xs" style="font-weight:700; letter-spacing:0.08em; color: var(--color-muted-fg);">NEED HELP WITH PAYMENT?</h3>
+				<div style="display:flex; flex-direction:column; gap:0.75rem; margin-top:0.75rem;">
+					<div style="display:flex; align-items:center; gap:0.75rem;">
+						<span class="material-symbols-outlined" style="color: var(--color-muted-fg);">location_on</span>
+						<span style="color: var(--color-fg); font-size:0.875rem;">{ props.Contact.Location }</span>
+					</div>
+					<div style="display:flex; align-items:center; gap:0.75rem;">
+						<span class="material-symbols-outlined" style="color: var(--color-muted-fg);">phone</span>
+						<a href={ templ.URL("tel:" + props.Contact.PhoneNumber) } style="color: var(--color-brand-blue); font-size:0.875rem; text-decoration:none;">{ props.Contact.PhoneNumber }</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	}
+}

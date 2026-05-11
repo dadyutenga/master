@@ -64,14 +64,14 @@ func Dashboard(props DashboardProps) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, " <span class=\"material-symbols-outlined\" style=\"font-size: 1rem; color: var(--color-muted-fg);\">expand_more</span></summary><div style=\"position: absolute; top: 2.5rem; right: 0; min-width: 180px; background: var(--color-bg); border: 1px solid var(--color-border); border-radius: 0.75rem; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); padding: 0.5rem;\"><a href=\"/dashboard/change-password\" style=\"display: block; padding: 0.5rem 0.75rem; font-size: 0.875rem; text-decoration: none; color: var(--color-fg); border-radius: 0.5rem;\" onmouseover=\"this.style.background='var(--color-secondary)'\" onmouseout=\"this.style.background='transparent'\">Change password</a><form method=\"POST\" action=\"/logout\"><button type=\"submit\" style=\"width: 100%; text-align: left; padding: 0.5rem 0.75rem; font-size: 0.875rem; background: transparent; border: none; color: var(--color-fg); cursor: pointer; border-radius: 0.5rem;\" onmouseover=\"this.style.background='var(--color-secondary)'\" onmouseout=\"this.style.background='transparent'\">Logout</button></form></div></details></div></header><!-- Main Content with top offset for fixed header --> <main style=\"padding-top: 5rem;\"><!-- Greeting at START (left-aligned, full width) --><div style=\"max-width: 1400px; margin: 0 auto; padding: 1.5rem 1.5rem 0.5rem;\"><h1 style=\"font-size: 1.5rem; font-weight: 700; color: var(--color-fg); font-family: var(--font-heading);\">Hello, ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, " <span class=\"material-symbols-outlined\" style=\"font-size: 1rem; color: var(--color-muted-fg);\">expand_more</span></summary><div style=\"position: absolute; top: 2.5rem; right: 0; min-width: 180px; background: var(--color-bg); border: 1px solid var(--color-border); border-radius: 0.75rem; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); padding: 0.5rem;\"><a href=\"/dashboard/details\" style=\"display: block; padding: 0.5rem 0.75rem; font-size: 0.875rem; text-decoration: none; color: var(--color-fg); border-radius: 0.5rem;\" onmouseover=\"this.style.background='var(--color-secondary)'\" onmouseout=\"this.style.background='transparent'\">Tenant details</a> <a href=\"/dashboard/change-password\" style=\"display: block; padding: 0.5rem 0.75rem; font-size: 0.875rem; text-decoration: none; color: var(--color-fg); border-radius: 0.5rem;\" onmouseover=\"this.style.background='var(--color-secondary)'\" onmouseout=\"this.style.background='transparent'\">Change password</a><form method=\"POST\" action=\"/logout\"><button type=\"submit\" style=\"width: 100%; text-align: left; padding: 0.5rem 0.75rem; font-size: 0.875rem; background: transparent; border: none; color: var(--color-fg); cursor: pointer; border-radius: 0.5rem;\" onmouseover=\"this.style.background='var(--color-secondary)'\" onmouseout=\"this.style.background='transparent'\">Logout</button></form></div></details></div></header><!-- Main Content with top offset for fixed header --> <main style=\"padding-top: 5rem;\"><!-- Greeting at START (left-aligned, full width) --><div style=\"max-width: 1400px; margin: 0 auto; padding: 1.5rem 1.5rem 0.5rem;\"><h1 style=\"font-size: 1.5rem; font-weight: 700; color: var(--color-fg); font-family: var(--font-heading);\">Hello, ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(props.User.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/dashboard.templ`, Line: 41, Col: 135}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/dashboard.templ`, Line: 42, Col: 135}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -84,7 +84,7 @@ func Dashboard(props DashboardProps) templ.Component {
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(props.Tenant.CompanyName)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/dashboard.templ`, Line: 51, Col: 69}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/dashboard.templ`, Line: 52, Col: 69}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -102,7 +102,7 @@ func Dashboard(props DashboardProps) templ.Component {
 				var templ_7745c5c3_Var6 templ.SafeURL
 				templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinURLErrs(templ.URL("https://" + props.Tenant.Domain))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/dashboard.templ`, Line: 57, Col: 62}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/dashboard.templ`, Line: 58, Col: 62}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 				if templ_7745c5c3_Err != nil {
@@ -115,7 +115,7 @@ func Dashboard(props DashboardProps) templ.Component {
 				var templ_7745c5c3_Var7 string
 				templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(props.Tenant.Domain)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/dashboard.templ`, Line: 57, Col: 150}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/dashboard.templ`, Line: 58, Col: 150}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 				if templ_7745c5c3_Err != nil {
@@ -133,7 +133,7 @@ func Dashboard(props DashboardProps) templ.Component {
 				var templ_7745c5c3_Var8 string
 				templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(props.Tenant.Domain)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/dashboard.templ`, Line: 59, Col: 74}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/dashboard.templ`, Line: 60, Col: 74}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 				if templ_7745c5c3_Err != nil {
@@ -172,7 +172,7 @@ func Dashboard(props DashboardProps) templ.Component {
 				var templ_7745c5c3_Var9 string
 				templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(string(props.Tenant.Status))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/dashboard.templ`, Line: 74, Col: 153}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/dashboard.templ`, Line: 75, Col: 153}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 				if templ_7745c5c3_Err != nil {

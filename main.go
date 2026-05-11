@@ -61,6 +61,8 @@ func main() {
 
 	client := app.Group("/dashboard", middleware.Auth(store, database))
 	client.Get("/", h.ClientDashboard)
+	client.Get("/details", h.ShowTenantDetails)
+	client.Post("/details", h.UpdateTenantDetails)
 	client.Get("/change-password", h.ShowChangePassword)
 	client.Post("/change-password", h.ChangePassword)
 
@@ -71,9 +73,15 @@ func main() {
 	admin.Get("/", h.AdminDashboard)
 	admin.Get("/tenants", h.ListTenants)
 	admin.Get("/tenants/:id", h.ShowTenant)
+	admin.Get("/tenants/:id/deployments/:deploymentId", h.ShowDeployment)
 	admin.Post("/tenants/:id/approve", h.ApproveTenant)
 	admin.Post("/tenants/:id/suspend", h.SuspendTenant)
 	admin.Post("/tenants/:id/retry", h.RetryProvision)
+	admin.Post("/tenants/:id/deployments/start", h.StartTenantDeployment)
+	admin.Post("/tenants/:id/deployments/stop", h.StopTenantDeployment)
+	admin.Post("/tenants/:id/billing", h.UpdateTenantBilling)
+	admin.Get("/settings/contact", h.AdminContactSettings)
+	admin.Post("/settings/contact", h.UpdateContactSettings)
 
 	log.Fatal(app.Listen(":8080"))
 }

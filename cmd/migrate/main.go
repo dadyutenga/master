@@ -43,6 +43,8 @@ func runMigrationsUp(db *sql.DB) {
 		migrationTenants,
 		migrationVerifyTokens,
 		migrationDocuments,
+		migrationContactDetails,
+		migrationDeployments,
 	}
 
 	for i, m := range migrations {
@@ -62,6 +64,13 @@ func runMigrationsUp(db *sql.DB) {
 		"ALTER TABLE tenants ADD COLUMN address TEXT",
 		"ALTER TABLE tenants ADD COLUMN city TEXT",
 		"ALTER TABLE tenants ADD COLUMN country TEXT",
+		"ALTER TABLE tenants ADD COLUMN requested_subdomain TEXT",
+		"ALTER TABLE tenants ADD COLUMN admin_name TEXT",
+		"ALTER TABLE tenants ADD COLUMN admin_email TEXT",
+		"ALTER TABLE tenants ADD COLUMN admin_phone TEXT",
+		"ALTER TABLE tenants ADD COLUMN billing_status TEXT NOT NULL DEFAULT 'paid'",
+		"ALTER TABLE tenants ADD COLUMN last_payment_at DATETIME",
+		"ALTER TABLE tenants ADD COLUMN next_due_at DATETIME",
 	}
 	for _, a := range alterColumns {
 		db.Exec(a) // ignore error if column already exists
@@ -71,6 +80,8 @@ func runMigrationsUp(db *sql.DB) {
 
 func runMigrationsDown(db *sql.DB) {
 	drops := []string{
+		"DROP TABLE IF EXISTS deployments",
+		"DROP TABLE IF EXISTS contact_details",
 		"DROP TABLE IF EXISTS documents",
 		"DROP TABLE IF EXISTS verify_tokens",
 		"DROP TABLE IF EXISTS tenants",
@@ -148,9 +159,17 @@ CREATE TABLE IF NOT EXISTS tenants (
     address         TEXT,
     city            TEXT,
     country         TEXT,
+    requested_subdomain TEXT,
+    admin_name      TEXT,
+    admin_email     TEXT,
+    admin_phone     TEXT,
+    billing_status  TEXT NOT NULL DEFAULT 'paid' CHECK(billing_status IN ('paid','overdue','suspended')),
+    last_payment_at DATETIME,
+    next_due_at     DATETIME,
     created_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+CREATE UNIQUE INDEX IF NOT EXISTS idx_tenants_requested_subdomain ON tenants(requested_subdomain);
 `
 
 const migrationDocuments = `
@@ -165,6 +184,34 @@ CREATE TABLE IF NOT EXISTS documents (
     size_bytes    INTEGER NOT NULL,
     created_at    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+`
+
+const migrationContactDetails = `
+CREATE TABLE IF NOT EXISTS contact_details (
+    id           INTEGER PRIMARY KEY,
+    location     TEXT NOT NULL,
+    phone_number TEXT NOT NULL,
+    created_at   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+INSERT INTO contact_details (id, location, phone_number, created_at, updated_at)
+SELECT 1, 'Samora Avenue, Dar es Salaam', '+255 123 456 789', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+WHERE NOT EXISTS (SELECT 1 FROM contact_details);
+`
+
+const migrationDeployments = `
+CREATE TABLE IF NOT EXISTS deployments (
+    id            TEXT PRIMARY KEY,
+    tenant_id     TEXT NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+    action        TEXT NOT NULL,
+    status        TEXT NOT NULL,
+    log           TEXT,
+    error_message TEXT,
+    created_at    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    completed_at  DATETIME
+);
+CREATE INDEX IF NOT EXISTS idx_deployments_tenant_id ON deployments(tenant_id);
 `
 
 const migrationVerifyTokens = `

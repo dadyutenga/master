@@ -65,7 +65,7 @@ func ChangePassword(props ChangePasswordProps) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, " <span class=\"material-symbols-outlined\" style=\"font-size:1rem; color: var(--color-muted-fg);\">expand_more</span></summary><div style=\"position:absolute; top:2rem; left:0; min-width:180px; background: var(--color-bg); border:1px solid var(--color-border); border-radius:0.75rem; box-shadow:0 10px 15px -3px rgba(0,0,0,0.1); padding:0.5rem;\"><a href=\"/dashboard/change-password\" style=\"display:block; padding:0.5rem 0.75rem; font-size:0.875rem; text-decoration:none; color: var(--color-fg);\">Change password</a><form method=\"POST\" action=\"/logout\"><button type=\"submit\" style=\"width:100%; text-align:left; padding:0.5rem 0.75rem; font-size:0.875rem; background:transparent; border:none; color: var(--color-fg); cursor:pointer;\">Logout</button></form></div></details></div></header><div class=\"max-w-3xl mx-auto p-6\" style=\"padding-top:2rem;\"><h1 class=\"text-2xl font-bold mb-6\" style=\"color: var(--color-fg); font-family: var(--font-heading);\">Change password</h1>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, " <span class=\"material-symbols-outlined\" style=\"font-size:1rem; color: var(--color-muted-fg);\">expand_more</span></summary><div style=\"position:absolute; top:2rem; left:0; min-width:180px; background: var(--color-bg); border:1px solid var(--color-border); border-radius:0.75rem; box-shadow:0 10px 15px -3px rgba(0,0,0,0.1); padding:0.5rem;\"><a href=\"/dashboard/details\" style=\"display:block; padding:0.5rem 0.75rem; font-size:0.875rem; text-decoration:none; color: var(--color-fg);\">Tenant details</a> <a href=\"/dashboard/change-password\" style=\"display:block; padding:0.5rem 0.75rem; font-size:0.875rem; text-decoration:none; color: var(--color-fg);\">Change password</a><form method=\"POST\" action=\"/logout\"><button type=\"submit\" style=\"width:100%; text-align:left; padding:0.5rem 0.75rem; font-size:0.875rem; background:transparent; border:none; color: var(--color-fg); cursor:pointer;\">Logout</button></form></div></details></div></header><div class=\"max-w-3xl mx-auto p-6\" style=\"padding-top:2rem;\"><h1 class=\"text-2xl font-bold mb-6\" style=\"color: var(--color-fg); font-family: var(--font-heading);\">Change password</h1>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -83,7 +83,7 @@ func ChangePassword(props ChangePasswordProps) templ.Component {
 				var templ_7745c5c3_Var4 string
 				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(props.Error)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/change_password.templ`, Line: 45, Col: 18}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/change_password.templ`, Line: 46, Col: 18}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 				if templ_7745c5c3_Err != nil {

@@ -1,0 +1,48 @@
+package admin
+
+import (
+	"github.com/dadyutenga/hms-control/internal/db/generated"
+	"github.com/dadyutenga/hms-control/internal/views/layout"
+)
+
+type ContactSettingsProps struct {
+	Contact generated.ContactDetails
+	Error   string
+	Success bool
+}
+
+templ ContactSettings(props ContactSettingsProps) {
+	@layout.Base("Contact Settings") {
+		<div class="max-w-3xl mx-auto p-6">
+			<div class="flex items-center gap-4 mb-6">
+				<a href="/admin/tenants" class="hover:[color:var(--color-fg)]" style="color: var(--color-muted-fg);">&larr; Back</a>
+				<h1 class="text-2xl font-bold" style="color: var(--color-fg); font-family: var(--font-heading);">Contact details</h1>
+			</div>
+
+			if props.Success {
+				<div class="mb-4 p-3 rounded text-sm" style="background-color: color-mix(in srgb, var(--color-brand-blue) 8%, var(--color-bg)); border: 1px solid color-mix(in srgb, var(--color-brand-blue) 25%, var(--color-border)); color: var(--color-brand-blue);">
+					Contact details updated.
+				</div>
+			}
+			if props.Error != "" {
+				<div class="mb-4 p-3 rounded text-sm" style="background-color: color-mix(in srgb, var(--color-destructive) 8%, var(--color-bg)); border: 1px solid color-mix(in srgb, var(--color-destructive) 25%, var(--color-border)); color: var(--color-destructive);">
+					{ props.Error }
+				</div>
+			}
+
+			<div class="rounded-xl border p-6" style="background: var(--color-card); border-color: var(--color-border);">
+				<form method="POST" action="/admin/settings/contact" style="display:flex; flex-direction:column; gap:1rem;">
+					<div style="display:flex; flex-direction:column; gap:0.5rem;">
+						<label for="location" style="font-size:0.875rem; font-weight:600; color: var(--color-fg);">Location</label>
+						<input type="text" name="location" required value={ props.Contact.Location } style="border: 1px solid var(--color-border); border-radius: 0.5rem; padding: 0.75rem;" />
+					</div>
+					<div style="display:flex; flex-direction:column; gap:0.5rem;">
+						<label for="phone_number" style="font-size:0.875rem; font-weight:600; color: var(--color-fg);">Phone number</label>
+						<input type="text" name="phone_number" required value={ props.Contact.PhoneNumber } style="border: 1px solid var(--color-border); border-radius: 0.5rem; padding: 0.75rem;" />
+					</div>
+					<button type="submit" class="btn btn-primary" style="align-self:flex-start;">Save contact</button>
+				</form>
+			</div>
+		</div>
+	}
+}

@@ -2,7 +2,7 @@ package home
 
 import "github.com/dadyutenga/hms-control/internal/views/layout"
 
-templ Contact() {
+templ Contact(props PageProps) {
 	@layout.Base("Contact") {
 		<!-- SPLASH SCREEN -->
 		<div id="app-splash">
@@ -82,7 +82,7 @@ templ Contact() {
 										</div>
 										<div>
 											<h3 class="card-title" style="margin-bottom:0.125rem;">Office Address</h3>
-											<p class="card-desc" style="margin-bottom:0;">Samora Avenue, Dar es Salaam, Tanzania</p>
+											<p class="card-desc" style="margin-bottom:0;">{ props.Contact.Location }</p>
 										</div>
 									</div>
 									<div class="card" style="flex-direction:row; align-items:center; gap:1rem;">
@@ -91,7 +91,7 @@ templ Contact() {
 										</div>
 										<div>
 											<h3 class="card-title" style="margin-bottom:0.125rem;">Phone</h3>
-											<p class="card-desc" style="margin-bottom:0;">+255 123 456 789</p>
+											<p class="card-desc" style="margin-bottom:0;">{ props.Contact.PhoneNumber }</p>
 										</div>
 									</div>
 									<div class="card" style="flex-direction:row; align-items:center; gap:1rem;">
@@ -152,7 +152,7 @@ templ Contact() {
 								Our team is available for live demos and consultations. Book a call at your convenience.
 							</p>
 							<div class="cta-buttons">
-								<a href="tel:+255123456789" class="btn btn-primary">Call Now</a>
+								<a href={ templ.URL("tel:" + props.Contact.PhoneNumber) } class="btn btn-primary">Call Now</a>
 								<a href="/register" class="btn btn-outline">Get Started Free</a>
 							</div>
 						</div>
@@ -170,14 +170,14 @@ templ Contact() {
 								<span class="material-symbols-outlined" style="color:var(--color-muted-fg);">map</span>
 							</div>
 							<h4 style="font-family:var(--font-heading); font-size:0.875rem; font-weight:700; margin-bottom:0.25rem;">Location</h4>
-							<p style="font-size:0.875rem; color:var(--color-muted-fg);">Samora Avenue, Dar es Salaam</p>
+							<p style="font-size:0.875rem; color:var(--color-muted-fg);">{ props.Contact.Location }</p>
 						</div>
 						<div style="text-align:center;">
 							<div style="width:2.5rem; height:2.5rem; border-radius:var(--radius); background:var(--color-bg); display:flex; align-items:center; justify-content:center; margin:0 auto 0.75rem;">
 								<span class="material-symbols-outlined" style="color:var(--color-muted-fg);">phone</span>
 							</div>
 							<h4 style="font-family:var(--font-heading); font-size:0.875rem; font-weight:700; margin-bottom:0.25rem;">Reservations</h4>
-							<p style="font-size:0.875rem; color:var(--color-muted-fg);">+255 123 456 789</p>
+							<p style="font-size:0.875rem; color:var(--color-muted-fg);">{ props.Contact.PhoneNumber }</p>
 						</div>
 						<div style="text-align:center;">
 							<div style="width:2.5rem; height:2.5rem; border-radius:var(--radius); background:var(--color-bg); display:flex; align-items:center; justify-content:center; margin:0 auto 0.75rem;">

@@ -8,10 +8,29 @@ import (
 type PendingProps struct {
 	Tenant generated.Tenant
 	User   generated.User
+	Contact generated.ContactDetails
 }
 
 templ Pending(props PendingProps) {
 	@layout.Base("Verification Pending") {
+		<dialog id="verification-dialog" style="border:none; padding:0; border-radius:1rem; max-width:520px; width:90%; box-shadow:0 20px 40px rgba(0,0,0,0.2);">
+			<div style="padding:2rem; background: var(--color-bg); border:1px solid var(--color-border); border-radius:1rem;">
+				<div style="display:flex; justify-content:space-between; align-items:flex-start; gap:1rem;">
+					<div>
+						<h2 style="font-family: var(--font-heading); font-size:1.25rem; font-weight:700; color: var(--color-fg); margin-bottom:0.5rem;">Verification in progress</h2>
+						<p style="color: var(--color-muted-fg); font-size:0.875rem; margin-bottom:1.5rem;">
+							We are reviewing your documents. You will be notified by email once verification is complete.
+						</p>
+					</div>
+					<button type="button" onclick="document.getElementById('verification-dialog').close()" style="background:transparent; border:none; color: var(--color-muted-fg); cursor:pointer;">
+						<span class="material-symbols-outlined">close</span>
+					</button>
+				</div>
+				<div style="display:flex; gap:0.75rem; justify-content:flex-end;">
+					<button type="button" class="btn btn-outline" onclick="document.getElementById('verification-dialog').close()" style="height:2.5rem; padding:0 1.5rem; font-size:0.875rem;">Got it</button>
+				</div>
+			</div>
+		</dialog>
 		<header style="position:sticky; top:0; z-index:50; background: var(--color-bg); border-bottom:1px solid var(--color-border);">
 			<div class="max-w-5xl mx-auto px-6" style="display:flex; align-items:center; justify-content:space-between; height:4rem;">
 				<a href="/dashboard" style="font-family: var(--font-heading); font-weight: 800; font-size: 1.125rem; text-decoration:none; color: var(--color-fg);">Hotel Management System</a>
@@ -21,10 +40,11 @@ templ Pending(props PendingProps) {
 							{ props.User.Name }
 							<span class="material-symbols-outlined" style="font-size:1rem; color: var(--color-muted-fg);">expand_more</span>
 						</summary>
-						<div style="position:absolute; top:2rem; left:0; min-width:180px; background: var(--color-bg); border:1px solid var(--color-border); border-radius:0.75rem; box-shadow:0 10px 15px -3px rgba(0,0,0,0.1); padding:0.5rem;">
-							<a href="/dashboard/change-password" style="display:block; padding:0.5rem 0.75rem; font-size:0.875rem; text-decoration:none; color: var(--color-fg);">Change password</a>
-							<form method="POST" action="/logout">
-								<button type="submit" style="width:100%; text-align:left; padding:0.5rem 0.75rem; font-size:0.875rem; background:transparent; border:none; color: var(--color-fg); cursor:pointer;">Logout</button>
+					<div style="position:absolute; top:2rem; left:0; min-width:180px; background: var(--color-bg); border:1px solid var(--color-border); border-radius:0.75rem; box-shadow:0 10px 15px -3px rgba(0,0,0,0.1); padding:0.5rem;">
+						<a href="/dashboard/details" style="display:block; padding:0.5rem 0.75rem; font-size:0.875rem; text-decoration:none; color: var(--color-fg);">Tenant details</a>
+						<a href="/dashboard/change-password" style="display:block; padding:0.5rem 0.75rem; font-size:0.875rem; text-decoration:none; color: var(--color-fg);">Change password</a>
+						<form method="POST" action="/logout">
+							<button type="submit" style="width:100%; text-align:left; padding:0.5rem 0.75rem; font-size:0.875rem; background:transparent; border:none; color: var(--color-fg); cursor:pointer;">Logout</button>
 							</form>
 						</div>
 				</details>
@@ -78,8 +98,38 @@ templ Pending(props PendingProps) {
 						</div>
 					</div>
 
+					<div class="rounded-xl border" style="margin-top:1rem; border-color: var(--color-border); background: var(--color-bg); padding:1rem 1.25rem;">
+						<h3 class="text-xs" style="font-weight:700; letter-spacing:0.08em; color: var(--color-muted-fg);">NEED HELP?</h3>
+						<div style="display:flex; flex-direction:column; gap:0.75rem; margin-top:0.75rem;">
+							<div style="display:flex; align-items:center; gap:0.75rem;">
+								<span class="material-symbols-outlined" style="color: var(--color-muted-fg);">location_on</span>
+								<span style="color: var(--color-fg); font-size:0.875rem;">{ props.Contact.Location }</span>
+							</div>
+							<div style="display:flex; align-items:center; gap:0.75rem;">
+								<span class="material-symbols-outlined" style="color: var(--color-muted-fg);">phone</span>
+								<a href={ templ.URL("tel:" + props.Contact.PhoneNumber) } style="color: var(--color-brand-blue); font-size:0.875rem; text-decoration:none;">{ props.Contact.PhoneNumber }</a>
+							</div>
+						</div>
+					</div>
+
 				</div>
 			</div>
 		</div>
+		<script>
+			(function () {
+				var dialog = document.getElementById('verification-dialog');
+				if (!dialog) return;
+				if (typeof dialog.showModal === 'function') {
+					dialog.showModal();
+				} else {
+					dialog.setAttribute('open', 'true');
+				}
+				document.addEventListener('keydown', function (event) {
+					if (event.key === 'Escape' && dialog.open) {
+						dialog.close();
+					}
+				});
+			})();
+		</script>
 	}
 }

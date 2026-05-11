@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"log"
+	"time"
 
 	"github.com/dadyutenga/hms-control/internal/config"
 	"github.com/dadyutenga/hms-control/internal/db/generated"
@@ -13,7 +14,7 @@ import (
 
 type Engine struct {
 	cfg   *config.Config
-	db   *sql.DB
+	db    *sql.DB
 	mail  *mailer.Mailer
 	queue chan uuid.UUID
 }
@@ -61,6 +62,25 @@ func (e *Engine) provision(tenantID uuid.UUID) {
 
 	if err != nil {
 		log.Printf("[provisioner] FAILED tenant %s: %v", tenant.Slug, err)
+		now := time.Now()
+		errMsg := err.Error()
+		var logPtr *string
+		if logOutput != "" {
+			logPtr = &logOutput
+		}
+		var errPtr *string
+		if errMsg != "" {
+			errPtr = &errMsg
+		}
+		if err := q.UpdateLatestDeploymentStatus(ctx, generated.UpdateLatestDeploymentStatusParams{
+			TenantID:     tenantID,
+			Status:       generated.DeploymentStatusFailed,
+			Log:          logPtr,
+			ErrorMessage: errPtr,
+			CompletedAt:  &now,
+		}); err != nil {
+			log.Printf("[provisioner] FAILED to update deployment status for %s: %v", tenant.Slug, err)
+		}
 		if err := q.SetTenantFailed(ctx, generated.SetTenantFailedParams{
 			ID:           tenantID,
 			ProvisionLog: &logOutput,
@@ -83,6 +103,20 @@ func (e *Engine) provision(tenantID uuid.UUID) {
 	}); err != nil {
 		log.Printf("[provisioner] FAILED to mark tenant %s active: %v", tenant.Slug, err)
 		return
+	}
+
+	now := time.Now()
+	var logPtr *string
+	if logOutput != "" {
+		logPtr = &logOutput
+	}
+	if err := q.UpdateLatestDeploymentStatus(ctx, generated.UpdateLatestDeploymentStatusParams{
+		TenantID:    tenantID,
+		Status:      generated.DeploymentStatusActive,
+		Log:         logPtr,
+		CompletedAt: &now,
+	}); err != nil {
+		log.Printf("[provisioner] FAILED to update deployment status for %s: %v", tenant.Slug, err)
 	}
 
 	user, err := q.GetUserByID(ctx, tenant.UserID)
