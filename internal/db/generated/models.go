@@ -107,6 +107,7 @@ type ListTenantsRow struct {
 	ProvisionLog  *string    `json:"provision_log"`
 	ApprovedAt    *time.Time `json:"approved_at"`
 	ProvisionedAt *time.Time `json:"provisioned_at"`
+	RequestedSubdomain *string `json:"requested_subdomain"`
 	BillingStatus string     `json:"billing_status"`
 	CreatedAt     time.Time  `json:"created_at"`
 	UpdatedAt     time.Time  `json:"updated_at"`

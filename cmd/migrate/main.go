@@ -85,6 +85,7 @@ func runMigrationsUp(db *sql.DB) {
 		migrationDeployments,
 		migrationAuditLog,
 		migrationSettings,
+		migrationDockerTemplates,
 	}
 	for i, m := range remaining {
 		fmt.Printf("Running migration %d...\n", i+len(migrations)+1)
@@ -93,11 +94,13 @@ func runMigrationsUp(db *sql.DB) {
 			log.Fatalf("Migration %d failed: %v", i+len(migrations)+1, err)
 		}
 	}
+	seedDefaultDockerTemplate(db)
 	fmt.Println("All migrations applied successfully.")
 }
 
 func runMigrationsDown(db *sql.DB) {
 	drops := []string{
+		"DROP TABLE IF EXISTS docker_templates",
 		"DROP TABLE IF EXISTS audit_logs",
 		"DROP TABLE IF EXISTS settings",
 		"DROP TABLE IF EXISTS deployments",
@@ -256,6 +259,7 @@ CREATE TABLE IF NOT EXISTS audit_logs (
 );
 CREATE INDEX IF NOT EXISTS idx_audit_logs_created_at ON audit_logs(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_audit_logs_tenant_id  ON audit_logs(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_audit_logs_action     ON audit_logs(action);
 `
 
 const migrationSettings = `
@@ -270,6 +274,42 @@ INSERT OR IGNORE INTO settings (key, value) VALUES
     ('smtp_user',        ''),
     ('smtp_pass',        ''),
     ('smtp_from',        'noreply@localhost'),
+    ('smtp_tls',         'true'),
     ('provision_script', './scripts/provision.sh'),
-    ('docker_template',  'default');
+    ('docker_template',  'default'),
+    ('provision_timeout','300');
 `
+
+const migrationDockerTemplates = `
+CREATE TABLE IF NOT EXISTS docker_templates (
+    id           INTEGER PRIMARY KEY AUTOINCREMENT,
+    name         TEXT NOT NULL UNIQUE,
+    template_body TEXT NOT NULL,
+    created_at   DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at   DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+`
+
+func seedDefaultDockerTemplate(db *sql.DB) {
+	var count int
+	if err := db.QueryRow("SELECT COUNT(*) FROM docker_templates").Scan(&count); err != nil {
+		log.Printf("Warning: failed to check docker templates: %v", err)
+		return
+	}
+	if count > 0 {
+		return
+	}
+	raw, err := os.ReadFile("./docker-templates/docker-compose.template.yml")
+	if err != nil {
+		log.Printf("Warning: default docker template missing: %v", err)
+		return
+	}
+	_, err = db.Exec(
+		`INSERT OR IGNORE INTO docker_templates (name, template_body, created_at, updated_at)
+		 VALUES (?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`,
+		"default", string(raw),
+	)
+	if err != nil {
+		log.Printf("Warning: failed to seed docker template: %v", err)
+	}
+}

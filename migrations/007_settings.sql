@@ -11,5 +11,7 @@ INSERT OR IGNORE INTO settings (key, value) VALUES
     ('smtp_user',        ''),
     ('smtp_pass',        ''),
     ('smtp_from',        'noreply@localhost'),
+    ('smtp_tls',         'true'),
     ('provision_script', './scripts/provision.sh'),
-    ('docker_template',  'default');
+    ('docker_template',  'default'),
+    ('provision_timeout','300');

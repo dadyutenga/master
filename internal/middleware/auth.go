@@ -7,6 +7,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/session"
+	"github.com/google/uuid"
 )
 
 func Auth(store *session.Store, db *sql.DB) fiber.Handler {
@@ -21,12 +22,42 @@ func Auth(store *session.Store, db *sql.DB) fiber.Handler {
 			return c.Redirect("/login")
 		}
 		userID, ok := rawID.(int64)
-		if !ok {
+		if !ok || userID == 0 {
 			sess.Destroy()
 			return c.Redirect("/login")
 		}
 
 		q := generated.New(db)
+
+		if impRaw := sess.Get("impersonating_tenant_id"); impRaw != nil {
+			if impID, ok := impRaw.(string); ok && impID != "" {
+				tenantID, err := uuid.Parse(impID)
+				if err != nil {
+					sess.Delete("impersonating_tenant_id")
+					sess.Save()
+					return c.Redirect("/admin/tenants")
+				}
+				tenant, err := q.GetTenantByID(c.Context(), tenantID)
+				if err == nil {
+					user, err := q.GetUserByID(c.Context(), tenant.UserID)
+					if err == nil {
+						c.Locals("user", user)
+						c.Locals("user_id", user.ID)
+						c.Locals("user_email", user.Email)
+						c.Locals("user_role", user.Role)
+						c.Locals("impersonating", true)
+						if adminID, ok := sess.Get("original_admin_id").(int64); ok {
+							c.Locals("original_admin_id", adminID)
+						}
+						return c.Next()
+					}
+				}
+				sess.Delete("impersonating_tenant_id")
+				sess.Save()
+				return c.Redirect("/admin/tenants")
+			}
+		}
+
 		user, err := q.GetUserByID(c.Context(), userID)
 		if err != nil {
 			sess.Destroy()
@@ -34,6 +65,10 @@ func Auth(store *session.Store, db *sql.DB) fiber.Handler {
 		}
 
 		c.Locals("user", user)
+		c.Locals("user_id", user.ID)
+		c.Locals("user_email", user.Email)
+		c.Locals("user_role", user.Role)
+		c.Locals("impersonating", false)
 		return c.Next()
 	}
 }

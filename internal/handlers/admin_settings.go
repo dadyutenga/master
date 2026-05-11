@@ -1,6 +1,11 @@
 package handlers
 
 import (
+	"fmt"
+	"io"
+	"net"
+	"net/smtp"
+	"strconv"
 	"strings"
 	"time"
 
@@ -46,7 +51,7 @@ func (h *Handler) UpdateContactSettings(c *fiber.Ctx) error {
 
 	user, ok := middleware.GetUser(c)
 	if ok {
-		LogAction(h.db, user.ID, "settings.contact", nil, "", c.IP())
+		h.audit.Log(user.ID, "settings.contact", nil, "Contact settings updated", c.IP())
 	}
 
 	return render(c, admin.ContactSettings(admin.ContactSettingsProps{
@@ -111,7 +116,7 @@ func (h *Handler) UpdateTenantBilling(c *fiber.Ctx) error {
 	user, ok := middleware.GetUser(c)
 	if ok {
 		tid := id.String()
-		LogAction(h.db, user.ID, "billing.updated", &tid, status, c.IP())
+		h.audit.Log(user.ID, "billing.updated", &tid, status, c.IP())
 	}
 
 	return c.Redirect("/admin/tenants/" + id.String())
@@ -170,7 +175,7 @@ func (h *Handler) handleDeploymentAction(c *fiber.Ctx, action string) error {
 	user, ok := middleware.GetUser(c)
 	if ok {
 		tid := id.String()
-		LogAction(h.db, user.ID, "deployment."+action, &tid, "", c.IP())
+		h.audit.Log(user.ID, "deployment."+action, &tid, "", c.IP())
 	}
 
 	return c.Redirect("/admin/tenants/" + id.String())
@@ -216,29 +221,13 @@ func (h *Handler) runDeploymentAction(c *fiber.Ctx, tenant generated.Tenant, act
 	return &deployment, err
 }
 
-func (h *Handler) getSetting(key string) string {
-	var value string
-	h.db.QueryRow(`SELECT value FROM settings WHERE key = ?`, key).Scan(&value)
-	return value
-}
-
-func (h *Handler) setSetting(key, value string) error {
-	_, err := h.db.Exec(`
-		INSERT INTO settings (key, value, updated_at)
-		VALUES (?, ?, CURRENT_TIMESTAMP)
-		ON CONFLICT(key) DO UPDATE SET value=excluded.value, updated_at=excluded.updated_at
-	`, key, value)
-	return err
-}
-
 func (h *Handler) AdminSMTPSettings(c *fiber.Ctx) error {
-	settings := map[string]string{
-		"smtp_host": h.getSetting("smtp_host"),
-		"smtp_port": h.getSetting("smtp_port"),
-		"smtp_user": h.getSetting("smtp_user"),
-		"smtp_from": h.getSetting("smtp_from"),
+	settings, err := h.settings.All()
+	if err != nil {
+		return err
 	}
-	return render(c, admin.SMTPSettingsPage(settings))
+	saved := c.Query("saved") == "1"
+	return render(c, admin.SMTPSettingsPage(settings, saved))
 }
 
 func (h *Handler) UpdateSMTPSettings(c *fiber.Ctx) error {
@@ -247,19 +236,20 @@ func (h *Handler) UpdateSMTPSettings(c *fiber.Ctx) error {
 		"smtp_port": c.FormValue("smtp_port"),
 		"smtp_user": c.FormValue("smtp_user"),
 		"smtp_from": c.FormValue("smtp_from"),
+		"smtp_tls":  c.FormValue("smtp_tls"),
 	}
 	if pass := c.FormValue("smtp_pass"); pass != "" {
 		fields["smtp_pass"] = pass
 	}
 	for key, value := range fields {
-		if err := h.setSetting(key, value); err != nil {
+		if err := h.settings.Set(key, value); err != nil {
 			return err
 		}
 	}
-	sess, _ := h.store.Get(c)
-	adminID := sess.Get("userID").(int64)
-	LogAction(h.db, adminID, "settings.smtp_updated", nil, "", c.IP())
-	return c.Redirect("/admin/settings/smtp")
+	if user, ok := middleware.GetUser(c); ok {
+		h.audit.Log(user.ID, "settings.smtp", nil, "SMTP settings updated", c.IP())
+	}
+	return c.Redirect("/admin/settings/smtp?saved=1")
 }
 
 func (h *Handler) TestSMTP(c *fiber.Ctx) error {
@@ -267,7 +257,59 @@ func (h *Handler) TestSMTP(c *fiber.Ctx) error {
 	if to == "" {
 		return c.JSON(fiber.Map{"ok": false, "error": "test_email is required"})
 	}
-	err := h.mail.Send(to, "HMS SMTP Test", "If you see this, SMTP is configured correctly.")
+
+	host := h.settings.Get("smtp_host")
+	port := h.settings.Get("smtp_port")
+	user := h.settings.Get("smtp_user")
+	pass := h.settings.Get("smtp_pass")
+	from := h.settings.Get("smtp_from")
+	tlsEnabled := h.settings.Get("smtp_tls") != "false"
+
+	if host == "" {
+		return c.JSON(fiber.Map{"ok": false, "error": "SMTP host not configured"})
+	}
+	addr := net.JoinHostPort(host, port)
+	var auth smtp.Auth
+	if user != "" || pass != "" {
+		auth = smtp.PlainAuth("", user, pass, host)
+	}
+	msg := fmt.Sprintf(
+		"From: %s\r\nTo: %s\r\nSubject: HMS SMTP Test\r\n\r\nSMTP is working correctly.",
+		from, to,
+	)
+	var err error
+	if tlsEnabled {
+		err = smtp.SendMail(addr, auth, from, []string{to}, []byte(msg))
+	} else {
+		var client *smtp.Client
+		conn, dialErr := net.Dial("tcp", addr)
+		if dialErr != nil {
+			return c.JSON(fiber.Map{"ok": false, "error": dialErr.Error()})
+		}
+		client, err = smtp.NewClient(conn, host)
+		if err == nil && auth != nil {
+			if authErr := client.Auth(auth); authErr != nil {
+				err = authErr
+			}
+		}
+		if err == nil {
+			if err = client.Mail(from); err == nil {
+				if err = client.Rcpt(to); err == nil {
+					var w io.WriteCloser
+					w, err = client.Data()
+					if err == nil {
+						_, err = w.Write([]byte(msg))
+						if closeErr := w.Close(); err == nil {
+							err = closeErr
+						}
+					}
+				}
+			}
+		}
+		if client != nil {
+			_ = client.Quit()
+		}
+	}
 	if err != nil {
 		return c.JSON(fiber.Map{"ok": false, "error": err.Error()})
 	}
@@ -275,25 +317,49 @@ func (h *Handler) TestSMTP(c *fiber.Ctx) error {
 }
 
 func (h *Handler) AdminProvisionerSettings(c *fiber.Ctx) error {
-	settings := map[string]string{
-		"provision_script": h.getSetting("provision_script"),
-		"docker_template":  h.getSetting("docker_template"),
+	settings, err := h.settings.All()
+	if err != nil {
+		return err
 	}
-	return render(c, admin.ProvisionerSettingsPage(settings))
+	templates, err := h.templates.List()
+	if err != nil {
+		return err
+	}
+	saved := c.Query("saved") == "1"
+	return render(c, admin.ProvisionerSettingsPage(settings, templates, saved, ""))
 }
 
 func (h *Handler) UpdateProvisionerSettings(c *fiber.Ctx) error {
-	fields := map[string]string{
-		"provision_script": c.FormValue("provision_script"),
-		"docker_template":  c.FormValue("docker_template"),
+	provisionScript := c.FormValue("provision_script")
+	dockerTemplate := c.FormValue("docker_template")
+	provisionTimeout := strings.TrimSpace(c.FormValue("provision_timeout"))
+
+	if provisionTimeout != "" {
+		if _, err := strconv.Atoi(provisionTimeout); err != nil {
+			settings, _ := h.settings.All()
+			templates, _ := h.templates.List()
+			return render(c, admin.ProvisionerSettingsPage(settings, templates, false, "Provision timeout must be a number of seconds."))
+		}
 	}
-	for key, value := range fields {
-		if err := h.setSetting(key, value); err != nil {
+	if dockerTemplate != "" {
+		if _, err := h.templates.GetByName(dockerTemplate); err != nil {
+			settings, _ := h.settings.All()
+			templates, _ := h.templates.List()
+			return render(c, admin.ProvisionerSettingsPage(settings, templates, false, "Selected docker template not found."))
+		}
+	}
+
+	for key, value := range map[string]string{
+		"provision_script":  provisionScript,
+		"docker_template":   dockerTemplate,
+		"provision_timeout": provisionTimeout,
+	} {
+		if err := h.settings.Set(key, value); err != nil {
 			return err
 		}
 	}
-	sess, _ := h.store.Get(c)
-	adminID := sess.Get("userID").(int64)
-	LogAction(h.db, adminID, "settings.provisioner_updated", nil, "", c.IP())
-	return c.Redirect("/admin/settings/provisioner")
+	if user, ok := middleware.GetUser(c); ok {
+		h.audit.Log(user.ID, "settings.provisioner", nil, "Provisioner settings updated", c.IP())
+	}
+	return c.Redirect("/admin/settings/provisioner?saved=1")
 }

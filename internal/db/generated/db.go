@@ -86,6 +86,11 @@ type UpdateTenantStatusParams struct {
 	Status string
 }
 
+type UpdateTenantDomainParams struct {
+	ID     uuid.UUID
+	Domain string
+}
+
 type SetTenantActiveParams struct {
 	ID           uuid.UUID
 	AppKey       *string
@@ -383,8 +388,8 @@ func (q *Queries) GetTenantByRequestedSubdomain(ctx context.Context, subdomain s
 }
 
 func (q *Queries) ListTenants(ctx context.Context, arg ListTenantsParams) ([]ListTenantsRow, error) {
-	rows, err := q.db.QueryContext(ctx,
-		`SELECT t.id, t.user_id, t.company_name, t.slug, t.domain, t.db_name, t.db_user, t.db_password, t.app_key, t.status, t.provision_log, t.approved_at, t.provisioned_at, t.billing_status, t.created_at, t.updated_at, u.name as user_name, u.email as user_email
+		rows, err := q.db.QueryContext(ctx,
+		`SELECT t.id, t.user_id, t.company_name, t.slug, t.domain, t.db_name, t.db_user, t.db_password, t.app_key, t.status, t.provision_log, t.approved_at, t.provisioned_at, t.requested_subdomain, t.billing_status, t.created_at, t.updated_at, u.name as user_name, u.email as user_email
 		 FROM tenants t
 		 JOIN users u ON t.user_id = u.id
 		 ORDER BY
@@ -409,10 +414,11 @@ func (q *Queries) ListTenants(ctx context.Context, arg ListTenantsParams) ([]Lis
 		var r ListTenantsRow
 		var appKey, provisionLog sql.NullString
 		var approvedAt, provisionedAt sql.NullTime
+		var requestedSubdomain sql.NullString
 		err := rows.Scan(
 			&r.ID, &r.UserID, &r.CompanyName, &r.Slug, &r.Domain,
 			&r.DbName, &r.DbUser, &r.DbPassword, &appKey, &r.Status,
-			&provisionLog, &approvedAt, &provisionedAt, &r.BillingStatus, &r.CreatedAt, &r.UpdatedAt,
+			&provisionLog, &approvedAt, &provisionedAt, &requestedSubdomain, &r.BillingStatus, &r.CreatedAt, &r.UpdatedAt,
 			&r.UserName, &r.UserEmail,
 		)
 		if err != nil {
@@ -429,6 +435,9 @@ func (q *Queries) ListTenants(ctx context.Context, arg ListTenantsParams) ([]Lis
 		}
 		if provisionedAt.Valid {
 			r.ProvisionedAt = &provisionedAt.Time
+		}
+		if requestedSubdomain.Valid {
+			r.RequestedSubdomain = &requestedSubdomain.String
 		}
 		result = append(result, r)
 	}
@@ -457,6 +466,14 @@ func (q *Queries) UpdateTenantStatus(ctx context.Context, arg UpdateTenantStatus
 	_, err := q.db.ExecContext(ctx,
 		`UPDATE tenants SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`,
 		arg.Status, arg.ID,
+	)
+	return err
+}
+
+func (q *Queries) UpdateTenantDomain(ctx context.Context, arg UpdateTenantDomainParams) error {
+	_, err := q.db.ExecContext(ctx,
+		`UPDATE tenants SET domain = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`,
+		arg.Domain, arg.ID,
 	)
 	return err
 }
