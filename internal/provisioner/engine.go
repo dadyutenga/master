@@ -32,7 +32,8 @@ func (e *Engine) Start() {
 	for i := range e.cfg.WorkerCount {
 		go e.worker(i)
 	}
-	log.Printf("[provisioner] started %d workers", e.cfg.WorkerCount)
+	go e.billingChecker()
+	log.Printf("[provisioner] started %d workers and billing checker", e.cfg.WorkerCount)
 }
 
 func (e *Engine) Enqueue(tenantID uuid.UUID) {
@@ -127,4 +128,48 @@ func (e *Engine) provision(tenantID uuid.UUID) {
 	go e.mail.SendTenantReady(user.Email, user.Name, "https://"+tenant.Domain)
 
 	log.Printf("[provisioner] SUCCESS tenant %s live at https://%s", tenant.Slug, tenant.Domain)
+}
+
+func (e *Engine) billingChecker() {
+	const interval = 1 * time.Hour
+	log.Printf("[billing-checker] starting, checking every %v", interval)
+	for {
+		time.Sleep(interval)
+		e.checkOverdueTenants()
+	}
+}
+
+func (e *Engine) checkOverdueTenants() {
+	ctx := context.Background()
+	q := generated.New(e.db)
+
+	tenants, err := q.ListOverdueTenants(ctx)
+	if err != nil {
+		log.Printf("[billing-checker] failed to list overdue tenants: %v", err)
+		return
+	}
+
+	runner := NewRunner(e.cfg)
+	for _, tenant := range tenants {
+		log.Printf("[billing-checker] marking tenant %s as overdue", tenant.Slug)
+
+		if err := q.MarkTenantOverdue(ctx, tenant.ID); err != nil {
+			log.Printf("[billing-checker] failed to mark %s overdue: %v", tenant.Slug, err)
+			continue
+		}
+
+		if _, err := runner.StopTenant(tenant.Slug); err != nil {
+			log.Printf("[billing-checker] failed to stop container for %s: %v", tenant.Slug, err)
+		} else {
+			log.Printf("[billing-checker] stopped container for overdue tenant %s", tenant.Slug)
+		}
+
+		if _, err := q.CreateDeployment(ctx, generated.CreateDeploymentParams{
+			TenantID: tenant.ID,
+			Action:   "billing_overdue",
+			Status:   generated.DeploymentStatusStopped,
+		}); err != nil {
+			log.Printf("[billing-checker] failed to record deployment for %s: %v", tenant.Slug, err)
+		}
+	}
 }

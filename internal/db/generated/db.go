@@ -384,7 +384,7 @@ func (q *Queries) GetTenantByRequestedSubdomain(ctx context.Context, subdomain s
 
 func (q *Queries) ListTenants(ctx context.Context, arg ListTenantsParams) ([]ListTenantsRow, error) {
 	rows, err := q.db.QueryContext(ctx,
-		`SELECT t.id, t.user_id, t.company_name, t.slug, t.domain, t.db_name, t.db_user, t.db_password, t.app_key, t.status, t.provision_log, t.approved_at, t.provisioned_at, t.created_at, t.updated_at, u.name as user_name, u.email as user_email
+		`SELECT t.id, t.user_id, t.company_name, t.slug, t.domain, t.db_name, t.db_user, t.db_password, t.app_key, t.status, t.provision_log, t.approved_at, t.provisioned_at, t.billing_status, t.created_at, t.updated_at, u.name as user_name, u.email as user_email
 		 FROM tenants t
 		 JOIN users u ON t.user_id = u.id
 		 ORDER BY
@@ -412,7 +412,7 @@ func (q *Queries) ListTenants(ctx context.Context, arg ListTenantsParams) ([]Lis
 		err := rows.Scan(
 			&r.ID, &r.UserID, &r.CompanyName, &r.Slug, &r.Domain,
 			&r.DbName, &r.DbUser, &r.DbPassword, &appKey, &r.Status,
-			&provisionLog, &approvedAt, &provisionedAt, &r.CreatedAt, &r.UpdatedAt,
+			&provisionLog, &approvedAt, &provisionedAt, &r.BillingStatus, &r.CreatedAt, &r.UpdatedAt,
 			&r.UserName, &r.UserEmail,
 		)
 		if err != nil {
@@ -477,6 +477,35 @@ func (q *Queries) UpdateTenantBilling(ctx context.Context, arg UpdateTenantBilli
 		 SET billing_status = ?, last_payment_at = ?, next_due_at = ?, updated_at = CURRENT_TIMESTAMP
 		 WHERE id = ?`,
 		arg.BillingStatus, arg.LastPaymentAt, arg.NextDueAt, arg.ID,
+	)
+	return err
+}
+
+func (q *Queries) ListOverdueTenants(ctx context.Context) ([]Tenant, error) {
+	rows, err := q.db.QueryContext(ctx,
+		`SELECT `+tenantCols+` FROM tenants
+		 WHERE billing_status = 'paid' AND next_due_at IS NOT NULL AND next_due_at < datetime('now')`,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var tenants []Tenant
+	for rows.Next() {
+		t, err := scanTenant(rows)
+		if err != nil {
+			return nil, err
+		}
+		tenants = append(tenants, t)
+	}
+	return tenants, rows.Err()
+}
+
+func (q *Queries) MarkTenantOverdue(ctx context.Context, id uuid.UUID) error {
+	_, err := q.db.ExecContext(ctx,
+		`UPDATE tenants SET billing_status = 'overdue', updated_at = CURRENT_TIMESTAMP WHERE id = ?`,
+		id,
 	)
 	return err
 }
@@ -636,21 +665,21 @@ func (q *Queries) DeleteDocument(ctx context.Context, id int64) error {
 	return err
 }
 
-// ── Superadmin ──────────────────────────────────────────────────────────────
+// ── Admin ────────────────────────────────────────────────────────────────────
 
 func (q *Queries) CreateSuperadminIfNotExists(ctx context.Context, arg CreateUserParams) error {
 	var count int
-	err := q.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM users WHERE role = 'superadmin'`).Scan(&count)
+	err := q.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM users WHERE role = 'admin'`).Scan(&count)
 	if err != nil {
 		return err
 	}
 	if count > 0 {
-		fmt.Println("Superadmin already exists, skipping.")
+		fmt.Println("Admin already exists, skipping.")
 		return nil
 	}
 	_, err = q.db.ExecContext(ctx,
 		`INSERT INTO users (name, email, company, phone, password, role, verified)
-		 VALUES (?, ?, ?, ?, ?, 'superadmin', 1)`,
+		 VALUES (?, ?, ?, ?, ?, 'admin', 1)`,
 		arg.Name, arg.Email, arg.Company, arg.Phone, arg.Password,
 	)
 	return err

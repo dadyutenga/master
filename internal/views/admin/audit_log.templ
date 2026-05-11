@@ -1,0 +1,66 @@
+package admin
+
+import (
+	"strconv"
+
+	"github.com/dadyutenga/hms-control/internal/models"
+	"github.com/dadyutenga/hms-control/internal/views/layout"
+)
+
+templ AuditLogPage(logs []models.AuditLog, page int) {
+	@layout.Base("Audit Log") {
+		<div class="max-w-7xl mx-auto p-6">
+			<div class="flex flex-wrap justify-between items-center gap-3 mb-6">
+				<h1 class="text-2xl font-bold" style="color: var(--color-fg); font-family: var(--font-heading);">Audit Log</h1>
+				<div class="flex items-center gap-3">
+					<a href="/admin/audit/export" class="btn btn-outline" style="height:2.5rem; padding:0 1.25rem; font-size:0.75rem;">Export CSV</a>
+				</div>
+			</div>
+			<div style="overflow-x:auto;">
+				<table class="w-full text-sm" style="font-family: var(--font-body);">
+					<thead>
+						<tr class="border-b" style="border-color: var(--color-border); color: var(--color-muted-fg);">
+							<th class="text-left py-3">ID</th>
+							<th class="text-left py-3">Admin</th>
+							<th class="text-left py-3">Action</th>
+							<th class="text-left py-3">Tenant</th>
+							<th class="text-left py-3">Detail</th>
+							<th class="text-left py-3">IP</th>
+							<th class="text-left py-3">Date</th>
+						</tr>
+					</thead>
+					<tbody>
+						for _, l := range logs {
+							<tr class="border-b hover:[background-color:var(--color-secondary)]" style="border-color: var(--color-border);">
+								<td class="py-3" style="color: var(--color-muted-fg);">{ strconv.FormatInt(l.ID, 10) }</td>
+								<td class="py-3" style="color: var(--color-fg);">{ l.AdminEmail }</td>
+								<td class="py-3">
+									<span class="px-2 py-1 rounded text-xs" style="background: var(--color-secondary); color: var(--color-fg);">{ l.Action }</span>
+								</td>
+								<td class="py-3" style="color: var(--color-muted-fg);">
+									if l.TenantID != nil {
+										{ *l.TenantID }
+									} else {
+										—
+									}
+								</td>
+								<td class="py-3" style="color: var(--color-fg);">{ l.Detail }</td>
+								<td class="py-3" style="color: var(--color-muted-fg);">{ l.IPAddress }</td>
+								<td class="py-3" style="color: var(--color-muted-fg);">{ l.CreatedAt.Format("02 Jan 2006 15:04") }</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div>
+			<div class="flex justify-center gap-3 mt-6">
+				if page > 1 {
+					<a href={ templ.URL("/admin/audit?page=" + strconv.Itoa(page-1)) } class="btn btn-outline" style="height:2.25rem; padding:0 1rem; font-size:0.75rem;">Previous</a>
+				}
+				<span style="color: var(--color-muted-fg); padding:0.5rem;">Page { strconv.Itoa(page) }</span>
+				if len(logs) == 50 {
+					<a href={ templ.URL("/admin/audit?page=" + strconv.Itoa(page+1)) } class="btn btn-outline" style="height:2.25rem; padding:0 1rem; font-size:0.75rem;">Next</a>
+				}
+			</div>
+		</div>
+	}
+}

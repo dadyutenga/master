@@ -143,7 +143,7 @@ func Pending(props PendingProps) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</a></div></div></div></div></div></div><script>\n\t\t\t(function () {\n\t\t\t\tvar dialog = document.getElementById('verification-dialog');\n\t\t\t\tif (!dialog) return;\n\t\t\t\tif (typeof dialog.showModal === 'function') {\n\t\t\t\t\tdialog.showModal();\n\t\t\t\t} else {\n\t\t\t\t\tdialog.setAttribute('open', 'true');\n\t\t\t\t}\n\t\t\t\tdocument.addEventListener('keydown', function (event) {\n\t\t\t\t\tif (event.key === 'Escape' && dialog.open) {\n\t\t\t\t\t\tdialog.close();\n\t\t\t\t\t}\n\t\t\t\t});\n\t\t\t})();\n\t\t</script>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</a></div></div></div></div></div></div><script>\r\n\t\t\t(function () {\r\n\t\t\t\tvar dialog = document.getElementById('verification-dialog');\r\n\t\t\t\tif (!dialog) return;\r\n\t\t\t\tif (typeof dialog.showModal === 'function') {\r\n\t\t\t\t\tdialog.showModal();\r\n\t\t\t\t} else {\r\n\t\t\t\t\tdialog.setAttribute('open', 'true');\r\n\t\t\t\t}\r\n\t\t\t\tdocument.addEventListener('keydown', function (event) {\r\n\t\t\t\t\tif (event.key === 'Escape' && dialog.open) {\r\n\t\t\t\t\t\tdialog.close();\r\n\t\t\t\t\t}\r\n\t\t\t\t});\r\n\t\t\t})();\r\n\t\t</script>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

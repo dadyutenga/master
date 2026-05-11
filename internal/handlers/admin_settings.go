@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/dadyutenga/hms-control/internal/db/generated"
+	"github.com/dadyutenga/hms-control/internal/middleware"
 	"github.com/dadyutenga/hms-control/internal/provisioner"
 	"github.com/dadyutenga/hms-control/internal/views/admin"
 
@@ -41,6 +42,11 @@ func (h *Handler) UpdateContactSettings(c *fiber.Ctx) error {
 			Contact: contact,
 			Error:   "Failed to update contact details.",
 		}))
+	}
+
+	user, ok := middleware.GetUser(c)
+	if ok {
+		LogAction(h.db, user.ID, "settings.contact", nil, "", c.IP())
 	}
 
 	return render(c, admin.ContactSettings(admin.ContactSettingsProps{
@@ -102,6 +108,12 @@ func (h *Handler) UpdateTenantBilling(c *fiber.Ctx) error {
 		h.runDeploymentAction(c, tenant, "start")
 	}
 
+	user, ok := middleware.GetUser(c)
+	if ok {
+		tid := id.String()
+		LogAction(h.db, user.ID, "billing.updated", &tid, status, c.IP())
+	}
+
 	return c.Redirect("/admin/tenants/" + id.String())
 }
 
@@ -154,6 +166,13 @@ func (h *Handler) handleDeploymentAction(c *fiber.Ctx, action string) error {
 	if _, err := h.runDeploymentAction(c, tenant, action); err != nil {
 		return c.Status(500).SendString("Deployment action failed.")
 	}
+
+	user, ok := middleware.GetUser(c)
+	if ok {
+		tid := id.String()
+		LogAction(h.db, user.ID, "deployment."+action, &tid, "", c.IP())
+	}
+
 	return c.Redirect("/admin/tenants/" + id.String())
 }
 

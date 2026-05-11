@@ -292,7 +292,7 @@ func (h *Handler) Login(c *fiber.Ctx) error {
 	if err := sess.Save(); err != nil {
 		return render(c, auth.Login(auth.LoginProps{Error: "Session error."}))
 	}
-	if user.Role == "superadmin" {
+	if user.Role == "admin" {
 		return c.Redirect("/admin")
 	}
 	return c.Redirect("/dashboard")

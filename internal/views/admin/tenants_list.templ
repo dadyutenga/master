@@ -2,22 +2,52 @@ package admin
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/dadyutenga/hms-control/internal/db/generated"
 	"github.com/dadyutenga/hms-control/internal/views/layout"
 )
 
-templ TenantList(tenants []generated.ListTenantsRow) {
+templ TenantList(tenants []generated.ListTenantsRow, search, statusFilter string, page, totalPages int) {
 	@layout.Base("Tenants") {
 		<div class="max-w-7xl mx-auto p-6">
-			<div class="flex flex-wrap justify-between items-center gap-3 mb-6">
+			<div class="flex flex-wrap justify-between items-center gap-3 mb-4">
 				<h1 class="text-2xl font-bold" style="color: var(--color-fg); font-family: var(--font-heading);">Tenants</h1>
 				<div class="flex items-center gap-3">
 					<a href="/admin/settings/contact" class="btn btn-outline" style="height:2.5rem; padding:0 1.25rem; font-size:0.75rem;">Contact settings</a>
-					<span style="color: var(--color-muted-fg);">{ fmt.Sprintf("%d", len(tenants)) } total</span>
 				</div>
 			</div>
+			<form method="GET" action="/admin/tenants" class="flex flex-wrap gap-3 mb-4">
+				<input type="text" name="q" value={ search } placeholder="Search company or email..."
+					class="rounded-lg border px-3 py-2 text-sm flex-1"
+					style="min-width:200px; border-color: var(--color-border); background: var(--color-bg); color: var(--color-fg);"/>
+				<select name="status"
+					class="rounded-lg border px-3 py-2 text-sm"
+					style="border-color: var(--color-border); background: var(--color-bg); color: var(--color-fg);">
+					<option value=""  if statusFilter == "" { selected }>All statuses</option>
+					<option value="pending_verification" if statusFilter == "pending_verification" { selected }>Pending Verification</option>
+					<option value="pending_approval" if statusFilter == "pending_approval" { selected }>Pending Approval</option>
+					<option value="provisioning" if statusFilter == "provisioning" { selected }>Provisioning</option>
+					<option value="active" if statusFilter == "active" { selected }>Active</option>
+					<option value="suspended" if statusFilter == "suspended" { selected }>Suspended</option>
+					<option value="failed" if statusFilter == "failed" { selected }>Failed</option>
+				</select>
+				<button type="submit" class="btn btn-outline" style="height:2.5rem; padding:0 1.25rem; font-size:0.75rem;">Filter</button>
+			</form>
 			@TenantTable(tenants)
+			if totalPages > 1 {
+				<div class="flex justify-center gap-2 mt-6 items-center">
+					if page > 1 {
+						<a href={ templ.URL(fmt.Sprintf("/admin/tenants?page=%d&q=%s&status=%s", page-1, search, statusFilter)) }
+						   class="btn btn-outline" style="height:2.25rem; padding:0 1rem; font-size:0.75rem;">Previous</a>
+					}
+					<span style="color: var(--color-muted-fg); padding:0 0.75rem;">Page { strconv.Itoa(page) } of { strconv.Itoa(totalPages) }</span>
+					if page < totalPages {
+						<a href={ templ.URL(fmt.Sprintf("/admin/tenants?page=%d&q=%s&status=%s", page+1, search, statusFilter)) }
+						   class="btn btn-outline" style="height:2.25rem; padding:0 1rem; font-size:0.75rem;">Next</a>
+					}
+				</div>
+			}
 		</div>
 	}
 }
@@ -30,6 +60,7 @@ templ TenantTable(tenants []generated.ListTenantsRow) {
 					<th class="text-left py-3">Company</th>
 					<th class="text-left py-3">Domain</th>
 					<th class="text-left py-3">Status</th>
+					<th class="text-left py-3">Billing</th>
 					<th class="text-left py-3">Registered</th>
 					<th class="text-left py-3">Actions</th>
 				</tr>
@@ -49,6 +80,9 @@ templ TenantTable(tenants []generated.ListTenantsRow) {
 						</td>
 						<td class="py-3" id={ "status-" + t.ID.String() }>
 							@StatusBadge(string(t.Status))
+						</td>
+						<td class="py-3">
+							@BillingStatusBadge(t.BillingStatus)
 						</td>
 						<td class="py-3" style="color: var(--color-muted-fg);">
 							{ t.CreatedAt.Format("02 Jan 2006") }

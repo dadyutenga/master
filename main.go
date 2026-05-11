@@ -61,16 +61,20 @@ func main() {
 
 	client := app.Group("/dashboard", middleware.Auth(store, database))
 	client.Get("/", h.ClientDashboard)
-	client.Get("/details", h.ShowTenantDetails)
-	client.Post("/details", h.UpdateTenantDetails)
-	client.Get("/change-password", h.ShowChangePassword)
-	client.Post("/change-password", h.ChangePassword)
+
+	billingProtected := client.Group("", middleware.RequireBilling(database))
+	billingProtected.Get("/details", h.ShowTenantDetails)
+	billingProtected.Post("/details", h.UpdateTenantDetails)
+	billingProtected.Get("/change-password", h.ShowChangePassword)
+	billingProtected.Post("/change-password", h.ChangePassword)
 
 	admin := app.Group("/admin",
 		middleware.Auth(store, database),
-		middleware.RequireRole("superadmin"),
+		middleware.RequireRole("admin"),
 	)
 	admin.Get("/", h.AdminDashboard)
+	admin.Get("/audit", h.AuditLog)
+	admin.Get("/audit/export", h.ExportAuditCSV)
 	admin.Get("/tenants", h.ListTenants)
 	admin.Get("/tenants/:id", h.ShowTenant)
 	admin.Get("/tenants/:id/deployments/:deploymentId", h.ShowDeployment)

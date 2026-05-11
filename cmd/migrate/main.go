@@ -107,17 +107,17 @@ func seedSuperadmin(db *sql.DB, cfg *config.Config) {
 		log.Printf("Warning seeding superadmin: %v", err)
 		return
 	}
-	_, err := db.Exec(
+	_, err = db.Exec(
 		`INSERT INTO users (name, email, company, password, role, verified)
-		 VALUES (?, ?, ?, ?, 'superadmin', 1)
+		 VALUES (?, ?, ?, ?, 'admin', 1)
 		 ON CONFLICT(email) DO NOTHING`,
 		cfg.SuperAdminName, cfg.SuperAdminEmail, "HMS Platform",
 		string(hash),
 	)
 	if err != nil {
-		log.Printf("Warning seeding superadmin: %v", err)
+		log.Printf("Warning seeding admin: %v", err)
 	} else {
-		fmt.Println("Superadmin seeded. Change the password after first login!")
+		fmt.Println("Admin seeded. Change the password after first login!")
 	}
 }
 
