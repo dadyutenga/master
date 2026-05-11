@@ -189,7 +189,12 @@ func (h *Handler) ShowTenant(c *fiber.Ctx) error {
 		return err
 	}
 
-	return render(c, admin.TenantDetail(tenant, user, deployments))
+	documents, err := q.GetDocumentsByUserID(c.Context(), tenant.UserID)
+	if err != nil {
+		return err
+	}
+
+	return render(c, admin.TenantDetail(tenant, user, deployments, documents))
 }
 
 func (h *Handler) ApproveTenant(c *fiber.Ctx) error {

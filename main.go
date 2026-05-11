@@ -38,6 +38,7 @@ func main() {
 	app.Use(recover.New())
 	app.Static("/static", "./static")
 	app.Static("/img", "./public/img")
+	app.Static("/uploads", "./uploads")
 
 	h := handlers.New(cfg, database, mail, store, eng)
 
