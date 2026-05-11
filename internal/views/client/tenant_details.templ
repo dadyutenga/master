@@ -1,0 +1,75 @@
+package client
+
+import (
+	"github.com/dadyutenga/hms-control/internal/db/generated"
+	"github.com/dadyutenga/hms-control/internal/views/layout"
+)
+
+type TenantDetailsProps struct {
+	Tenant  generated.Tenant
+	User    generated.User
+	Error   string
+	Success bool
+}
+
+templ TenantDetails(props TenantDetailsProps) {
+	@layout.Base("Tenant Details") {
+		<header style="position:sticky; top:0; z-index:50; background: var(--color-bg); border-bottom:1px solid var(--color-border);">
+			<div class="max-w-5xl mx-auto px-6" style="display:flex; align-items:center; justify-content:space-between; height:4rem;">
+				<a href="/dashboard" style="font-family: var(--font-heading); font-weight: 800; font-size: 1.125rem; text-decoration:none; color: var(--color-fg);">Hotel Management System</a>
+				<details style="position:relative;">
+					<summary style="list-style:none; display:flex; align-items:center; gap:0.5rem; cursor:pointer; font-size:0.875rem; color: var(--color-fg);">
+						<span class="material-symbols-outlined" style="font-size:1.1rem; color: var(--color-muted-fg);">account_circle</span>
+						{ props.User.Name }
+						<span class="material-symbols-outlined" style="font-size:1rem; color: var(--color-muted-fg);">expand_more</span>
+					</summary>
+					<div style="position:absolute; top:2rem; left:0; min-width:180px; background: var(--color-bg); border:1px solid var(--color-border); border-radius:0.75rem; box-shadow:0 10px 15px -3px rgba(0,0,0,0.1); padding:0.5rem;">
+						<a href="/dashboard/details" style="display:block; padding:0.5rem 0.75rem; font-size:0.875rem; text-decoration:none; color: var(--color-fg);">Tenant details</a>
+						<a href="/dashboard/change-password" style="display:block; padding:0.5rem 0.75rem; font-size:0.875rem; text-decoration:none; color: var(--color-fg);">Change password</a>
+						<form method="POST" action="/logout">
+							<button type="submit" style="width:100%; text-align:left; padding:0.5rem 0.75rem; font-size:0.875rem; background:transparent; border:none; color: var(--color-fg); cursor:pointer;">Logout</button>
+						</form>
+					</div>
+				</details>
+			</div>
+		</header>
+
+		<div class="max-w-3xl mx-auto p-6" style="padding-top:2rem;">
+			<h1 class="text-2xl font-bold mb-6" style="color: var(--color-fg); font-family: var(--font-heading);">Tenant details</h1>
+
+			if props.Success {
+				<div class="mb-4 p-3 rounded text-sm" style="background-color: color-mix(in srgb, var(--color-brand-blue) 8%, var(--color-bg)); border: 1px solid color-mix(in srgb, var(--color-brand-blue) 25%, var(--color-border)); color: var(--color-brand-blue);">
+					Tenant details updated successfully.
+				</div>
+			}
+			if props.Error != "" {
+				<div class="mb-4 p-3 rounded text-sm" style="background-color: color-mix(in srgb, var(--color-destructive) 8%, var(--color-bg)); border: 1px solid color-mix(in srgb, var(--color-destructive) 25%, var(--color-border)); color: var(--color-destructive);">
+					{ props.Error }
+				</div>
+			}
+
+			<div class="rounded-xl border p-6" style="background: var(--color-card); border-color: var(--color-border);">
+				<form method="POST" action="/dashboard/details" style="display:flex; flex-direction:column; gap:1rem;">
+					<div style="display:flex; flex-direction:column; gap:0.5rem;">
+						<label for="requested_subdomain" style="font-size:0.875rem; font-weight:600; color: var(--color-fg);">Requested subdomain</label>
+						<input type="text" name="requested_subdomain" required value={ RequestedSubdomainValue(props.Tenant) } style="border: 1px solid var(--color-border); border-radius: 0.5rem; padding: 0.75rem;" />
+						<span style="font-size:0.75rem; color: var(--color-muted-fg);">Lowercase letters, numbers, and hyphens only.</span>
+					</div>
+					<div style="display:flex; flex-direction:column; gap:0.5rem;">
+						<label for="admin_name" style="font-size:0.875rem; font-weight:600; color: var(--color-fg);">Admin full name</label>
+						<input type="text" name="admin_name" required value={ OptionalStringValue(props.Tenant.AdminName) } style="border: 1px solid var(--color-border); border-radius: 0.5rem; padding: 0.75rem;" />
+					</div>
+					<div style="display:flex; flex-direction:column; gap:0.5rem;">
+						<label for="admin_email" style="font-size:0.875rem; font-weight:600; color: var(--color-fg);">Admin email</label>
+						<input type="email" name="admin_email" required value={ OptionalStringValue(props.Tenant.AdminEmail) } style="border: 1px solid var(--color-border); border-radius: 0.5rem; padding: 0.75rem;" />
+					</div>
+					<div style="display:flex; flex-direction:column; gap:0.5rem;">
+						<label for="admin_phone" style="font-size:0.875rem; font-weight:600; color: var(--color-fg);">Admin phone (optional)</label>
+						<input type="text" name="admin_phone" value={ OptionalStringValue(props.Tenant.AdminPhone) } style="border: 1px solid var(--color-border); border-radius: 0.5rem; padding: 0.75rem;" />
+					</div>
+					<button type="submit" class="btn btn-primary" style="align-self:flex-start;">Save details</button>
+				</form>
+			</div>
+		</div>
+	}
+}

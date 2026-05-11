@@ -1,0 +1,64 @@
+package admin
+
+import (
+	"github.com/dadyutenga/hms-control/internal/db/generated"
+	"github.com/dadyutenga/hms-control/internal/views/layout"
+)
+
+type DeploymentDetailProps struct {
+	Tenant     generated.Tenant
+	Deployment generated.Deployment
+}
+
+templ DeploymentDetail(props DeploymentDetailProps) {
+	@layout.Base("Deployment Detail") {
+		<div class="max-w-4xl mx-auto p-6">
+			<div class="flex items-center gap-4 mb-6">
+				<a href={ templ.URL("/admin/tenants/" + props.Tenant.ID.String()) } class="hover:[color:var(--color-fg)]" style="color: var(--color-muted-fg);">&larr; Back</a>
+				<h1 class="text-2xl font-bold" style="color: var(--color-fg); font-family: var(--font-heading);">Deployment</h1>
+				@DeploymentStatusBadge(props.Deployment.Status)
+			</div>
+
+			<div class="rounded-xl border p-6 mb-6" style="background: var(--color-card); border-color: var(--color-border);">
+				<dl class="space-y-3 text-sm">
+					<div class="flex justify-between">
+						<dt style="color: var(--color-muted-fg);">Tenant</dt>
+						<dd style="color: var(--color-fg);">{ props.Tenant.CompanyName }</dd>
+					</div>
+					<div class="flex justify-between">
+						<dt style="color: var(--color-muted-fg);">Action</dt>
+						<dd style="color: var(--color-fg);">{ props.Deployment.Action }</dd>
+					</div>
+					<div class="flex justify-between">
+						<dt style="color: var(--color-muted-fg);">Status</dt>
+						<dd style="color: var(--color-fg);">{ props.Deployment.Status }</dd>
+					</div>
+					<div class="flex justify-between">
+						<dt style="color: var(--color-muted-fg);">Created</dt>
+						<dd style="color: var(--color-fg);">{ props.Deployment.CreatedAt.Format("02 Jan 2006 15:04") }</dd>
+					</div>
+					if props.Deployment.CompletedAt != nil {
+						<div class="flex justify-between">
+							<dt style="color: var(--color-muted-fg);">Completed</dt>
+							<dd style="color: var(--color-fg);">{ props.Deployment.CompletedAt.Format("02 Jan 2006 15:04") }</dd>
+						</div>
+					}
+				</dl>
+			</div>
+
+			if props.Deployment.ErrorMessage != nil {
+				<div class="rounded-xl border p-6 mb-6" style="background: color-mix(in srgb, var(--color-destructive) 8%, var(--color-bg)); border-color: var(--color-border);">
+					<h2 class="text-lg font-semibold mb-2" style="color: var(--color-fg); font-family: var(--font-heading);">Error</h2>
+					<p class="text-sm" style="color: var(--color-destructive);">{ *props.Deployment.ErrorMessage }</p>
+				</div>
+			}
+
+			if props.Deployment.Log != nil {
+				<div class="rounded-xl border p-6" style="background: var(--color-card); border-color: var(--color-border);">
+					<h2 class="text-lg font-semibold mb-4" style="color: var(--color-fg); font-family: var(--font-heading);">Log output</h2>
+					<pre class="rounded p-4 text-xs overflow-x-auto whitespace-pre-wrap" style="background: var(--color-secondary); color: var(--color-muted-fg);">{ *props.Deployment.Log }</pre>
+				</div>
+			}
+		</div>
+	}
+}

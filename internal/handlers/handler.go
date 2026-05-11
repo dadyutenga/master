@@ -4,6 +4,7 @@ import (
 	"database/sql"
 
 	"github.com/dadyutenga/hms-control/internal/config"
+	"github.com/dadyutenga/hms-control/internal/db/generated"
 	"github.com/dadyutenga/hms-control/internal/mailer"
 	"github.com/dadyutenga/hms-control/internal/provisioner"
 
@@ -35,6 +36,11 @@ func render(c *fiber.Ctx, comp templ.Component) error {
 	return comp.Render(c.Context(), c.Response().BodyWriter())
 }
 
+func (h *Handler) contactDetails(c *fiber.Ctx) (generated.ContactDetails, error) {
+	q := generated.New(h.db)
+	return q.GetContactDetails(c.Context())
+}
+
 func ErrorHandler(c *fiber.Ctx, err error) error {
 	code := fiber.StatusInternalServerError
 	if e, ok := err.(*fiber.Error); ok {
@@ -43,4 +49,3 @@ func ErrorHandler(c *fiber.Ctx, err error) error {
 	c.Set("Content-Type", "text/plain; charset=utf-8")
 	return c.Status(code).SendString(err.Error())
 }
-

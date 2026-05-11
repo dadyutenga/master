@@ -14,8 +14,9 @@ import (
 )
 
 type PendingProps struct {
-	Tenant generated.Tenant
-	User   generated.User
+	Tenant  generated.Tenant
+	User    generated.User
+	Contact generated.ContactDetails
 }
 
 func Pending(props PendingProps) templ.Component {
@@ -51,27 +52,27 @@ func Pending(props PendingProps) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<header style=\"position:sticky; top:0; z-index:50; background: var(--color-bg); border-bottom:1px solid var(--color-border);\"><div class=\"max-w-5xl mx-auto px-6\" style=\"display:flex; align-items:center; justify-content:space-between; height:4rem;\"><a href=\"/dashboard\" style=\"font-family: var(--font-heading); font-weight: 800; font-size: 1.125rem; text-decoration:none; color: var(--color-fg);\">Hotel Management System</a> <details style=\"position:relative;\"><summary style=\"list-style:none; display:flex; align-items:center; gap:0.5rem; cursor:pointer; font-size:0.875rem; color: var(--color-fg);\"><span class=\"material-symbols-outlined\" style=\"font-size:1.1rem; color: var(--color-muted-fg);\">account_circle</span> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<dialog id=\"verification-dialog\" style=\"border:none; padding:0; border-radius:1rem; max-width:520px; width:90%; box-shadow:0 20px 40px rgba(0,0,0,0.2);\"><div style=\"padding:2rem; background: var(--color-bg); border:1px solid var(--color-border); border-radius:1rem;\"><div style=\"display:flex; justify-content:space-between; align-items:flex-start; gap:1rem;\"><div><h2 style=\"font-family: var(--font-heading); font-size:1.25rem; font-weight:700; color: var(--color-fg); margin-bottom:0.5rem;\">Verification in progress</h2><p style=\"color: var(--color-muted-fg); font-size:0.875rem; margin-bottom:1.5rem;\">We are reviewing your documents. You will be notified by email once verification is complete.</p></div><button type=\"button\" onclick=\"document.getElementById('verification-dialog').close()\" style=\"background:transparent; border:none; color: var(--color-muted-fg); cursor:pointer;\"><span class=\"material-symbols-outlined\">close</span></button></div><div style=\"display:flex; gap:0.75rem; justify-content:flex-end;\"><button type=\"button\" class=\"btn btn-outline\" onclick=\"document.getElementById('verification-dialog').close()\" style=\"height:2.5rem; padding:0 1.5rem; font-size:0.875rem;\">Got it</button></div></div></dialog><header style=\"position:sticky; top:0; z-index:50; background: var(--color-bg); border-bottom:1px solid var(--color-border);\"><div class=\"max-w-5xl mx-auto px-6\" style=\"display:flex; align-items:center; justify-content:space-between; height:4rem;\"><a href=\"/dashboard\" style=\"font-family: var(--font-heading); font-weight: 800; font-size: 1.125rem; text-decoration:none; color: var(--color-fg);\">Hotel Management System</a> <details style=\"position:relative;\"><summary style=\"list-style:none; display:flex; align-items:center; gap:0.5rem; cursor:pointer; font-size:0.875rem; color: var(--color-fg);\"><span class=\"material-symbols-outlined\" style=\"font-size:1.1rem; color: var(--color-muted-fg);\">account_circle</span> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(props.User.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/pending.templ`, Line: 21, Col: 24}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/pending.templ`, Line: 40, Col: 24}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, " <span class=\"material-symbols-outlined\" style=\"font-size:1rem; color: var(--color-muted-fg);\">expand_more</span></summary><div style=\"position:absolute; top:2rem; left:0; min-width:180px; background: var(--color-bg); border:1px solid var(--color-border); border-radius:0.75rem; box-shadow:0 10px 15px -3px rgba(0,0,0,0.1); padding:0.5rem;\"><a href=\"/dashboard/change-password\" style=\"display:block; padding:0.5rem 0.75rem; font-size:0.875rem; text-decoration:none; color: var(--color-fg);\">Change password</a><form method=\"POST\" action=\"/logout\"><button type=\"submit\" style=\"width:100%; text-align:left; padding:0.5rem 0.75rem; font-size:0.875rem; background:transparent; border:none; color: var(--color-fg); cursor:pointer;\">Logout</button></form></div></details></div></header><div class=\"max-w-5xl mx-auto p-6\" style=\"padding-top:2rem;\"><h1 class=\"text-2xl font-bold mb-6 text-center\" style=\"color: var(--color-fg); font-family: var(--font-heading);\">Hello, ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, " <span class=\"material-symbols-outlined\" style=\"font-size:1rem; color: var(--color-muted-fg);\">expand_more</span></summary><div style=\"position:absolute; top:2rem; left:0; min-width:180px; background: var(--color-bg); border:1px solid var(--color-border); border-radius:0.75rem; box-shadow:0 10px 15px -3px rgba(0,0,0,0.1); padding:0.5rem;\"><a href=\"/dashboard/details\" style=\"display:block; padding:0.5rem 0.75rem; font-size:0.875rem; text-decoration:none; color: var(--color-fg);\">Tenant details</a> <a href=\"/dashboard/change-password\" style=\"display:block; padding:0.5rem 0.75rem; font-size:0.875rem; text-decoration:none; color: var(--color-fg);\">Change password</a><form method=\"POST\" action=\"/logout\"><button type=\"submit\" style=\"width:100%; text-align:left; padding:0.5rem 0.75rem; font-size:0.875rem; background:transparent; border:none; color: var(--color-fg); cursor:pointer;\">Logout</button></form></div></details></div></header><div class=\"max-w-5xl mx-auto p-6\" style=\"padding-top:2rem;\"><h1 class=\"text-2xl font-bold mb-6 text-center\" style=\"color: var(--color-fg); font-family: var(--font-heading);\">Hello, ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(props.User.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/pending.templ`, Line: 34, Col: 141}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/pending.templ`, Line: 54, Col: 141}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -84,7 +85,7 @@ func Pending(props PendingProps) templ.Component {
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(props.Tenant.CompanyName)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/pending.templ`, Line: 52, Col: 87}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/pending.templ`, Line: 72, Col: 87}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -97,13 +98,52 @@ func Pending(props PendingProps) templ.Component {
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(string(props.Tenant.Status))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/pending.templ`, Line: 57, Col: 145}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/pending.templ`, Line: 77, Col: 145}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</span></dd></div></dl></div><div class=\"rounded-xl border\" style=\"margin-top:1rem; border-color: var(--color-border); background: var(--color-bg); padding:1rem 1.25rem;\"><h3 class=\"text-xs\" style=\"font-weight:700; letter-spacing:0.08em; color: var(--color-muted-fg);\">WHAT HAPPENS NEXT?</h3><div style=\"display:flex; flex-direction:column; gap:0.75rem; margin-top:0.75rem;\"><div style=\"display:flex; align-items:center; gap:0.75rem;\"><span style=\"width:24px; height:24px; border-radius:9999px; background: color-mix(in srgb, var(--color-brand-blue) 15%, var(--color-bg)); color: var(--color-brand-blue); display:flex; align-items:center; justify-content:center; font-size:0.75rem; font-weight:700;\">1</span> <span style=\"color: var(--color-muted-fg); font-size:0.875rem;\">Our team reviews your documents for compliance.</span></div><div style=\"display:flex; align-items:center; gap:0.75rem;\"><span style=\"width:24px; height:24px; border-radius:9999px; background: color-mix(in srgb, var(--color-brand-blue) 15%, var(--color-bg)); color: var(--color-brand-blue); display:flex; align-items:center; justify-content:center; font-size:0.75rem; font-weight:700;\">2</span> <span style=\"color: var(--color-muted-fg); font-size:0.875rem;\">We approve the account and activate your management system.</span></div><div style=\"display:flex; align-items:center; gap:0.75rem;\"><span style=\"width:24px; height:24px; border-radius:9999px; background: color-mix(in srgb, var(--color-brand-blue) 15%, var(--color-bg)); color: var(--color-brand-blue); display:flex; align-items:center; justify-content:center; font-size:0.75rem; font-weight:700;\">3</span> <span style=\"color: var(--color-muted-fg); font-size:0.875rem;\">You will see the full dashboard once approved.</span></div></div></div></div></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</span></dd></div></dl></div><div class=\"rounded-xl border\" style=\"margin-top:1rem; border-color: var(--color-border); background: var(--color-bg); padding:1rem 1.25rem;\"><h3 class=\"text-xs\" style=\"font-weight:700; letter-spacing:0.08em; color: var(--color-muted-fg);\">WHAT HAPPENS NEXT?</h3><div style=\"display:flex; flex-direction:column; gap:0.75rem; margin-top:0.75rem;\"><div style=\"display:flex; align-items:center; gap:0.75rem;\"><span style=\"width:24px; height:24px; border-radius:9999px; background: color-mix(in srgb, var(--color-brand-blue) 15%, var(--color-bg)); color: var(--color-brand-blue); display:flex; align-items:center; justify-content:center; font-size:0.75rem; font-weight:700;\">1</span> <span style=\"color: var(--color-muted-fg); font-size:0.875rem;\">Our team reviews your documents for compliance.</span></div><div style=\"display:flex; align-items:center; gap:0.75rem;\"><span style=\"width:24px; height:24px; border-radius:9999px; background: color-mix(in srgb, var(--color-brand-blue) 15%, var(--color-bg)); color: var(--color-brand-blue); display:flex; align-items:center; justify-content:center; font-size:0.75rem; font-weight:700;\">2</span> <span style=\"color: var(--color-muted-fg); font-size:0.875rem;\">We approve the account and activate your management system.</span></div><div style=\"display:flex; align-items:center; gap:0.75rem;\"><span style=\"width:24px; height:24px; border-radius:9999px; background: color-mix(in srgb, var(--color-brand-blue) 15%, var(--color-bg)); color: var(--color-brand-blue); display:flex; align-items:center; justify-content:center; font-size:0.75rem; font-weight:700;\">3</span> <span style=\"color: var(--color-muted-fg); font-size:0.875rem;\">You will see the full dashboard once approved.</span></div></div></div><div class=\"rounded-xl border\" style=\"margin-top:1rem; border-color: var(--color-border); background: var(--color-bg); padding:1rem 1.25rem;\"><h3 class=\"text-xs\" style=\"font-weight:700; letter-spacing:0.08em; color: var(--color-muted-fg);\">NEED HELP?</h3><div style=\"display:flex; flex-direction:column; gap:0.75rem; margin-top:0.75rem;\"><div style=\"display:flex; align-items:center; gap:0.75rem;\"><span class=\"material-symbols-outlined\" style=\"color: var(--color-muted-fg);\">location_on</span> <span style=\"color: var(--color-fg); font-size:0.875rem;\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var7 string
+			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(props.Contact.Location)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/pending.templ`, Line: 106, Col: 90}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</span></div><div style=\"display:flex; align-items:center; gap:0.75rem;\"><span class=\"material-symbols-outlined\" style=\"color: var(--color-muted-fg);\">phone</span> <a href=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var8 templ.SafeURL
+			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinURLErrs(templ.URL("tel:" + props.Contact.PhoneNumber))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/pending.templ`, Line: 110, Col: 63}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\" style=\"color: var(--color-brand-blue); font-size:0.875rem; text-decoration:none;\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var9 string
+			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(props.Contact.PhoneNumber)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/pending.templ`, Line: 110, Col: 175}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</a></div></div></div></div></div></div><script>\n\t\t\t(function () {\n\t\t\t\tvar dialog = document.getElementById('verification-dialog');\n\t\t\t\tif (!dialog) return;\n\t\t\t\tif (typeof dialog.showModal === 'function') {\n\t\t\t\t\tdialog.showModal();\n\t\t\t\t} else {\n\t\t\t\t\tdialog.setAttribute('open', 'true');\n\t\t\t\t}\n\t\t\t\tdocument.addEventListener('keydown', function (event) {\n\t\t\t\t\tif (event.key === 'Escape' && dialog.open) {\n\t\t\t\t\t\tdialog.close();\n\t\t\t\t\t}\n\t\t\t\t});\n\t\t\t})();\n\t\t</script>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

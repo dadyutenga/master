@@ -16,6 +16,15 @@ const (
 	TenantStatusActive              = "active"
 	TenantStatusSuspended           = "suspended"
 	TenantStatusFailed              = "failed"
+
+	BillingStatusPaid      = "paid"
+	BillingStatusOverdue   = "overdue"
+	BillingStatusSuspended = "suspended"
+
+	DeploymentStatusProvisioning = "provisioning"
+	DeploymentStatusActive       = "active"
+	DeploymentStatusFailed       = "failed"
+	DeploymentStatusStopped      = "stopped"
 )
 
 // ── Params ──────────────────────────────────────────────────────────────────
@@ -57,6 +66,21 @@ type CreateTenantParams struct {
 	Country     *string
 }
 
+type UpdateTenantDetailsParams struct {
+	ID                 uuid.UUID
+	RequestedSubdomain *string
+	AdminName          *string
+	AdminEmail         *string
+	AdminPhone         *string
+}
+
+type UpdateTenantBillingParams struct {
+	ID            uuid.UUID
+	BillingStatus string
+	LastPaymentAt *time.Time
+	NextDueAt     *time.Time
+}
+
 type UpdateTenantStatusParams struct {
 	ID     uuid.UUID
 	Status string
@@ -91,6 +115,36 @@ type CreateDocumentParams struct {
 	OriginalName string
 	MimeType     string
 	SizeBytes    int64
+}
+
+type CreateContactDetailsParams struct {
+	Location    string
+	PhoneNumber string
+}
+
+type CreateDeploymentParams struct {
+	TenantID     uuid.UUID
+	Action       string
+	Status       string
+	Log          *string
+	ErrorMessage *string
+	CompletedAt  *time.Time
+}
+
+type UpdateDeploymentStatusParams struct {
+	ID           uuid.UUID
+	Status       string
+	Log          *string
+	ErrorMessage *string
+	CompletedAt  *time.Time
+}
+
+type UpdateLatestDeploymentStatusParams struct {
+	TenantID     uuid.UUID
+	Status       string
+	Log          *string
+	ErrorMessage *string
+	CompletedAt  *time.Time
 }
 
 // ── Users ───────────────────────────────────────────────────────────────────
@@ -206,6 +260,32 @@ func (q *Queries) UseVerifyToken(ctx context.Context, token string) error {
 	return err
 }
 
+// ── Contact Details ─────────────────────────────────────────────────────────
+
+func scanContactDetails(scanner interface{ Scan(dest ...any) error }) (ContactDetails, error) {
+	var cd ContactDetails
+	err := scanner.Scan(&cd.ID, &cd.Location, &cd.PhoneNumber, &cd.CreatedAt, &cd.UpdatedAt)
+	return cd, err
+}
+
+func (q *Queries) GetContactDetails(ctx context.Context) (ContactDetails, error) {
+	return scanContactDetails(q.db.QueryRowContext(ctx,
+		`SELECT id, location, phone_number, created_at, updated_at FROM contact_details ORDER BY id LIMIT 1`,
+	))
+}
+
+func (q *Queries) UpsertContactDetails(ctx context.Context, arg CreateContactDetailsParams) (ContactDetails, error) {
+	var cd ContactDetails
+	err := q.db.QueryRowContext(ctx,
+		`INSERT INTO contact_details (id, location, phone_number, created_at, updated_at)
+		 VALUES (1, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+		 ON CONFLICT(id) DO UPDATE SET location = excluded.location, phone_number = excluded.phone_number, updated_at = CURRENT_TIMESTAMP
+		 RETURNING id, location, phone_number, created_at, updated_at`,
+		arg.Location, arg.PhoneNumber,
+	).Scan(&cd.ID, &cd.Location, &cd.PhoneNumber, &cd.CreatedAt, &cd.UpdatedAt)
+	return cd, err
+}
+
 // ── Tenants ─────────────────────────────────────────────────────────────────
 
 func scanTenant(scanner interface{ Scan(dest ...any) error }) (Tenant, error) {
@@ -213,12 +293,16 @@ func scanTenant(scanner interface{ Scan(dest ...any) error }) (Tenant, error) {
 	var appKey, provisionLog sql.NullString
 	var approvedAt, provisionedAt sql.NullTime
 	var hotelName, category, address, city, country sql.NullString
+	var requestedSubdomain, adminName, adminEmail, adminPhone, billingStatus sql.NullString
 	var roomCount sql.NullInt64
+	var lastPaymentAt, nextDueAt sql.NullTime
 	err := scanner.Scan(
 		&t.ID, &t.UserID, &t.CompanyName, &t.Slug, &t.Domain,
 		&t.DbName, &t.DbUser, &t.DbPassword, &appKey, &t.Status,
 		&provisionLog, &approvedAt, &provisionedAt,
 		&hotelName, &category, &roomCount, &address, &city, &country,
+		&requestedSubdomain, &adminName, &adminEmail, &adminPhone, &billingStatus,
+		&lastPaymentAt, &nextDueAt,
 		&t.CreatedAt, &t.UpdatedAt,
 	)
 	if err != nil {
@@ -254,10 +338,33 @@ func scanTenant(scanner interface{ Scan(dest ...any) error }) (Tenant, error) {
 	if country.Valid {
 		t.Country = &country.String
 	}
+	if requestedSubdomain.Valid {
+		t.RequestedSubdomain = &requestedSubdomain.String
+	}
+	if adminName.Valid {
+		t.AdminName = &adminName.String
+	}
+	if adminEmail.Valid {
+		t.AdminEmail = &adminEmail.String
+	}
+	if adminPhone.Valid {
+		t.AdminPhone = &adminPhone.String
+	}
+	if billingStatus.Valid {
+		t.BillingStatus = billingStatus.String
+	} else {
+		t.BillingStatus = BillingStatusPaid
+	}
+	if lastPaymentAt.Valid {
+		t.LastPaymentAt = &lastPaymentAt.Time
+	}
+	if nextDueAt.Valid {
+		t.NextDueAt = &nextDueAt.Time
+	}
 	return t, nil
 }
 
-const tenantCols = `id, user_id, company_name, slug, domain, db_name, db_user, db_password, app_key, status, provision_log, approved_at, provisioned_at, hotel_name, category, room_count, address, city, country, created_at, updated_at`
+const tenantCols = `id, user_id, company_name, slug, domain, db_name, db_user, db_password, app_key, status, provision_log, approved_at, provisioned_at, hotel_name, category, room_count, address, city, country, requested_subdomain, admin_name, admin_email, admin_phone, billing_status, last_payment_at, next_due_at, created_at, updated_at`
 
 func (q *Queries) GetTenantByID(ctx context.Context, id uuid.UUID) (Tenant, error) {
 	return scanTenant(q.db.QueryRowContext(ctx, `SELECT `+tenantCols+` FROM tenants WHERE id = ?`, id))
@@ -269,6 +376,10 @@ func (q *Queries) GetTenantBySlug(ctx context.Context, slug string) (Tenant, err
 
 func (q *Queries) GetTenantByUserID(ctx context.Context, userID int64) (Tenant, error) {
 	return scanTenant(q.db.QueryRowContext(ctx, `SELECT `+tenantCols+` FROM tenants WHERE user_id = ?`, userID))
+}
+
+func (q *Queries) GetTenantByRequestedSubdomain(ctx context.Context, subdomain string) (Tenant, error) {
+	return scanTenant(q.db.QueryRowContext(ctx, `SELECT `+tenantCols+` FROM tenants WHERE requested_subdomain = ?`, subdomain))
 }
 
 func (q *Queries) ListTenants(ctx context.Context, arg ListTenantsParams) ([]ListTenantsRow, error) {
@@ -350,6 +461,26 @@ func (q *Queries) UpdateTenantStatus(ctx context.Context, arg UpdateTenantStatus
 	return err
 }
 
+func (q *Queries) UpdateTenantDetails(ctx context.Context, arg UpdateTenantDetailsParams) error {
+	_, err := q.db.ExecContext(ctx,
+		`UPDATE tenants
+		 SET requested_subdomain = ?, admin_name = ?, admin_email = ?, admin_phone = ?, updated_at = CURRENT_TIMESTAMP
+		 WHERE id = ?`,
+		arg.RequestedSubdomain, arg.AdminName, arg.AdminEmail, arg.AdminPhone, arg.ID,
+	)
+	return err
+}
+
+func (q *Queries) UpdateTenantBilling(ctx context.Context, arg UpdateTenantBillingParams) error {
+	_, err := q.db.ExecContext(ctx,
+		`UPDATE tenants
+		 SET billing_status = ?, last_payment_at = ?, next_due_at = ?, updated_at = CURRENT_TIMESTAMP
+		 WHERE id = ?`,
+		arg.BillingStatus, arg.LastPaymentAt, arg.NextDueAt, arg.ID,
+	)
+	return err
+}
+
 func (q *Queries) ApproveTenant(ctx context.Context, id uuid.UUID) error {
 	_, err := q.db.ExecContext(ctx,
 		`UPDATE tenants SET status = 'provisioning', approved_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP WHERE id = ?`,
@@ -378,6 +509,88 @@ func (q *Queries) SetTenantProvisioning(ctx context.Context, id uuid.UUID) error
 	_, err := q.db.ExecContext(ctx,
 		`UPDATE tenants SET status = 'provisioning', provision_log = NULL, updated_at = CURRENT_TIMESTAMP WHERE id = ?`,
 		id,
+	)
+	return err
+}
+
+// ── Deployments ─────────────────────────────────────────────────────────────
+
+func scanDeployment(scanner interface{ Scan(dest ...any) error }) (Deployment, error) {
+	var d Deployment
+	var logText, errText sql.NullString
+	var completedAt sql.NullTime
+	err := scanner.Scan(
+		&d.ID, &d.TenantID, &d.Action, &d.Status, &logText, &errText,
+		&d.CreatedAt, &d.UpdatedAt, &completedAt,
+	)
+	if logText.Valid {
+		d.Log = &logText.String
+	}
+	if errText.Valid {
+		d.ErrorMessage = &errText.String
+	}
+	if completedAt.Valid {
+		d.CompletedAt = &completedAt.Time
+	}
+	return d, err
+}
+
+func (q *Queries) CreateDeployment(ctx context.Context, arg CreateDeploymentParams) (Deployment, error) {
+	id := uuid.New()
+	return scanDeployment(q.db.QueryRowContext(ctx,
+		`INSERT INTO deployments (id, tenant_id, action, status, log, error_message, completed_at)
+		 VALUES (?, ?, ?, ?, ?, ?, ?)
+		 RETURNING id, tenant_id, action, status, log, error_message, created_at, updated_at, completed_at`,
+		id, arg.TenantID, arg.Action, arg.Status, arg.Log, arg.ErrorMessage, arg.CompletedAt,
+	))
+}
+
+func (q *Queries) GetDeploymentByID(ctx context.Context, id uuid.UUID) (Deployment, error) {
+	return scanDeployment(q.db.QueryRowContext(ctx,
+		`SELECT id, tenant_id, action, status, log, error_message, created_at, updated_at, completed_at FROM deployments WHERE id = ?`,
+		id,
+	))
+}
+
+func (q *Queries) ListDeploymentsByTenantID(ctx context.Context, tenantID uuid.UUID) ([]Deployment, error) {
+	rows, err := q.db.QueryContext(ctx,
+		`SELECT id, tenant_id, action, status, log, error_message, created_at, updated_at, completed_at
+		 FROM deployments WHERE tenant_id = ? ORDER BY created_at DESC`,
+		tenantID,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var result []Deployment
+	for rows.Next() {
+		d, err := scanDeployment(rows)
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, d)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+func (q *Queries) UpdateDeploymentStatus(ctx context.Context, arg UpdateDeploymentStatusParams) error {
+	_, err := q.db.ExecContext(ctx,
+		`UPDATE deployments SET status = ?, log = ?, error_message = ?, completed_at = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`,
+		arg.Status, arg.Log, arg.ErrorMessage, arg.CompletedAt, arg.ID,
+	)
+	return err
+}
+
+func (q *Queries) UpdateLatestDeploymentStatus(ctx context.Context, arg UpdateLatestDeploymentStatusParams) error {
+	_, err := q.db.ExecContext(ctx,
+		`UPDATE deployments
+		 SET status = ?, log = ?, error_message = ?, completed_at = ?, updated_at = CURRENT_TIMESTAMP
+		 WHERE id = (SELECT id FROM deployments WHERE tenant_id = ? ORDER BY created_at DESC LIMIT 1)`,
+		arg.Status, arg.Log, arg.ErrorMessage, arg.CompletedAt, arg.TenantID,
 	)
 	return err
 }

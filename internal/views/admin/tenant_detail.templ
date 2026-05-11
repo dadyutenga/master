@@ -5,7 +5,7 @@ import (
 	"github.com/dadyutenga/hms-control/internal/views/layout"
 )
 
-templ TenantDetail(tenant generated.Tenant, user generated.User) {
+templ TenantDetail(tenant generated.Tenant, user generated.User, deployments []generated.Deployment) {
 	@layout.Base("Tenant Detail") {
 		<div class="max-w-4xl mx-auto p-6">
 			<div class="flex items-center gap-4 mb-6">
@@ -14,9 +14,9 @@ templ TenantDetail(tenant generated.Tenant, user generated.User) {
 				@StatusBadge(string(tenant.Status))
 			</div>
 
-			<div class="grid grid-cols-2 gap-6">
-				<div class="rounded-xl border p-6" style="background: var(--color-card); border-color: var(--color-border);">
-					<h2 class="text-lg font-semibold mb-4" style="color: var(--color-fg); font-family: var(--font-heading);">Tenant Info</h2>
+		<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+			<div class="rounded-xl border p-6" style="background: var(--color-card); border-color: var(--color-border);">
+				<h2 class="text-lg font-semibold mb-4" style="color: var(--color-fg); font-family: var(--font-heading);">Tenant Info</h2>
 					<dl class="space-y-3 text-sm">
 						<div class="flex justify-between">
 							<dt style="color: var(--color-muted-fg);">Slug</dt>
@@ -35,10 +35,10 @@ templ TenantDetail(tenant generated.Tenant, user generated.User) {
 							<dd style="color: var(--color-fg);">{ tenant.CreatedAt.Format("02 Jan 2006 15:04") }</dd>
 						</div>
 					</dl>
-				</div>
+			</div>
 
-				<div class="rounded-xl border p-6" style="background: var(--color-card); border-color: var(--color-border);">
-					<h2 class="text-lg font-semibold mb-4" style="color: var(--color-fg); font-family: var(--font-heading);">Owner</h2>
+			<div class="rounded-xl border p-6" style="background: var(--color-card); border-color: var(--color-border);">
+				<h2 class="text-lg font-semibold mb-4" style="color: var(--color-fg); font-family: var(--font-heading);">Owner</h2>
 					<dl class="space-y-3 text-sm">
 						<div class="flex justify-between">
 							<dt style="color: var(--color-muted-fg);">Name</dt>
@@ -52,9 +52,127 @@ templ TenantDetail(tenant generated.Tenant, user generated.User) {
 							<dt style="color: var(--color-muted-fg);">Company</dt>
 							<dd style="color: var(--color-fg);">{ user.Company }</dd>
 						</div>
-					</dl>
+				</dl>
+			</div>
+
+			<div class="rounded-xl border p-6" style="background: var(--color-card); border-color: var(--color-border);">
+				<h2 class="text-lg font-semibold mb-4" style="color: var(--color-fg); font-family: var(--font-heading);">Billing</h2>
+				<div class="mb-4">
+					@BillingStatusBadge(tenant.BillingStatus)
+				</div>
+				<form method="POST" action={ templ.URL("/admin/tenants/" + tenant.ID.String() + "/billing") } style="display:flex; flex-direction:column; gap:0.75rem;">
+					<div style="display:flex; flex-direction:column; gap:0.5rem;">
+						<label style="font-size:0.75rem; font-weight:600; color: var(--color-muted-fg);" for="billing_status">Billing status</label>
+						<select name="billing_status" style="border: 1px solid var(--color-border); border-radius: 0.5rem; padding: 0.5rem 0.75rem; background: var(--color-bg);">
+							<option value="paid" selected={ tenant.BillingStatus == "paid" }>Paid</option>
+							<option value="overdue" selected={ tenant.BillingStatus == "overdue" }>Overdue</option>
+							<option value="suspended" selected={ tenant.BillingStatus == "suspended" }>Suspended</option>
+						</select>
+					</div>
+					<div style="display:flex; flex-direction:column; gap:0.5rem;">
+						<label style="font-size:0.75rem; font-weight:600; color: var(--color-muted-fg);" for="last_payment_at">Last payment</label>
+						<input type="date" name="last_payment_at" value={ FormatDate(tenant.LastPaymentAt) } style="border: 1px solid var(--color-border); border-radius: 0.5rem; padding: 0.5rem 0.75rem;" />
+					</div>
+					<div style="display:flex; flex-direction:column; gap:0.5rem;">
+						<label style="font-size:0.75rem; font-weight:600; color: var(--color-muted-fg);" for="next_due_at">Next due</label>
+						<input type="date" name="next_due_at" value={ FormatDate(tenant.NextDueAt) } style="border: 1px solid var(--color-border); border-radius: 0.5rem; padding: 0.5rem 0.75rem;" />
+					</div>
+					<button type="submit" class="btn btn-primary" style="height:2.5rem; font-size:0.75rem;">Update billing</button>
+				</form>
+			</div>
+		</div>
+
+		<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+			<div class="rounded-xl border p-6" style="background: var(--color-card); border-color: var(--color-border);">
+				<h2 class="text-lg font-semibold mb-4" style="color: var(--color-fg); font-family: var(--font-heading);">Tenant details</h2>
+				<dl class="space-y-3 text-sm">
+					<div class="flex justify-between">
+						<dt style="color: var(--color-muted-fg);">Requested subdomain</dt>
+						<dd style="color: var(--color-fg);">{ OptionalStringValue(tenant.RequestedSubdomain) }</dd>
+					</div>
+					<div class="flex justify-between">
+						<dt style="color: var(--color-muted-fg);">Admin name</dt>
+						<dd style="color: var(--color-fg);">{ OptionalStringValue(tenant.AdminName) }</dd>
+					</div>
+					<div class="flex justify-between">
+						<dt style="color: var(--color-muted-fg);">Admin email</dt>
+						<dd style="color: var(--color-fg);">{ OptionalStringValue(tenant.AdminEmail) }</dd>
+					</div>
+					<div class="flex justify-between">
+						<dt style="color: var(--color-muted-fg);">Admin phone</dt>
+						<dd style="color: var(--color-fg);">{ OptionalStringValue(tenant.AdminPhone) }</dd>
+					</div>
+				</dl>
+			</div>
+			<div class="rounded-xl border p-6" style="background: var(--color-card); border-color: var(--color-border);">
+				<h2 class="text-lg font-semibold mb-4" style="color: var(--color-fg); font-family: var(--font-heading);">Deployment actions</h2>
+				<div class="flex flex-wrap gap-2">
+					<button
+						hx-post={ "/admin/tenants/" + tenant.ID.String() + "/deployments/start" }
+						hx-confirm="Start the tenant container?"
+						class="px-3 py-1 rounded text-xs font-medium hover:opacity-90"
+						style="background: var(--color-brand-blue); color: var(--color-primary-fg);">
+						Start
+					</button>
+					<button
+						hx-post={ "/admin/tenants/" + tenant.ID.String() + "/deployments/stop" }
+						hx-confirm="Stop the tenant container?"
+						class="px-3 py-1 rounded text-xs font-medium hover:opacity-90"
+						style="background: var(--color-destructive); color: var(--color-primary-fg);">
+						Stop
+					</button>
+					if tenant.Status == generated.TenantStatusFailed {
+						<button
+							hx-post={ "/admin/tenants/" + tenant.ID.String() + "/retry" }
+							hx-confirm="Retry provisioning this tenant?"
+							class="px-3 py-1 rounded text-xs font-medium hover:opacity-90"
+							style="background: hsl(25, 80%, 50%); color: var(--color-primary-fg);">
+							Retry
+						</button>
+					}
 				</div>
 			</div>
+		</div>
+
+		<div class="mt-6 rounded-xl border p-6" style="background: var(--color-card); border-color: var(--color-border);">
+			<h2 class="text-lg font-semibold mb-4" style="color: var(--color-fg); font-family: var(--font-heading);">Deployments</h2>
+			if len(deployments) == 0 {
+				<p style="color: var(--color-muted-fg); font-size:0.875rem;">No deployments recorded yet.</p>
+			} else {
+				<table class="w-full text-sm">
+					<thead>
+						<tr class="border-b" style="border-color: var(--color-border); color: var(--color-muted-fg);">
+							<th class="text-left py-3">Action</th>
+							<th class="text-left py-3">Status</th>
+							<th class="text-left py-3">Created</th>
+							<th class="text-left py-3">Completed</th>
+							<th class="text-left py-3">Details</th>
+						</tr>
+					</thead>
+					<tbody>
+						for _, d := range deployments {
+							<tr class="border-b hover:[background-color:var(--color-secondary)]" style="border-color: var(--color-border);">
+								<td class="py-3" style="color: var(--color-fg);">{ d.Action }</td>
+								<td class="py-3">@DeploymentStatusBadge(d.Status)</td>
+								<td class="py-3" style="color: var(--color-muted-fg);">{ d.CreatedAt.Format("02 Jan 2006 15:04") }</td>
+								<td class="py-3" style="color: var(--color-muted-fg);">
+									if d.CompletedAt != nil {
+										{ d.CompletedAt.Format("02 Jan 2006 15:04") }
+									}
+								</td>
+								<td class="py-3">
+									<a href={ templ.URL("/admin/tenants/" + tenant.ID.String() + "/deployments/" + d.ID.String()) }
+									   class="px-3 py-1 rounded text-xs font-medium hover:[background-color:var(--color-muted)]"
+									   style="background: var(--color-secondary); color: var(--color-fg);">
+										View
+									</a>
+								</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			}
+		</div>
 
 			if tenant.ProvisionLog != nil {
 				<div class="mt-6 rounded-xl border p-6" style="background: var(--color-card); border-color: var(--color-border);">
@@ -63,5 +181,33 @@ templ TenantDetail(tenant generated.Tenant, user generated.User) {
 				</div>
 			}
 		</div>
+	}
+}
+
+templ BillingStatusBadge(status string) {
+	switch status {
+		case "paid":
+			<span class="px-2 py-1 rounded text-xs" style="background: hsl(140, 60%, 95%); color: hsl(140, 60%, 35%);">paid</span>
+		case "overdue":
+			<span class="px-2 py-1 rounded text-xs" style="background: hsl(35, 90%, 95%); color: hsl(35, 90%, 35%);">overdue</span>
+		case "suspended":
+			<span class="px-2 py-1 rounded text-xs" style="background: hsl(0, 70%, 95%); color: hsl(0, 70%, 40%);">suspended</span>
+		default:
+			<span class="px-2 py-1 rounded text-xs" style="background: var(--color-secondary); color: var(--color-muted-fg);">{ status }</span>
+	}
+}
+
+templ DeploymentStatusBadge(status string) {
+	switch status {
+		case "provisioning":
+			<span class="px-2 py-1 rounded text-xs animate-pulse" style="background: hsl(200, 80%, 95%); color: hsl(200, 80%, 40%);">provisioning</span>
+		case "active":
+			<span class="px-2 py-1 rounded text-xs" style="background: hsl(140, 60%, 95%); color: hsl(140, 60%, 35%);">active</span>
+		case "failed":
+			<span class="px-2 py-1 rounded text-xs" style="background: hsl(0, 70%, 95%); color: hsl(0, 70%, 40%);">failed</span>
+		case "stopped":
+			<span class="px-2 py-1 rounded text-xs" style="background: hsl(35, 90%, 95%); color: hsl(35, 90%, 35%);">stopped</span>
+		default:
+			<span class="px-2 py-1 rounded text-xs" style="background: var(--color-secondary); color: var(--color-muted-fg);">{ status }</span>
 	}
 }

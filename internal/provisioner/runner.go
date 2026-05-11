@@ -48,3 +48,20 @@ func (r *Runner) GetAppKey(slug string) (string, error) {
 	}
 	return strings.TrimSpace(string(out)), nil
 }
+
+func (r *Runner) StartTenant(slug string) (string, error) {
+	return r.runDockerCommand("start", "hms_"+slug)
+}
+
+func (r *Runner) StopTenant(slug string) (string, error) {
+	return r.runDockerCommand("stop", "hms_"+slug)
+}
+
+func (r *Runner) runDockerCommand(args ...string) (string, error) {
+	cmd := exec.Command("docker", args...)
+	var buf bytes.Buffer
+	cmd.Stdout = &buf
+	cmd.Stderr = &buf
+	err := cmd.Run()
+	return strings.TrimSpace(buf.String()), err
+}

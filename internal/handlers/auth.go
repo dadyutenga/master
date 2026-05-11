@@ -23,15 +23,27 @@ import (
 )
 
 func (h *Handler) Home(c *fiber.Ctx) error {
-	return render(c, home.Welcome())
+	contact, err := h.contactDetails(c)
+	if err != nil {
+		return err
+	}
+	return render(c, home.Welcome(home.PageProps{Contact: contact}))
 }
 
 func (h *Handler) About(c *fiber.Ctx) error {
-	return render(c, home.About())
+	contact, err := h.contactDetails(c)
+	if err != nil {
+		return err
+	}
+	return render(c, home.About(home.PageProps{Contact: contact}))
 }
 
 func (h *Handler) Contact(c *fiber.Ctx) error {
-	return render(c, home.Contact())
+	contact, err := h.contactDetails(c)
+	if err != nil {
+		return err
+	}
+	return render(c, home.Contact(home.PageProps{Contact: contact}))
 }
 
 func (h *Handler) ShowRegister(c *fiber.Ctx) error {

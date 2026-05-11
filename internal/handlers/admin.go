@@ -45,7 +45,12 @@ func (h *Handler) ShowTenant(c *fiber.Ctx) error {
 		return fiber.ErrNotFound
 	}
 
-	return render(c, admin.TenantDetail(tenant, user))
+	deployments, err := q.ListDeploymentsByTenantID(c.Context(), tenant.ID)
+	if err != nil {
+		return err
+	}
+
+	return render(c, admin.TenantDetail(tenant, user, deployments))
 }
 
 func (h *Handler) ApproveTenant(c *fiber.Ctx) error {
@@ -65,6 +70,14 @@ func (h *Handler) ApproveTenant(c *fiber.Ctx) error {
 
 	if err := q.ApproveTenant(c.Context(), id); err != nil {
 		return c.Status(500).SendString("Failed to approve tenant.")
+	}
+
+	if _, err := q.CreateDeployment(c.Context(), generated.CreateDeploymentParams{
+		TenantID: id,
+		Action:   "approve",
+		Status:   generated.DeploymentStatusProvisioning,
+	}); err != nil {
+		return c.Status(500).SendString("Failed to record deployment.")
 	}
 
 	h.eng.Enqueue(id)
@@ -120,6 +133,13 @@ func (h *Handler) RetryProvision(c *fiber.Ctx) error {
 
 	if err := q.SetTenantProvisioning(c.Context(), id); err != nil {
 		return c.Status(500).SendString("Failed to reset tenant status.")
+	}
+	if _, err := q.CreateDeployment(c.Context(), generated.CreateDeploymentParams{
+		TenantID: id,
+		Action:   "retry",
+		Status:   generated.DeploymentStatusProvisioning,
+	}); err != nil {
+		return c.Status(500).SendString("Failed to record deployment.")
 	}
 	h.eng.Enqueue(id)
 

@@ -10,9 +10,12 @@ import (
 templ TenantList(tenants []generated.ListTenantsRow) {
 	@layout.Base("Tenants") {
 		<div class="max-w-7xl mx-auto p-6">
-			<div class="flex justify-between items-center mb-6">
+			<div class="flex flex-wrap justify-between items-center gap-3 mb-6">
 				<h1 class="text-2xl font-bold" style="color: var(--color-fg); font-family: var(--font-heading);">Tenants</h1>
-				<span style="color: var(--color-muted-fg);">{ fmt.Sprintf("%d", len(tenants)) } total</span>
+				<div class="flex items-center gap-3">
+					<a href="/admin/settings/contact" class="btn btn-outline" style="height:2.5rem; padding:0 1.25rem; font-size:0.75rem;">Contact settings</a>
+					<span style="color: var(--color-muted-fg);">{ fmt.Sprintf("%d", len(tenants)) } total</span>
+				</div>
 			</div>
 			@TenantTable(tenants)
 		</div>
