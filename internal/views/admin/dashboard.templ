@@ -23,7 +23,7 @@ templ DashboardPage(stats models.DashboardStats) {
 
 			<!-- Quick links -->
 			<div style="display:flex; gap:0.75rem; flex-wrap:wrap; margin-bottom:2rem;">
-				<a href={ templ.URL("/admin/tenants?status=pending_approval") }
+				<a href={ templ.URL("/admin/verification") }
 				   style="display:inline-flex; align-items:center; gap:0.5rem; padding:0.625rem 1.5rem; border-radius:9999px; font-size:0.875rem; font-weight:600; cursor:pointer; background:var(--color-brand-blue); color:#fff; text-decoration:none; transition:opacity 0.15s ease;"
 				   onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
 					Review Pending ({ strconv.Itoa(stats.PendingTenants) })

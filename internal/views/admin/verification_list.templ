@@ -1,0 +1,141 @@
+package admin
+
+import (
+	"fmt"
+	"strconv"
+
+	"github.com/dadyutenga/hms-control/internal/db/generated"
+)
+
+templ VerificationList(tenants []generated.ListTenantsRow, search, statusFilter string, page, totalPages int) {
+	@AdminLayout("Verification", "") {
+		<div class="max-w-7xl mx-auto p-6">
+			<div class="flex flex-wrap justify-between items-center gap-3 mb-4">
+				<div>
+					<h1 class="text-2xl font-bold" style="color: var(--color-fg); font-family: var(--font-heading);">Tenant Verification</h1>
+					<p class="text-sm" style="color: var(--color-muted-fg); margin-top:0.25rem;">Review and verify tenant registration documents</p>
+				</div>
+				<div class="flex items-center gap-3">
+					<a href="/admin/tenants" class="btn btn-outline" style="height:2.5rem; padding:0 1.25rem; font-size:0.75rem;">All Tenants</a>
+				</div>
+			</div>
+			<form method="GET" action="/admin/verification" class="flex flex-wrap gap-3 mb-4">
+				<input type="text" name="q" value={ search } placeholder="Search company or email..."
+					class="rounded-lg border px-3 py-2 text-sm flex-1"
+					style="min-width:200px; border-color: var(--color-border); background: var(--color-bg); color: var(--color-fg);"/>
+				<select name="status"
+					class="rounded-lg border px-3 py-2 text-sm"
+					style="border-color: var(--color-border); background: var(--color-bg); color: var(--color-fg);">
+					<option value="pending_verification,pending_approval" if statusFilter == "pending_verification,pending_approval" || statusFilter == "" { selected }>All Pending</option>
+					<option value="pending_verification" if statusFilter == "pending_verification" { selected }>Pending Verification</option>
+					<option value="pending_approval" if statusFilter == "pending_approval" { selected }>Pending Approval</option>
+				</select>
+				<button type="submit" class="btn btn-outline" style="height:2.5rem; padding:0 1.25rem; font-size:0.75rem;">Filter</button>
+			</form>
+			@VerificationTable(tenants)
+			if totalPages > 1 {
+				<div class="flex justify-center gap-2 mt-6 items-center">
+					if page > 1 {
+						<a href={ templ.URL(fmt.Sprintf("/admin/verification?page=%d&q=%s&status=%s", page-1, search, statusFilter)) }
+						   class="btn btn-outline" style="height:2.25rem; padding:0 1rem; font-size:0.75rem;">Previous</a>
+					}
+					<span style="color: var(--color-muted-fg); padding:0 0.75rem;">Page { strconv.Itoa(page) } of { strconv.Itoa(totalPages) }</span>
+					if page < totalPages {
+						<a href={ templ.URL(fmt.Sprintf("/admin/verification?page=%d&q=%s&status=%s", page+1, search, statusFilter)) }
+						   class="btn btn-outline" style="height:2.25rem; padding:0 1rem; font-size:0.75rem;">Next</a>
+					}
+				</div>
+			}
+		</div>
+	}
+}
+
+templ VerificationTable(tenants []generated.ListTenantsRow) {
+	<div id="verification-table">
+		if len(tenants) == 0 {
+			<div style="text-align:center; padding:3rem; color:var(--color-muted-fg);">
+				<span class="material-symbols-outlined" style="font-size:3rem; display:block; margin-bottom:0.5rem;">verified_user</span>
+				<p style="font-size:0.9375rem; font-weight:500;">No tenants pending verification</p>
+				<p style="font-size:0.8125rem; margin-top:0.25rem;">All caught up!</p>
+			</div>
+		} else {
+			<table class="w-full text-sm" style="font-family: var(--font-body);">
+				<thead>
+					<tr class="border-b" style="border-color: var(--color-border); color: var(--color-muted-fg);">
+						<th class="text-left py-3">Company</th>
+						<th class="text-left py-3">Domain</th>
+						<th class="text-left py-3">Status</th>
+						<th class="text-left py-3">Billing</th>
+						<th class="text-left py-3">Registered</th>
+						<th class="text-left py-3">Actions</th>
+					</tr>
+				</thead>
+				<tbody>
+					for _, t := range tenants {
+						@VerificationRow(t)
+					}
+				</tbody>
+			</table>
+		}
+	</div>
+}
+
+templ VerificationRow(t generated.ListTenantsRow) {
+	<tr id={ "vrow-" + t.ID.String() } class="border-b hover:[background-color:var(--color-secondary)]" style="border-color: var(--color-border);">
+		<td class="py-3">
+			<div class="font-medium" style="color: var(--color-fg);">{ t.CompanyName }</div>
+			<div class="text-xs" style="color: var(--color-muted-fg);">{ t.UserEmail }</div>
+		</td>
+		<td class="py-3">
+			<a href={ templ.URL("https://" + t.Domain) }
+			   class="hover:underline" target="_blank" style="color: var(--color-brand-blue);">
+				{ t.Domain }
+			</a>
+		</td>
+		<td class="py-3">
+			@StatusBadge(string(t.Status))
+		</td>
+		<td class="py-3">
+			@BillingStatusBadge(t.BillingStatus)
+		</td>
+		<td class="py-3" style="color: var(--color-muted-fg);">
+			{ t.CreatedAt.Format("02 Jan 2006") }
+		</td>
+		<td class="py-3">
+			@VerificationActions(t)
+		</td>
+	</tr>
+}
+
+templ VerificationActions(t generated.ListTenantsRow) {
+	<div class="flex gap-2">
+		if t.Status == generated.TenantStatusPendingVerification {
+			<button
+				hx-post={ "/admin/verification/" + t.ID.String() + "/verify" }
+				hx-target={ "#vrow-" + t.ID.String() }
+				hx-swap="outerHTML"
+				hx-confirm="Mark this tenant as verified and move to pending approval?"
+				class="px-3 py-1 rounded text-xs font-medium hover:opacity-90"
+				style="background: hsl(270, 50%, 50%); color: #fff;">
+				Verify
+			</button>
+		}
+		if t.Status == generated.TenantStatusPendingApproval {
+			<button
+				hx-post={ "/admin/tenants/" + t.ID.String() + "/approve" }
+				hx-target={ "#vrow-" + t.ID.String() }
+				hx-swap="outerHTML"
+				hx-confirm="Approve and provision this tenant?"
+				class="px-3 py-1 rounded text-xs font-medium hover:opacity-90"
+				style="background: var(--color-brand-blue); color: var(--color-primary-fg);">
+				Approve
+			</button>
+		}
+		<a href={ templ.URL("/admin/verification/" + t.ID.String()) }
+		   class="px-3 py-1 rounded text-xs font-medium hover:opacity-90"
+		   style="background: var(--color-secondary); color: var(--color-fg); display:inline-flex; align-items:center; gap:0.25rem;">
+			<span class="material-symbols-outlined" style="font-size:0.875rem;">visibility</span>
+			Review
+		</a>
+	</div>
+}

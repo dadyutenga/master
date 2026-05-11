@@ -66,14 +66,131 @@ func (h *Handler) ListTenants(c *fiber.Ctx) error {
 	if page < 1 {
 		page = 1
 	}
+	tenants, totalPages, err := h.listTenantsWithFilters(status, search, page)
+	if err != nil {
+		return err
+	}
+	return render(c, admin.TenantList(tenants, search, status, page, totalPages))
+}
+
+func (h *Handler) ListVerificationTenants(c *fiber.Ctx) error {
+	status := c.Query("status", "pending_verification,pending_approval")
+	search := c.Query("q", "")
+	page, _ := strconv.Atoi(c.Query("page", "1"))
+	if page < 1 {
+		page = 1
+	}
+
+	tenants, totalPages, err := h.listTenantsWithFilters(status, search, page)
+	if err != nil {
+		return err
+	}
+	return render(c, admin.VerificationList(tenants, search, status, page, totalPages))
+}
+
+func (h *Handler) ShowVerificationTenant(c *fiber.Ctx) error {
+	id, err := uuid.Parse(c.Params("id"))
+	if err != nil {
+		return c.Status(400).SendString("Invalid tenant ID")
+	}
+
+	q := generated.New(h.db)
+	tenant, err := q.GetTenantByID(c.Context(), id)
+	if err != nil {
+		return fiber.ErrNotFound
+	}
+
+	user, err := q.GetUserByID(c.Context(), tenant.UserID)
+	if err != nil {
+		return fiber.ErrNotFound
+	}
+
+	documents, err := q.GetDocumentsByUserID(c.Context(), tenant.UserID)
+	if err != nil {
+		return err
+	}
+
+	return render(c, admin.VerificationDetail(tenant, user, documents))
+}
+
+func (h *Handler) VerifyTenant(c *fiber.Ctx) error {
+	id, err := uuid.Parse(c.Params("id"))
+	if err != nil {
+		return c.Status(400).SendString("Invalid tenant ID")
+	}
+
+	q := generated.New(h.db)
+	tenant, err := q.GetTenantByID(c.Context(), id)
+	if err != nil {
+		return fiber.ErrNotFound
+	}
+	if tenant.Status != generated.TenantStatusPendingVerification {
+		return c.Status(409).SendString("Tenant not in pending_verification state")
+	}
+
+	if err := q.UpdateTenantStatus(c.Context(), generated.UpdateTenantStatusParams{
+		ID:     id,
+		Status: generated.TenantStatusPendingApproval,
+	}); err != nil {
+		return c.Status(500).SendString("Failed to verify tenant.")
+	}
+
+	if uid, ok := middleware.GetUserID(c); ok {
+		tid := id.String()
+		h.audit.Log(uid, "tenant.verified", &tid, "", c.IP())
+	}
+
+	if c.Get("HX-Request") == "true" {
+		updatedTenant, _ := q.GetTenantByID(c.Context(), id)
+		user, _ := q.GetUserByID(c.Context(), updatedTenant.UserID)
+		userName, userEmail := "", ""
+		if user.Name != "" {
+			userName = user.Name
+		}
+		if user.Email != "" {
+			userEmail = user.Email
+		}
+		row := generated.ListTenantsRow{
+			ID:            updatedTenant.ID,
+			UserID:        updatedTenant.UserID,
+			CompanyName:   updatedTenant.CompanyName,
+			Slug:          updatedTenant.Slug,
+			Domain:        updatedTenant.Domain,
+			DbName:        updatedTenant.DbName,
+			DbUser:        updatedTenant.DbUser,
+			DbPassword:    updatedTenant.DbPassword,
+			Status:        updatedTenant.Status,
+			BillingStatus: updatedTenant.BillingStatus,
+			CreatedAt:     updatedTenant.CreatedAt,
+			UpdatedAt:     updatedTenant.UpdatedAt,
+			UserName:      userName,
+			UserEmail:     userEmail,
+		}
+		return render(c, admin.VerificationRow(row))
+	}
+
+	redirectTo := c.Get("Referer")
+	if redirectTo == "" {
+		redirectTo = "/admin/verification"
+	}
+	return c.Redirect(redirectTo)
+}
+
+func (h *Handler) listTenantsWithFilters(status, search string, page int) ([]generated.ListTenantsRow, int, error) {
 	const limit = 20
 	offset := (page - 1) * limit
 
 	baseWhere := "WHERE 1=1"
 	args := []interface{}{}
 	if status != "" {
-		baseWhere += " AND t.status = ?"
-		args = append(args, status)
+		// Support multiple statuses separated by comma (e.g., "pending_verification,pending_approval")
+		statuses := strings.Split(status, ",")
+		placeholders := make([]string, len(statuses))
+		for i, s := range statuses {
+			placeholders[i] = "?"
+			args = append(args, strings.TrimSpace(s))
+		}
+		baseWhere += " AND t.status IN (" + strings.Join(placeholders, ",") + ")"
 	}
 	if search != "" {
 		baseWhere += " AND (t.company_name LIKE ? OR u.email LIKE ?)"
@@ -83,7 +200,7 @@ func (h *Handler) ListTenants(c *fiber.Ctx) error {
 	countQuery := `SELECT COUNT(*) FROM tenants t JOIN users u ON t.user_id = u.id ` + baseWhere
 	var total int
 	if err := h.db.QueryRow(countQuery, args...).Scan(&total); err != nil {
-		return err
+		return nil, 0, err
 	}
 
 	query := `SELECT t.id, t.user_id, t.company_name, t.slug, t.domain, t.db_name, t.db_user, t.db_password, t.app_key, t.status, t.provision_log, t.approved_at, t.provisioned_at, t.billing_status, t.created_at, t.updated_at, u.name as user_name, u.email as user_email
@@ -104,7 +221,7 @@ func (h *Handler) ListTenants(c *fiber.Ctx) error {
 
 	rows, err := h.db.Query(query, args...)
 	if err != nil {
-		return err
+		return nil, 0, err
 	}
 	defer rows.Close()
 
@@ -120,7 +237,7 @@ func (h *Handler) ListTenants(c *fiber.Ctx) error {
 			&r.UserName, &r.UserEmail,
 		)
 		if err != nil {
-			return err
+			return nil, 0, err
 		}
 		if appKey.Valid {
 			r.AppKey = &appKey.String
@@ -137,14 +254,14 @@ func (h *Handler) ListTenants(c *fiber.Ctx) error {
 		tenants = append(tenants, r)
 	}
 	if err := rows.Err(); err != nil {
-		return err
+		return nil, 0, err
 	}
 
 	totalPages := (total + limit - 1) / limit
 	if totalPages == 0 {
 		totalPages = 1
 	}
-	return render(c, admin.TenantList(tenants, search, status, page, totalPages))
+	return tenants, totalPages, nil
 }
 
 func (h *Handler) ShowTenant(c *fiber.Ctx) error {
@@ -212,9 +329,43 @@ func (h *Handler) ApproveTenant(c *fiber.Ctx) error {
 	}
 
 	if c.Get("HX-Request") == "true" {
+		referer := c.Get("Referer")
+		if strings.Contains(referer, "/admin/verification") {
+			updatedTenant, _ := q.GetTenantByID(c.Context(), id)
+			user, _ := q.GetUserByID(c.Context(), updatedTenant.UserID)
+			userName, userEmail := "", ""
+			if user.Name != "" {
+				userName = user.Name
+			}
+			if user.Email != "" {
+				userEmail = user.Email
+			}
+			row := generated.ListTenantsRow{
+				ID:            updatedTenant.ID,
+				UserID:        updatedTenant.UserID,
+				CompanyName:   updatedTenant.CompanyName,
+				Slug:          updatedTenant.Slug,
+				Domain:        updatedTenant.Domain,
+				DbName:        updatedTenant.DbName,
+				DbUser:        updatedTenant.DbUser,
+				DbPassword:    updatedTenant.DbPassword,
+				Status:        updatedTenant.Status,
+				BillingStatus: updatedTenant.BillingStatus,
+				CreatedAt:     updatedTenant.CreatedAt,
+				UpdatedAt:     updatedTenant.UpdatedAt,
+				UserName:      userName,
+				UserEmail:     userEmail,
+			}
+			return render(c, admin.VerificationRow(row))
+		}
 		return render(c, admin.StatusBadge(generated.TenantStatusProvisioning))
 	}
-	return c.Redirect("/admin/tenants")
+
+	redirectTo := c.Get("Referer")
+	if redirectTo == "" {
+		redirectTo = "/admin/tenants"
+	}
+	return c.Redirect(redirectTo)
 }
 
 func (h *Handler) SuspendTenant(c *fiber.Ctx) error {

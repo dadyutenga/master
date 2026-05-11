@@ -1,0 +1,254 @@
+package admin
+
+import (
+	"fmt"
+	"strings"
+
+	"github.com/dadyutenga/hms-control/internal/db/generated"
+)
+
+templ VerificationDetail(tenant generated.Tenant, user generated.User, documents []generated.Document) {
+	@AdminLayout("Verification Review", "") {
+		<div style="max-width:1400px; margin:0 auto;">
+			<div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:1.5rem; flex-wrap:wrap;">
+				<a href="/admin/verification" style="color:var(--color-muted-fg); text-decoration:none; font-size:0.875rem;">&larr; Back to Verification</a>
+				<h1 style="font-family:var(--font-heading); font-size:1.5rem; font-weight:700; letter-spacing:-0.025em; color:var(--color-fg);">{ tenant.CompanyName }</h1>
+				@StatusBadge(string(tenant.Status))
+				@BillingStatusBadge(tenant.BillingStatus)
+			</div>
+
+			<!-- Verification Actions Bar -->
+			<div style="background:color-mix(in srgb, var(--color-brand-blue) 6%, var(--color-bg)); border:1px solid var(--color-brand-blue); border-radius:1rem; padding:1rem 1.5rem; margin-bottom:1.5rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.75rem;">
+				<div>
+					<span style="font-family:var(--font-heading); font-weight:700; font-size:0.9375rem; color:var(--color-fg);">
+						if tenant.Status == generated.TenantStatusPendingVerification {
+							Awaiting Email Verification
+						} else if tenant.Status == generated.TenantStatusPendingApproval {
+							Awaiting Approval &mdash; Review Documents Below
+						} else {
+							Tenant Status: { string(tenant.Status) }
+						}
+					</span>
+					<p style="font-size:0.75rem; color:var(--color-muted-fg); margin-top:0.25rem;">
+						if tenant.Status == generated.TenantStatusPendingVerification {
+							Verify the tenant's email before reviewing documents.
+						} else if tenant.Status == generated.TenantStatusPendingApproval {
+							Review uploaded documents and registration details, then approve to begin provisioning.
+						}
+					</p>
+				</div>
+				<div style="display:flex; gap:0.5rem;">
+					if tenant.Status == generated.TenantStatusPendingVerification {
+						<form method="POST" action={ templ.URL("/admin/verification/" + tenant.ID.String() + "/verify") }>
+							<button type="submit"
+								style="display:inline-flex; align-items:center; gap:0.25rem; padding:0.625rem 1.5rem; border-radius:9999px; border:none; font-size:0.875rem; font-weight:600; cursor:pointer; background:hsl(270, 50%, 50%); color:#fff; transition:opacity 0.15s ease;"
+								onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+								<span class="material-symbols-outlined" style="font-size:1rem;">mark_email_read</span>
+								Verify Email
+							</button>
+						</form>
+					}
+					if tenant.Status == generated.TenantStatusPendingApproval {
+						<form method="POST" action={ templ.URL("/admin/tenants/" + tenant.ID.String() + "/approve") }>
+							<button type="submit"
+								style="display:inline-flex; align-items:center; gap:0.25rem; padding:0.625rem 1.5rem; border-radius:9999px; border:none; font-size:0.875rem; font-weight:600; cursor:pointer; background:var(--color-brand-blue); color:#fff; transition:opacity 0.15s ease;"
+								onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+								<span class="material-symbols-outlined" style="font-size:1rem;">check_circle</span>
+								Approve & Provision
+							</button>
+						</form>
+					}
+					<form method="POST" action={ templ.URL("/admin/tenants/" + tenant.ID.String() + "/suspend") }>
+						<button type="submit"
+							style="display:inline-flex; align-items:center; gap:0.25rem; padding:0.625rem 1.5rem; border-radius:9999px; border:1px solid var(--color-destructive); font-size:0.875rem; font-weight:600; cursor:pointer; background:var(--color-bg); color:var(--color-destructive); transition:all 0.15s ease;"
+							onmouseover="this.style.background='var(--color-secondary)'" onmouseout="this.style.background='var(--color-bg)'">
+							<span class="material-symbols-outlined" style="font-size:1rem;">cancel</span>
+							Reject
+						</button>
+					</form>
+				</div>
+			</div>
+
+			<!-- Grid: Business Info + Hotel Info -->
+			<div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
+				@detailCard("Business & Legal Information") {
+					<dl style="display:flex; flex-direction:column; gap:0.75rem;">
+						@detailRow("Company", user.Company)
+						@detailRow("Owner", user.Name)
+						@detailRow("Email", user.Email)
+						if user.Phone != nil {
+							@detailRow("Phone", *user.Phone)
+						}
+						if user.TIN != nil {
+							@detailRow("TIN", *user.TIN)
+						}
+						if user.BrelaNumber != nil {
+							@detailRow("BRELA #", *user.BrelaNumber)
+						}
+						@detailRow("Registered", tenant.CreatedAt.Format("02 Jan 2006 15:04"))
+					</dl>
+				}
+				@detailCard("Hotel Information") {
+					<dl style="display:flex; flex-direction:column; gap:0.75rem;">
+						if tenant.HotelName != nil {
+							@detailRow("Hotel Name", *tenant.HotelName)
+						}
+						if tenant.Category != nil {
+							@detailRow("Category", *tenant.Category)
+						}
+						if tenant.RoomCount != nil {
+							@detailRow("Rooms", fmt.Sprintf("%d", *tenant.RoomCount))
+						}
+						if tenant.Address != nil {
+							@detailRow("Address", *tenant.Address)
+						}
+						if tenant.City != nil {
+							@detailRow("City", *tenant.City)
+						}
+						if tenant.Country != nil {
+							@detailRow("Country", *tenant.Country)
+						}
+						@detailRow("Domain", tenant.Domain)
+						if tenant.RequestedSubdomain != nil && *tenant.RequestedSubdomain != "" {
+							@detailRow("Subdomain", *tenant.RequestedSubdomain)
+						}
+					</dl>
+				}
+			</div>
+
+			<!-- Grid: System Info + Admin Info -->
+			<div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
+				@detailCard("System Info") {
+					<dl style="display:flex; flex-direction:column; gap:0.75rem;">
+						@detailRow("Tenant ID", tenant.ID.String())
+						@detailRow("Slug", tenant.Slug)
+						@detailRow("DB Name", tenant.DbName)
+						@detailRow("Status", string(tenant.Status))
+						@detailRow("Billing", tenant.BillingStatus)
+					</dl>
+				}
+				@detailCard("Admin Account") {
+					<dl style="display:flex; flex-direction:column; gap:0.75rem;">
+						if tenant.AdminName != nil && *tenant.AdminName != "" {
+							@detailRow("Admin Name", *tenant.AdminName)
+						} else {
+							@detailRow("Admin Name", user.Name)
+						}
+						if tenant.AdminEmail != nil && *tenant.AdminEmail != "" {
+							@detailRow("Admin Email", *tenant.AdminEmail)
+						} else {
+							@detailRow("Admin Email", user.Email)
+						}
+						if tenant.AdminPhone != nil && *tenant.AdminPhone != "" {
+							@detailRow("Admin Phone", *tenant.AdminPhone)
+						} else if user.Phone != nil {
+							@detailRow("Admin Phone", *user.Phone)
+						}
+					</dl>
+				}
+			</div>
+
+			<!-- Uploaded Documents Section -->
+			<div style="background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.5rem; margin-bottom:1rem;">
+				<div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem;">
+					<h2 style="font-family:var(--font-heading); font-size:1rem; font-weight:700; color:var(--color-fg); display:flex; align-items:center; gap:0.5rem;">
+						<span class="material-symbols-outlined" style="font-size:1.25rem;">folder_open</span>
+						Uploaded Documents
+					</h2>
+					if len(documents) > 0 {
+						<span style="font-size:0.75rem; color:var(--color-muted-fg);">{ fmt.Sprintf("%d file(s)", len(documents)) }</span>
+					}
+				</div>
+				if len(documents) == 0 {
+					<div style="text-align:center; padding:2rem; color:var(--color-muted-fg);">
+						<span class="material-symbols-outlined" style="font-size:2.5rem; display:block; margin-bottom:0.5rem;">cloud_upload</span>
+						<p style="font-size:0.875rem;">No documents uploaded yet.</p>
+					</div>
+				} else {
+					<!-- Document Grid -->
+					<div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(320px, 1fr)); gap:1rem;">
+						for _, d := range documents {
+							<div id={ fmt.Sprintf("doc-card-%d", d.ID) } style="background:var(--color-card); border:1px solid var(--color-border); border-radius:0.75rem; overflow:hidden; transition:box-shadow 0.15s ease;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'" onmouseout="this.style.boxShadow='none'">
+								<!-- Document Preview -->
+								<div style="aspect-ratio:4/3; background:var(--color-secondary); display:flex; align-items:center; justify-content:center; overflow:hidden; position:relative;">
+									if strings.HasPrefix(d.MimeType, "image/") {
+										<img src={ templ.URL("/" + d.Filename) } alt={ d.OriginalName } style="width:100%; height:100%; object-fit:contain; cursor:pointer;" loading="lazy" onclick="openDocModal(this.src, this.alt)"/>
+		
+									} else {
+										<div style="display:flex; flex-direction:column; align-items:center; gap:0.5rem; color:var(--color-muted-fg);">
+											<span class="material-symbols-outlined" style="font-size:3rem;">description</span>
+											<span style="font-size:0.75rem;">{ d.MimeType }</span>
+										</div>
+									}
+								</div>
+								<!-- Document Info -->
+								<div style="padding:0.75rem 1rem;">
+									<div style="font-size:0.8125rem; font-weight:600; color:var(--color-fg); margin-bottom:0.375rem; word-break:break-all;">{ d.OriginalName }</div>
+									<div style="display:flex; justify-content:space-between; align-items:center; gap:0.5rem; margin-bottom:0.5rem;">
+										<span style="display:inline-flex; align-items:center; padding:0.2rem 0.625rem; border-radius:9999px; font-size:0.6875rem; font-weight:600; background:var(--color-brand-blue); color:#fff;">{ DocTypeLabel(d.DocType) }</span>
+										<span style="font-size:0.6875rem; color:var(--color-muted-fg);">{ FormatFileSize(d.SizeBytes) }</span>
+									</div>
+									<div style="display:flex; gap:0.375rem;">
+										<a href={ templ.URL("/" + d.Filename) } target="_blank" rel="noopener noreferrer"
+										   style="flex:1; display:flex; align-items:center; justify-content:center; gap:0.25rem; padding:0.375rem; border-radius:0.375rem; font-size:0.6875rem; font-weight:500; text-decoration:none; background:var(--color-secondary); color:var(--color-fg); transition:background 0.15s ease;"
+										   onmouseover="this.style.background='var(--color-muted)'" onmouseout="this.style.background='var(--color-secondary)'">
+											<span class="material-symbols-outlined" style="font-size:0.875rem;">open_in_new</span>
+											View
+										</a>
+										<a href={ templ.URL("/" + d.Filename) } download={ d.OriginalName }
+										   style="flex:1; display:flex; align-items:center; justify-content:center; gap:0.25rem; padding:0.375rem; border-radius:0.375rem; font-size:0.6875rem; font-weight:500; text-decoration:none; background:var(--color-secondary); color:var(--color-fg); transition:background 0.15s ease;"
+										   onmouseover="this.style.background='var(--color-muted)'" onmouseout="this.style.background='var(--color-secondary)'">
+											<span class="material-symbols-outlined" style="font-size:0.875rem;">download</span>
+											Download
+										</a>
+									</div>
+								</div>
+							</div>
+						}
+					</div>
+				}
+			</div>
+
+			<!-- Review Notes / Provision Log -->
+			if tenant.ProvisionLog != nil {
+				<div style="background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.5rem;">
+					<h2 style="font-family:var(--font-heading); font-size:1rem; font-weight:700; color:var(--color-fg); margin-bottom:1rem;">Provision Log</h2>
+					<pre style="border-radius:0.75rem; padding:1rem; font-size:0.75rem; overflow-x:auto; white-space:pre-wrap; background:#1e1e1e; color:#d4d4d4; font-family:monospace;">{ *tenant.ProvisionLog }</pre>
+				</div>
+			}
+		</div>
+
+		<!-- Document Modal -->
+		<div id="doc-modal" style="display:none; position:fixed; inset:0; z-index:100; background:rgba(0,0,0,0.85); align-items:center; justify-content:center;" onclick="closeDocModal(event)">
+			<div style="position:relative; max-width:90vw; max-height:90vh;">
+				<button onclick="document.getElementById('doc-modal').style.display='none'" style="position:absolute; top:-2.5rem; right:0; background:rgba(255,255,255,0.15); border:none; border-radius:0.5rem; padding:0.375rem; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+					<span class="material-symbols-outlined" style="font-size:1.5rem; color:#fff;">close</span>
+				</button>
+				<img id="doc-modal-img" src="" alt="" style="max-width:90vw; max-height:85vh; object-fit:contain; border-radius:0.5rem;"/>
+				<div id="doc-modal-caption" style="text-align:center; color:#fff; font-size:0.875rem; margin-top:0.75rem;"></div>
+			</div>
+		</div>
+
+		<script>
+			function openDocModal(src, alt) {
+				var modal = document.getElementById('doc-modal');
+				var img = document.getElementById('doc-modal-img');
+				var caption = document.getElementById('doc-modal-caption');
+				img.src = src;
+				img.alt = alt;
+				caption.textContent = alt;
+				modal.style.display = 'flex';
+			}
+			function closeDocModal(e) {
+				if (e.target === document.getElementById('doc-modal')) {
+					document.getElementById('doc-modal').style.display = 'none';
+				}
+			}
+			document.addEventListener('keydown', function(e) {
+				if (e.key === 'Escape') {
+					document.getElementById('doc-modal').style.display = 'none';
+				}
+			});
+		</script>
+	}
+}

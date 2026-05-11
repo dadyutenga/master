@@ -78,7 +78,7 @@ templ AdminLayout(title string, userName string) {
 				<nav>
 					@sidebarLink("/admin", "dashboard", "Dashboard", false)
 					@sidebarLink("/admin/tenants", "apartment", "Tenants", false)
-					@sidebarLink("/admin/tenants?status=pending_approval", "verified_user", "Verification", false)
+					@sidebarLink("/admin/verification", "verified_user", "Verification", false)
 					@sidebarLink("/admin/audit", "history", "Audit Log", false)
 					<div class="admin-sidebar-section">Settings</div>
 					@sidebarLink("/admin/settings/contact", "contact_mail", "Contact", false)

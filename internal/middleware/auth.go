@@ -42,6 +42,7 @@ func Auth(store *session.Store, db *sql.DB) fiber.Handler {
 					&user.TIN, &user.BrelaNumber, &user.CreatedAt, &user.UpdatedAt)
 				if err == nil {
 					c.Locals("user", user)
+					c.Locals("user_role", user.Role)
 					c.Locals("impersonating", true)
 					c.Locals("original_admin_id", userID)
 					return c.Next()
@@ -60,6 +61,7 @@ func Auth(store *session.Store, db *sql.DB) fiber.Handler {
 		}
 
 		c.Locals("user", user)
+		c.Locals("user_role", user.Role)
 		c.Locals("impersonating", false)
 		return c.Next()
 	}
