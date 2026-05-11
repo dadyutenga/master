@@ -7,6 +7,7 @@ import (
 
 	"github.com/dadyutenga/hms-control/internal/db/generated"
 	"github.com/dadyutenga/hms-control/internal/middleware"
+	"github.com/dadyutenga/hms-control/internal/models"
 	"github.com/dadyutenga/hms-control/internal/provisioner"
 	"github.com/dadyutenga/hms-control/internal/views/admin"
 
@@ -272,7 +273,11 @@ func (h *Handler) AdminProvisionerSettings(c *fiber.Ctx) error {
 		return err
 	}
 	saved := c.Query("saved") == "1"
-	return render(c, admin.ProvisionerSettingsPage(s, saved))
+
+	templateStore := models.NewDockerTemplateStore(h.db)
+	templateNames, _ := templateStore.ListNames()
+
+	return render(c, admin.ProvisionerSettingsPage(s, saved, templateNames))
 }
 
 // POST /admin/settings/provisioner

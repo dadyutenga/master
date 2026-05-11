@@ -1,6 +1,6 @@
 package admin
 
-templ ProvisionerSettingsPage(s map[string]string, saved bool) {
+templ ProvisionerSettingsPage(s map[string]string, saved bool, templateNames []string) {
 	@AdminLayout("Provisioner Settings", "") {
 		<div style="max-width:480px; margin:0 auto;">
 			<h1 style="font-family:var(--font-heading); font-size:1.5rem; font-weight:700; letter-spacing:-0.025em; color:var(--color-fg); margin-bottom:1.5rem;">Provisioner Settings</h1>
@@ -14,8 +14,26 @@ templ ProvisionerSettingsPage(s map[string]string, saved bool) {
 			<form method="POST" action="/admin/settings/provisioner" style="display:flex; flex-direction:column; gap:1rem;">
 				@settingField("Provision Script Path", "provision_script",
 					s["provision_script"], "./scripts/provision.sh", "text")
-				@settingField("Docker Template Name", "docker_template",
-					s["docker_template"], "default", "text")
+
+				<div style="display:flex; flex-direction:column; gap:0.375rem;">
+					<label for="docker_template" style="font-size:0.875rem; font-weight:500; color:var(--color-fg);">Docker Template</label>
+					<select id="docker_template" name="docker_template"
+					        style="padding:0.5rem 0.75rem; border:1px solid var(--color-border); border-radius:0.5rem; font-size:0.875rem; font-family:var(--font-body); background:var(--color-bg); color:var(--color-fg); outline:none;">
+						<option value="default" if s["docker_template"] == "default" || s["docker_template"] == "" { selected }>default (built-in)</option>
+						for _, name := range templateNames {
+							if name == s["docker_template"] {
+								<option value={ name } selected>{ name }</option>
+							} else {
+								<option value={ name }>{ name }</option>
+							}
+						}
+					</select>
+					<p style="font-size:0.75rem; color:var(--color-muted-fg);">
+						Manage custom templates in
+						<a href="/admin/docker-templates" style="color:var(--color-brand-blue); text-decoration:none;">Docker Templates</a>.
+					</p>
+				</div>
+
 				@settingField("Provision Timeout (seconds)", "provision_timeout",
 					s["provision_timeout"], "300", "number")
 

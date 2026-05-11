@@ -85,6 +85,7 @@ func runMigrationsUp(db *sql.DB) {
 		migrationDeployments,
 		migrationAuditLog,
 		migrationSettings,
+		migrationDockerTemplates,
 	}
 	for i, m := range remaining {
 		fmt.Printf("Running migration %d...\n", i+len(migrations)+1)
@@ -98,6 +99,7 @@ func runMigrationsUp(db *sql.DB) {
 
 func runMigrationsDown(db *sql.DB) {
 	drops := []string{
+		"DROP TABLE IF EXISTS docker_templates",
 		"DROP TABLE IF EXISTS audit_logs",
 		"DROP TABLE IF EXISTS settings",
 		"DROP TABLE IF EXISTS deployments",
@@ -272,4 +274,16 @@ INSERT OR IGNORE INTO settings (key, value) VALUES
     ('smtp_from',        'noreply@localhost'),
     ('provision_script', './scripts/provision.sh'),
     ('docker_template',  'default');
+`
+
+const migrationDockerTemplates = `
+CREATE TABLE IF NOT EXISTS docker_templates (
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    name          TEXT NOT NULL UNIQUE,
+    description   TEXT NOT NULL DEFAULT '',
+    template_body TEXT NOT NULL,
+    created_at    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_docker_templates_name ON docker_templates(name);
 `

@@ -60,6 +60,9 @@ func main() {
 		return c.SendString("Check your email for a verification link.")
 	})
 
+	// Stop impersonation (accessible while acting as tenant)
+	app.Post("/admin/impersonate/stop", middleware.Auth(store, database), h.StopImpersonation)
+
 	client := app.Group("/dashboard", middleware.Auth(store, database))
 	client.Get("/", h.ClientDashboard)
 
@@ -90,7 +93,6 @@ func main() {
 	admin.Post("/tenants/:id/deployments/stop", h.StopTenantDeployment)
 	admin.Post("/tenants/:id/billing", h.UpdateTenantBilling)
 	admin.Post("/tenants/:id/impersonate", h.ImpersonateTenant)
-	admin.Post("/impersonate/stop", h.StopImpersonation)
 	admin.Get("/settings/contact", h.AdminContactSettings)
 	admin.Post("/settings/contact", h.UpdateContactSettings)
 	admin.Get("/settings/smtp", h.AdminSMTPSettings)
@@ -98,6 +100,14 @@ func main() {
 	admin.Post("/settings/smtp/test", h.TestSMTP)
 	admin.Get("/settings/provisioner", h.AdminProvisionerSettings)
 	admin.Post("/settings/provisioner", h.UpdateProvisionerSettings)
+
+	// Docker Templates
+	admin.Get("/docker-templates", h.ListDockerTemplates)
+	admin.Get("/docker-templates/new", h.ShowCreateDockerTemplate)
+	admin.Post("/docker-templates/new", h.CreateDockerTemplate)
+	admin.Get("/docker-templates/:id/edit", h.ShowEditDockerTemplate)
+	admin.Post("/docker-templates/:id/edit", h.UpdateDockerTemplate)
+	admin.Post("/docker-templates/:id/delete", h.DeleteDockerTemplate)
 
 	log.Fatal(app.Listen(":8080"))
 }
