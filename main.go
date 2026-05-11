@@ -92,6 +92,7 @@ func main() {
 	admin.Post("/verification/:id/verify", h.VerifyTenant)
 	admin.Post("/tenants/:id/suspend", h.SuspendTenant)
 	admin.Post("/tenants/:id/retry", h.RetryProvision)
+	admin.Post("/users/:userId/change-password", h.AdminChangePassword)
 	admin.Post("/tenants/:id/deployments/start", h.StartTenantDeployment)
 	admin.Post("/tenants/:id/deployments/stop", h.StopTenantDeployment)
 	admin.Post("/tenants/:id/billing", h.UpdateTenantBilling)

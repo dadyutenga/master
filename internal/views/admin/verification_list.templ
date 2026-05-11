@@ -26,9 +26,10 @@ templ VerificationList(tenants []generated.ListTenantsRow, search, statusFilter 
 				<select name="status"
 					class="rounded-lg border px-3 py-2 text-sm"
 					style="border-color: var(--color-border); background: var(--color-bg); color: var(--color-fg);">
-					<option value="pending_verification,pending_approval" if statusFilter == "pending_verification,pending_approval" || statusFilter == "" { selected }>All Pending</option>
+					<option value="pending_verification,pending_approval,failed" if statusFilter == "pending_verification,pending_approval,failed" || statusFilter == "" { selected }>All Pending</option>
 					<option value="pending_verification" if statusFilter == "pending_verification" { selected }>Pending Verification</option>
 					<option value="pending_approval" if statusFilter == "pending_approval" { selected }>Pending Approval</option>
+					<option value="failed" if statusFilter == "failed" { selected }>Failed</option>
 				</select>
 				<button type="submit" class="btn btn-outline" style="height:2.5rem; padding:0 1.25rem; font-size:0.75rem;">Filter</button>
 			</form>
@@ -47,6 +48,86 @@ templ VerificationList(tenants []generated.ListTenantsRow, search, statusFilter 
 				</div>
 			}
 		</div>
+		@confirmModal()
+		<script>
+			function openConfirmModal(opts) {
+				var modal = document.getElementById('confirm-modal');
+				document.getElementById('confirm-modal-icon').textContent = opts.icon || 'help';
+				document.getElementById('confirm-modal-icon').style.color = opts.iconColor || 'var(--color-brand-blue)';
+				document.getElementById('confirm-modal-title').textContent = opts.title || 'Are you sure?';
+				document.getElementById('confirm-modal-message').textContent = opts.message || '';
+				var confirmBtn = document.getElementById('confirm-modal-confirm');
+				confirmBtn.textContent = opts.confirmText || 'Confirm';
+				confirmBtn.style.background = opts.confirmBg || 'var(--color-brand-blue)';
+				confirmBtn.style.color = opts.confirmFg || '#fff';
+				confirmBtn.style.borderColor = opts.confirmBg || 'var(--color-brand-blue)';
+				modal._confirmCb = opts.onConfirm || function(){};
+				modal.style.display = 'flex';
+				setTimeout(function(){ confirmBtn.focus(); }, 50);
+			}
+			function closeConfirmModal() {
+				document.getElementById('confirm-modal').style.display = 'none';
+				document.getElementById('confirm-modal')._confirmCb = null;
+			}
+			function confirmModalAction() {
+				var modal = document.getElementById('confirm-modal');
+				var cb = modal._confirmCb;
+				closeConfirmModal();
+				if (cb) cb();
+			}
+			document.addEventListener('keydown', function(e) {
+				if (e.key === 'Escape') closeConfirmModal();
+			});
+
+			function verifyTenant(btn) {
+				openConfirmModal({
+					icon: 'mark_email_read',
+					iconColor: 'hsl(270, 50%, 50%)',
+					title: 'Verify Tenant',
+					message: 'Mark this tenant as verified? This confirms their email and moves them to pending approval.',
+					confirmText: 'Verify',
+					confirmBg: 'hsl(270, 50%, 50%)',
+					onConfirm: function() {
+						htmx.ajax('POST', btn.getAttribute('data-url'), {
+							target: btn.getAttribute('data-target'),
+							swap: 'outerHTML'
+						});
+					}
+				});
+			}
+			function approveTenant(btn) {
+				openConfirmModal({
+					icon: 'check_circle',
+					iconColor: 'var(--color-brand-blue)',
+					title: 'Approve Tenant',
+					message: 'Approve this tenant and set them as active? They will be able to access the system.',
+					confirmText: 'Approve',
+					confirmBg: 'var(--color-brand-blue)',
+					onConfirm: function() {
+						htmx.ajax('POST', btn.getAttribute('data-url'), {
+							target: btn.getAttribute('data-target'),
+							swap: 'outerHTML'
+						});
+					}
+				});
+			}
+			function retryTenant(btn) {
+				openConfirmModal({
+					icon: 'refresh',
+					iconColor: 'hsl(25, 80%, 50%)',
+					title: 'Activate Tenant',
+					message: 'Activate this failed tenant? Their status will be set to active.',
+					confirmText: 'Activate',
+					confirmBg: 'hsl(25, 80%, 50%)',
+					onConfirm: function() {
+						htmx.ajax('POST', btn.getAttribute('data-url'), {
+							target: btn.getAttribute('data-target'),
+							swap: 'outerHTML'
+						});
+					}
+				});
+			}
+		</script>
 	}
 }
 
@@ -111,10 +192,9 @@ templ VerificationActions(t generated.ListTenantsRow) {
 	<div class="flex gap-2">
 		if t.Status == generated.TenantStatusPendingVerification {
 			<button
-				hx-post={ "/admin/verification/" + t.ID.String() + "/verify" }
-				hx-target={ "#vrow-" + t.ID.String() }
-				hx-swap="outerHTML"
-				hx-confirm="Mark this tenant as verified and move to pending approval?"
+				onclick="verifyTenant(this)"
+				data-url={ "/admin/verification/" + t.ID.String() + "/verify" }
+				data-target={ "#vrow-" + t.ID.String() }
 				class="px-3 py-1 rounded text-xs font-medium hover:opacity-90"
 				style="background: hsl(270, 50%, 50%); color: #fff;">
 				Verify
@@ -122,13 +202,22 @@ templ VerificationActions(t generated.ListTenantsRow) {
 		}
 		if t.Status == generated.TenantStatusPendingApproval {
 			<button
-				hx-post={ "/admin/tenants/" + t.ID.String() + "/approve" }
-				hx-target={ "#vrow-" + t.ID.String() }
-				hx-swap="outerHTML"
-				hx-confirm="Approve and provision this tenant?"
+				onclick="approveTenant(this)"
+				data-url={ "/admin/tenants/" + t.ID.String() + "/approve" }
+				data-target={ "#vrow-" + t.ID.String() }
 				class="px-3 py-1 rounded text-xs font-medium hover:opacity-90"
 				style="background: var(--color-brand-blue); color: var(--color-primary-fg);">
 				Approve
+			</button>
+		}
+		if t.Status == generated.TenantStatusFailed {
+			<button
+				onclick="retryTenant(this)"
+				data-url={ "/admin/tenants/" + t.ID.String() + "/retry" }
+				data-target={ "#vrow-" + t.ID.String() }
+				class="px-3 py-1 rounded text-xs font-medium hover:opacity-90"
+				style="background: hsl(25, 80%, 50%); color: #fff;">
+				Activate
 			</button>
 		}
 		<a href={ templ.URL("/admin/verification/" + t.ID.String()) }
@@ -138,4 +227,26 @@ templ VerificationActions(t generated.ListTenantsRow) {
 			Review
 		</a>
 	</div>
+}
+
+templ confirmModal() {
+	<div id="confirm-modal" style="display:none; position:fixed; inset:0; z-index:200; background:rgba(0,0,0,0.5); align-items:center; justify-content:center;" onclick="if(event.target===this)closeConfirmModal()">
+		<div style="background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:2rem; max-width:420px; width:90%; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); animation:modalIn 0.15s ease-out;">
+			<div style="text-align:center;">
+				<span id="confirm-modal-icon" class="material-symbols-outlined" style="font-size:3rem; display:block; margin-bottom:0.75rem;">help</span>
+				<h3 id="confirm-modal-title" style="font-family:var(--font-heading); font-size:1.125rem; font-weight:700; color:var(--color-fg); margin-bottom:0.5rem;">Are you sure?</h3>
+				<p id="confirm-modal-message" style="font-size:0.875rem; color:var(--color-muted-fg); line-height:1.5;"></p>
+			</div>
+			<div style="display:flex; gap:0.75rem; margin-top:1.5rem;">
+				<button onclick="closeConfirmModal()" style="flex:1; padding:0.625rem 1rem; border-radius:0.5rem; border:1px solid var(--color-border); font-size:0.875rem; font-weight:600; cursor:pointer; background:var(--color-bg); color:var(--color-fg); transition:background 0.15s ease;" onmouseover="this.style.background='var(--color-secondary)'" onmouseout="this.style.background='var(--color-bg)'">Cancel</button>
+				<button id="confirm-modal-confirm" onclick="confirmModalAction()" style="flex:1; padding:0.625rem 1rem; border-radius:0.5rem; border:none; font-size:0.875rem; font-weight:600; cursor:pointer; transition:opacity 0.15s ease;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">Confirm</button>
+			</div>
+		</div>
+	</div>
+	<style>
+		@keyframes modalIn {
+			from { opacity:0; transform:scale(0.95) translateY(0.5rem); }
+			to { opacity:1; transform:scale(1) translateY(0); }
+		}
+	</style>
 }

@@ -18,6 +18,7 @@ templ VerificationDetail(tenant generated.Tenant, user generated.User, documents
 			</div>
 
 			<!-- Verification Actions Bar -->
+			if tenant.Status == generated.TenantStatusPendingVerification || tenant.Status == generated.TenantStatusPendingApproval || tenant.Status == generated.TenantStatusFailed {
 			<div style="background:color-mix(in srgb, var(--color-brand-blue) 6%, var(--color-bg)); border:1px solid var(--color-brand-blue); border-radius:1rem; padding:1rem 1.5rem; margin-bottom:1.5rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.75rem;">
 				<div>
 					<span style="font-family:var(--font-heading); font-weight:700; font-size:0.9375rem; color:var(--color-fg);">
@@ -25,49 +26,64 @@ templ VerificationDetail(tenant generated.Tenant, user generated.User, documents
 							Awaiting Email Verification
 						} else if tenant.Status == generated.TenantStatusPendingApproval {
 							Awaiting Approval &mdash; Review Documents Below
-						} else {
-							Tenant Status: { string(tenant.Status) }
+						} else if tenant.Status == generated.TenantStatusFailed {
+							Tenant Failed &mdash; Activation Required
 						}
 					</span>
 					<p style="font-size:0.75rem; color:var(--color-muted-fg); margin-top:0.25rem;">
 						if tenant.Status == generated.TenantStatusPendingVerification {
 							Verify the tenant's email before reviewing documents.
 						} else if tenant.Status == generated.TenantStatusPendingApproval {
-							Review uploaded documents and registration details, then approve to begin provisioning.
+							Review uploaded documents and registration details, then approve.
+						} else if tenant.Status == generated.TenantStatusFailed {
+							Provisioning failed. Click Activate to set this tenant as active.
 						}
 					</p>
 				</div>
 				<div style="display:flex; gap:0.5rem;">
 					if tenant.Status == generated.TenantStatusPendingVerification {
-						<form method="POST" action={ templ.URL("/admin/verification/" + tenant.ID.String() + "/verify") }>
-							<button type="submit"
-								style="display:inline-flex; align-items:center; gap:0.25rem; padding:0.625rem 1.5rem; border-radius:9999px; border:none; font-size:0.875rem; font-weight:600; cursor:pointer; background:hsl(270, 50%, 50%); color:#fff; transition:opacity 0.15s ease;"
-								onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
-								<span class="material-symbols-outlined" style="font-size:1rem;">mark_email_read</span>
-								Verify Email
-							</button>
-						</form>
+						<button
+							onclick="detailVerifyTenant(this)"
+							data-url={ "/admin/verification/" + tenant.ID.String() + "/verify" }
+							style="display:inline-flex; align-items:center; gap:0.25rem; padding:0.625rem 1.5rem; border-radius:9999px; border:none; font-size:0.875rem; font-weight:600; cursor:pointer; background:hsl(270, 50%, 50%); color:#fff; transition:opacity 0.15s ease;"
+							onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+							<span class="material-symbols-outlined" style="font-size:1rem;">mark_email_read</span>
+							Verify Email
+						</button>
 					}
 					if tenant.Status == generated.TenantStatusPendingApproval {
-						<form method="POST" action={ templ.URL("/admin/tenants/" + tenant.ID.String() + "/approve") }>
-							<button type="submit"
-								style="display:inline-flex; align-items:center; gap:0.25rem; padding:0.625rem 1.5rem; border-radius:9999px; border:none; font-size:0.875rem; font-weight:600; cursor:pointer; background:var(--color-brand-blue); color:#fff; transition:opacity 0.15s ease;"
-								onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
-								<span class="material-symbols-outlined" style="font-size:1rem;">check_circle</span>
-								Approve & Provision
-							</button>
-						</form>
+						<button
+							onclick="detailApproveTenant(this)"
+							data-url={ "/admin/tenants/" + tenant.ID.String() + "/approve" }
+							style="display:inline-flex; align-items:center; gap:0.25rem; padding:0.625rem 1.5rem; border-radius:9999px; border:none; font-size:0.875rem; font-weight:600; cursor:pointer; background:var(--color-brand-blue); color:#fff; transition:opacity 0.15s ease;"
+							onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+							<span class="material-symbols-outlined" style="font-size:1rem;">check_circle</span>
+							Approve Tenant
+						</button>
 					}
-					<form method="POST" action={ templ.URL("/admin/tenants/" + tenant.ID.String() + "/suspend") }>
-						<button type="submit"
+					if tenant.Status == generated.TenantStatusFailed {
+						<button
+							onclick="detailActivateTenant(this)"
+							data-url={ "/admin/tenants/" + tenant.ID.String() + "/retry" }
+							style="display:inline-flex; align-items:center; gap:0.25rem; padding:0.625rem 1.5rem; border-radius:9999px; border:none; font-size:0.875rem; font-weight:600; cursor:pointer; background:hsl(25, 80%, 50%); color:#fff; transition:opacity 0.15s ease;"
+							onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+							<span class="material-symbols-outlined" style="font-size:1rem;">refresh</span>
+							Activate
+						</button>
+					}
+					if tenant.Status != generated.TenantStatusActive && tenant.Status != generated.TenantStatusSuspended && tenant.Status != generated.TenantStatusFailed {
+						<button
+							onclick="detailRejectTenant(this)"
+							data-url={ "/admin/tenants/" + tenant.ID.String() + "/suspend" }
 							style="display:inline-flex; align-items:center; gap:0.25rem; padding:0.625rem 1.5rem; border-radius:9999px; border:1px solid var(--color-destructive); font-size:0.875rem; font-weight:600; cursor:pointer; background:var(--color-bg); color:var(--color-destructive); transition:all 0.15s ease;"
 							onmouseover="this.style.background='var(--color-secondary)'" onmouseout="this.style.background='var(--color-bg)'">
 							<span class="material-symbols-outlined" style="font-size:1rem;">cancel</span>
 							Reject
 						</button>
-					</form>
+					}
 				</div>
 			</div>
+			}
 
 			<!-- Grid: Business Info + Hotel Info -->
 			<div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
@@ -165,15 +181,12 @@ templ VerificationDetail(tenant generated.Tenant, user generated.User, documents
 						<p style="font-size:0.875rem;">No documents uploaded yet.</p>
 					</div>
 				} else {
-					<!-- Document Grid -->
 					<div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(320px, 1fr)); gap:1rem;">
 						for _, d := range documents {
-							<div id={ fmt.Sprintf("doc-card-%d", d.ID) } style="background:var(--color-card); border:1px solid var(--color-border); border-radius:0.75rem; overflow:hidden; transition:box-shadow 0.15s ease;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'" onmouseout="this.style.boxShadow='none'">
-								<!-- Document Preview -->
+							<div style="background:var(--color-card); border:1px solid var(--color-border); border-radius:0.75rem; overflow:hidden; transition:box-shadow 0.15s ease;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'" onmouseout="this.style.boxShadow='none'">
 								<div style="aspect-ratio:4/3; background:var(--color-secondary); display:flex; align-items:center; justify-content:center; overflow:hidden; position:relative;">
 									if strings.HasPrefix(d.MimeType, "image/") {
 										<img src={ templ.URL("/" + d.Filename) } alt={ d.OriginalName } style="width:100%; height:100%; object-fit:contain; cursor:pointer;" loading="lazy" onclick="openDocModal(this.src, this.alt)"/>
-		
 									} else {
 										<div style="display:flex; flex-direction:column; align-items:center; gap:0.5rem; color:var(--color-muted-fg);">
 											<span class="material-symbols-outlined" style="font-size:3rem;">description</span>
@@ -181,7 +194,6 @@ templ VerificationDetail(tenant generated.Tenant, user generated.User, documents
 										</div>
 									}
 								</div>
-								<!-- Document Info -->
 								<div style="padding:0.75rem 1rem;">
 									<div style="font-size:0.8125rem; font-weight:600; color:var(--color-fg); margin-bottom:0.375rem; word-break:break-all;">{ d.OriginalName }</div>
 									<div style="display:flex; justify-content:space-between; align-items:center; gap:0.5rem; margin-bottom:0.5rem;">
@@ -209,7 +221,7 @@ templ VerificationDetail(tenant generated.Tenant, user generated.User, documents
 				}
 			</div>
 
-			<!-- Review Notes / Provision Log -->
+			<!-- Provision Log -->
 			if tenant.ProvisionLog != nil {
 				<div style="background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.5rem;">
 					<h2 style="font-family:var(--font-heading); font-size:1rem; font-weight:700; color:var(--color-fg); margin-bottom:1rem;">Provision Log</h2>
@@ -229,14 +241,15 @@ templ VerificationDetail(tenant generated.Tenant, user generated.User, documents
 			</div>
 		</div>
 
+		<!-- Confirm Modal -->
+		@detailConfirmModal()
+
 		<script>
 			function openDocModal(src, alt) {
 				var modal = document.getElementById('doc-modal');
-				var img = document.getElementById('doc-modal-img');
-				var caption = document.getElementById('doc-modal-caption');
-				img.src = src;
-				img.alt = alt;
-				caption.textContent = alt;
+				document.getElementById('doc-modal-img').src = src;
+				document.getElementById('doc-modal-img').alt = alt;
+				document.getElementById('doc-modal-caption').textContent = alt;
 				modal.style.display = 'flex';
 			}
 			function closeDocModal(e) {
@@ -247,8 +260,107 @@ templ VerificationDetail(tenant generated.Tenant, user generated.User, documents
 			document.addEventListener('keydown', function(e) {
 				if (e.key === 'Escape') {
 					document.getElementById('doc-modal').style.display = 'none';
+					document.getElementById('detail-confirm-modal').style.display = 'none';
 				}
 			});
+
+			function openDetailConfirmModal(opts) {
+				var modal = document.getElementById('detail-confirm-modal');
+				document.getElementById('dcm-icon').textContent = opts.icon || 'help';
+				document.getElementById('dcm-icon').style.color = opts.iconColor || 'var(--color-brand-blue)';
+				document.getElementById('dcm-title').textContent = opts.title || 'Are you sure?';
+				document.getElementById('dcm-message').textContent = opts.message || '';
+				var btn = document.getElementById('dcm-confirm');
+				btn.textContent = opts.confirmText || 'Confirm';
+				btn.style.background = opts.confirmBg || 'var(--color-brand-blue)';
+				btn.style.color = opts.confirmFg || '#fff';
+				modal._confirmCb = opts.onConfirm || function(){};
+				modal.style.display = 'flex';
+				setTimeout(function(){ btn.focus(); }, 50);
+			}
+			function closeDetailConfirmModal() {
+				document.getElementById('detail-confirm-modal').style.display = 'none';
+			}
+			function detailConfirmAction() {
+				var modal = document.getElementById('detail-confirm-modal');
+				var cb = modal._confirmCb;
+				closeDetailConfirmModal();
+				if (cb) cb();
+			}
+
+			function postAction(url) {
+				var form = document.createElement('form');
+				form.method = 'POST';
+				form.action = url;
+				document.body.appendChild(form);
+				form.submit();
+			}
+			function detailVerifyTenant(btn) {
+				openDetailConfirmModal({
+					icon: 'mark_email_read',
+					iconColor: 'hsl(270, 50%, 50%)',
+					title: 'Verify Tenant Email',
+					message: 'Confirm that this tenant\'s email is verified. They will move to pending approval.',
+					confirmText: 'Verify',
+					confirmBg: 'hsl(270, 50%, 50%)',
+					onConfirm: function() { postAction(btn.getAttribute('data-url')); }
+				});
+			}
+			function detailApproveTenant(btn) {
+				openDetailConfirmModal({
+					icon: 'check_circle',
+					iconColor: 'var(--color-brand-blue)',
+					title: 'Approve Tenant',
+					message: 'Approve this tenant and set them as active? They will be able to access the system.',
+					confirmText: 'Approve',
+					confirmBg: 'var(--color-brand-blue)',
+					onConfirm: function() { postAction(btn.getAttribute('data-url')); }
+				});
+			}
+			function detailRejectTenant(btn) {
+				openDetailConfirmModal({
+					icon: 'cancel',
+					iconColor: 'var(--color-destructive)',
+					title: 'Reject Tenant',
+					message: 'Reject and suspend this tenant? They will not be able to access the system.',
+					confirmText: 'Reject',
+					confirmBg: 'var(--color-destructive)',
+					onConfirm: function() { postAction(btn.getAttribute('data-url')); }
+				});
+			}
+			function detailActivateTenant(btn) {
+				openDetailConfirmModal({
+					icon: 'refresh',
+					iconColor: 'hsl(25, 80%, 50%)',
+					title: 'Activate Tenant',
+					message: 'Activate this failed tenant? Their status will be set to active.',
+					confirmText: 'Activate',
+					confirmBg: 'hsl(25, 80%, 50%)',
+					onConfirm: function() { postAction(btn.getAttribute('data-url')); }
+				});
+			}
 		</script>
 	}
+}
+
+templ detailConfirmModal() {
+	<div id="detail-confirm-modal" style="display:none; position:fixed; inset:0; z-index:200; background:rgba(0,0,0,0.5); align-items:center; justify-content:center;" onclick="if(event.target===this)closeDetailConfirmModal()">
+		<div style="background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:2rem; max-width:420px; width:90%; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); animation:dcmIn 0.15s ease-out;">
+			<div style="text-align:center;">
+				<span id="dcm-icon" class="material-symbols-outlined" style="font-size:3rem; display:block; margin-bottom:0.75rem;">help</span>
+				<h3 id="dcm-title" style="font-family:var(--font-heading); font-size:1.125rem; font-weight:700; color:var(--color-fg); margin-bottom:0.5rem;">Are you sure?</h3>
+				<p id="dcm-message" style="font-size:0.875rem; color:var(--color-muted-fg); line-height:1.5;"></p>
+			</div>
+			<div style="display:flex; gap:0.75rem; margin-top:1.5rem;">
+				<button onclick="closeDetailConfirmModal()" style="flex:1; padding:0.625rem 1rem; border-radius:0.5rem; border:1px solid var(--color-border); font-size:0.875rem; font-weight:600; cursor:pointer; background:var(--color-bg); color:var(--color-fg); transition:background 0.15s ease;" onmouseover="this.style.background='var(--color-secondary)'" onmouseout="this.style.background='var(--color-bg)'">Cancel</button>
+				<button id="dcm-confirm" onclick="detailConfirmAction()" style="flex:1; padding:0.625rem 1rem; border-radius:0.5rem; border:none; font-size:0.875rem; font-weight:600; cursor:pointer; transition:opacity 0.15s ease;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">Confirm</button>
+			</div>
+		</div>
+	</div>
+	<style>
+		@keyframes dcmIn {
+			from { opacity:0; transform:scale(0.95) translateY(0.5rem); }
+			to { opacity:1; transform:scale(1) translateY(0); }
+		}
+	</style>
 }

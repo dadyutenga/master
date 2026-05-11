@@ -18,6 +18,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func (h *Handler) AdminDashboard(c *fiber.Ctx) error {
@@ -74,7 +75,7 @@ func (h *Handler) ListTenants(c *fiber.Ctx) error {
 }
 
 func (h *Handler) ListVerificationTenants(c *fiber.Ctx) error {
-	status := c.Query("status", "pending_verification,pending_approval")
+	status := c.Query("status", "pending_verification,pending_approval,failed")
 	search := c.Query("q", "")
 	page, _ := strconv.Atoi(c.Query("page", "1"))
 	if page < 1 {
@@ -309,19 +310,12 @@ func (h *Handler) ApproveTenant(c *fiber.Ctx) error {
 		return c.Status(409).SendString("Tenant not in pending_approval state")
 	}
 
-	if err := q.ApproveTenant(c.Context(), id); err != nil {
+	if err := q.UpdateTenantStatus(c.Context(), generated.UpdateTenantStatusParams{
+		ID:     id,
+		Status: generated.TenantStatusActive,
+	}); err != nil {
 		return c.Status(500).SendString("Failed to approve tenant.")
 	}
-
-	if _, err := q.CreateDeployment(c.Context(), generated.CreateDeploymentParams{
-		TenantID: id,
-		Action:   "approve",
-		Status:   generated.DeploymentStatusProvisioning,
-	}); err != nil {
-		return c.Status(500).SendString("Failed to record deployment.")
-	}
-
-	h.eng.Enqueue(id)
 
 	if uid, ok := middleware.GetUserID(c); ok {
 		tid := id.String()
@@ -358,7 +352,7 @@ func (h *Handler) ApproveTenant(c *fiber.Ctx) error {
 			}
 			return render(c, admin.VerificationRow(row))
 		}
-		return render(c, admin.StatusBadge(generated.TenantStatusProvisioning))
+		return render(c, admin.StatusBadge(generated.TenantStatusActive))
 	}
 
 	redirectTo := c.Get("Referer")
@@ -372,6 +366,20 @@ func (h *Handler) SuspendTenant(c *fiber.Ctx) error {
 	id, err := uuid.Parse(c.Params("id"))
 	if err != nil {
 		return c.Status(400).SendString("Invalid tenant ID")
+	}
+
+	adminPassword := c.FormValue("admin_password")
+	if adminPassword == "" {
+		return c.Status(400).SendString("Admin password is required")
+	}
+
+	adminUser, ok := middleware.GetUser(c)
+	if !ok {
+		return c.Status(401).SendString("Not authenticated")
+	}
+
+	if err := bcrypt.CompareHashAndPassword([]byte(adminUser.Password), []byte(adminPassword)); err != nil {
+		return c.Status(403).SendString("Incorrect admin password")
 	}
 
 	q := generated.New(h.db)
@@ -395,9 +403,6 @@ func (h *Handler) SuspendTenant(c *fiber.Ctx) error {
 		h.audit.Log(uid, "tenant.suspended", &tid, "", c.IP())
 	}
 
-	if c.Get("HX-Request") == "true" {
-		return render(c, admin.StatusBadge(generated.TenantStatusSuspended))
-	}
 	return c.Redirect("/admin/tenants")
 }
 
@@ -416,27 +421,59 @@ func (h *Handler) RetryProvision(c *fiber.Ctx) error {
 		return c.Status(409).SendString("Only failed tenants can be retried")
 	}
 
-	if err := q.SetTenantProvisioning(c.Context(), id); err != nil {
-		return c.Status(500).SendString("Failed to reset tenant status.")
-	}
-	if _, err := q.CreateDeployment(c.Context(), generated.CreateDeploymentParams{
-		TenantID: id,
-		Action:   "retry",
-		Status:   generated.DeploymentStatusProvisioning,
+	if err := q.UpdateTenantStatus(c.Context(), generated.UpdateTenantStatusParams{
+		ID:     id,
+		Status: generated.TenantStatusActive,
 	}); err != nil {
-		return c.Status(500).SendString("Failed to record deployment.")
+		return c.Status(500).SendString("Failed to activate tenant.")
 	}
-	h.eng.Enqueue(id)
 
 	if uid, ok := middleware.GetUserID(c); ok {
 		tid := id.String()
-		h.audit.Log(uid, "provision.retry", &tid, "", c.IP())
+		h.audit.Log(uid, "tenant.activated", &tid, "", c.IP())
 	}
 
 	if c.Get("HX-Request") == "true" {
-		return render(c, admin.StatusBadge(generated.TenantStatusProvisioning))
+		return render(c, admin.StatusBadge(generated.TenantStatusActive))
 	}
 	return c.Redirect("/admin/tenants/" + id.String())
+}
+
+func (h *Handler) AdminChangePassword(c *fiber.Ctx) error {
+	userID, err := strconv.ParseInt(c.Params("userId"), 10, 64)
+	if err != nil {
+		return c.Status(400).SendString("Invalid user ID")
+	}
+
+	newPass := c.FormValue("new_password")
+	if len(newPass) < 8 {
+		return c.Status(400).SendString("Password must be at least 8 characters")
+	}
+
+	q := generated.New(h.db)
+	user, err := q.GetUserByID(c.Context(), userID)
+	if err != nil {
+		return c.Status(404).SendString("User not found")
+	}
+
+	hash, err := bcrypt.GenerateFromPassword([]byte(newPass), bcrypt.DefaultCost)
+	if err != nil {
+		return c.Status(500).SendString("Failed to hash password")
+	}
+
+	if err := q.UpdateUserPassword(c.Context(), generated.UpdateUserPasswordParams{
+		ID:       user.ID,
+		Password: string(hash),
+	}); err != nil {
+		return c.Status(500).SendString("Failed to update password")
+	}
+
+	if uid, ok := middleware.GetUserID(c); ok {
+		auditDetail := fmt.Sprintf("changed password for user %d (%s)", user.ID, user.Email)
+		h.audit.Log(uid, "user.password_changed", nil, auditDetail, c.IP())
+	}
+
+	return c.Redirect("/admin/tenants")
 }
 
 // GET /admin/audit
