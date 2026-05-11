@@ -1,186 +1,266 @@
 package admin
 
 import (
+	"fmt"
+	"strings"
+
 	"github.com/dadyutenga/hms-control/internal/db/generated"
-	)
+)
 
-templ TenantDetail(tenant generated.Tenant, user generated.User, deployments []generated.Deployment) {
+templ TenantDetail(tenant generated.Tenant, user generated.User, deployments []generated.Deployment, documents []generated.Document) {
 	@AdminLayout("Tenant Detail", "") {
-		<div class="max-w-4xl mx-auto p-6">
-			<div class="flex items-center gap-4 mb-6">
-				<a href="/admin/tenants" class="hover:[color:var(--color-fg)]" style="color: var(--color-muted-fg);">&larr; Back</a>
-				<h1 class="text-2xl font-bold" style="color: var(--color-fg); font-family: var(--font-heading);">{ tenant.CompanyName }</h1>
+		<div style="max-width:1400px; margin:0 auto;">
+			<div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:1.5rem; flex-wrap:wrap;">
+				<a href="/admin/tenants" style="color:var(--color-muted-fg); text-decoration:none; font-size:0.875rem;">&larr; Back</a>
+				<h1 style="font-family:var(--font-heading); font-size:1.5rem; font-weight:700; letter-spacing:-0.025em; color:var(--color-fg);">{ tenant.CompanyName }</h1>
 				@StatusBadge(string(tenant.Status))
-				<span id="health-badge" class="badge" style="background: var(--color-secondary); color: var(--color-muted-fg);">checking...</span>
+				@BillingStatusBadge(tenant.BillingStatus)
+				<span id="health-badge" style="display:inline-flex; align-items:center; padding:0.125rem 0.625rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:var(--color-secondary); color:var(--color-muted-fg);">checking...</span>
 			</div>
 
-		<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-			<div class="rounded-xl border p-6" style="background: var(--color-card); border-color: var(--color-border);">
-				<h2 class="text-lg font-semibold mb-4" style="color: var(--color-fg); font-family: var(--font-heading);">Tenant Info</h2>
-					<dl class="space-y-3 text-sm">
-						<div class="flex justify-between">
-							<dt style="color: var(--color-muted-fg);">Slug</dt>
-							<dd style="color: var(--color-fg);">{ tenant.Slug }</dd>
-						</div>
-						<div class="flex justify-between">
-							<dt style="color: var(--color-muted-fg);">Domain</dt>
-							<dd><a href={ templ.URL("https://" + tenant.Domain) } class="hover:underline" style="color: var(--color-brand-blue);">{ tenant.Domain }</a></dd>
-						</div>
-						<div class="flex justify-between">
-							<dt style="color: var(--color-muted-fg);">Status</dt>
-							<dd style="color: var(--color-fg);">{ string(tenant.Status) }</dd>
-						</div>
-						<div class="flex justify-between">
-							<dt style="color: var(--color-muted-fg);">Created</dt>
-							<dd style="color: var(--color-fg);">{ tenant.CreatedAt.Format("02 Jan 2006 15:04") }</dd>
-						</div>
-					</dl>
-			</div>
-
-			<div class="rounded-xl border p-6" style="background: var(--color-card); border-color: var(--color-border);">
-				<h2 class="text-lg font-semibold mb-4" style="color: var(--color-fg); font-family: var(--font-heading);">Owner</h2>
-					<dl class="space-y-3 text-sm">
-						<div class="flex justify-between">
-							<dt style="color: var(--color-muted-fg);">Name</dt>
-							<dd style="color: var(--color-fg);">{ user.Name }</dd>
-						</div>
-						<div class="flex justify-between">
-							<dt style="color: var(--color-muted-fg);">Email</dt>
-							<dd style="color: var(--color-fg);">{ user.Email }</dd>
-						</div>
-						<div class="flex justify-between">
-							<dt style="color: var(--color-muted-fg);">Company</dt>
-							<dd style="color: var(--color-fg);">{ user.Company }</dd>
-						</div>
-				</dl>
-			</div>
-
-			<div class="rounded-xl border p-6" style="background: var(--color-card); border-color: var(--color-border);">
-				<h2 class="text-lg font-semibold mb-4" style="color: var(--color-fg); font-family: var(--font-heading);">Billing</h2>
-				<div class="mb-4">
-					@BillingStatusBadge(tenant.BillingStatus)
+			<!-- Verification Actions -->
+			if tenant.Status == generated.TenantStatusPendingApproval {
+				<div style="background:color-mix(in srgb, var(--color-brand-blue) 6%, var(--color-bg)); border:1px solid var(--color-brand-blue); border-radius:1rem; padding:1rem 1.5rem; margin-bottom:1.5rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.75rem;">
+					<div>
+						<span style="font-family:var(--font-heading); font-weight:700; font-size:0.9375rem; color:var(--color-fg);">Verification Required</span>
+						<p style="font-size:0.75rem; color:var(--color-muted-fg); margin-top:0.25rem;">Review registration details and documents before approving.</p>
+					</div>
+					<div style="display:flex; gap:0.5rem;">
+						<button
+							hx-post={ "/admin/tenants/" + tenant.ID.String() + "/approve" }
+							hx-confirm="Approve and provision this tenant?"
+							style="display:inline-flex; align-items:center; gap:0.25rem; padding:0.625rem 1.5rem; border-radius:9999px; border:none; font-size:0.875rem; font-weight:600; cursor:pointer; background:var(--color-brand-blue); color:#fff; transition:opacity 0.15s ease;"
+							onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+							<span class="material-symbols-outlined" style="font-size:1rem;">check</span>
+							Approve
+						</button>
+						<button
+							hx-post={ "/admin/tenants/" + tenant.ID.String() + "/suspend" }
+							hx-confirm="Suspend this tenant?"
+							style="display:inline-flex; align-items:center; gap:0.25rem; padding:0.625rem 1.5rem; border-radius:9999px; border:1px solid var(--color-destructive); font-size:0.875rem; font-weight:600; cursor:pointer; background:var(--color-bg); color:var(--color-destructive); transition:all 0.15s ease;"
+							onmouseover="this.style.background='var(--color-secondary)'" onmouseout="this.style.background='var(--color-bg)'">
+							<span class="material-symbols-outlined" style="font-size:1rem;">block</span>
+							Suspend
+						</button>
+					</div>
 				</div>
-				<form method="POST" action={ templ.URL("/admin/tenants/" + tenant.ID.String() + "/billing") } style="display:flex; flex-direction:column; gap:0.75rem;">
-					<div style="display:flex; flex-direction:column; gap:0.5rem;">
-						<label style="font-size:0.75rem; font-weight:600; color: var(--color-muted-fg);" for="billing_status">Billing status</label>
-						<select name="billing_status" style="border: 1px solid var(--color-border); border-radius: 0.5rem; padding: 0.5rem 0.75rem; background: var(--color-bg);">
-							<option value="paid" selected={ tenant.BillingStatus == "paid" }>Paid</option>
-							<option value="overdue" selected={ tenant.BillingStatus == "overdue" }>Overdue</option>
-							<option value="suspended" selected={ tenant.BillingStatus == "suspended" }>Suspended</option>
-						</select>
-					</div>
-					<div style="display:flex; flex-direction:column; gap:0.5rem;">
-						<label style="font-size:0.75rem; font-weight:600; color: var(--color-muted-fg);" for="last_payment_at">Last payment</label>
-						<input type="date" name="last_payment_at" value={ FormatDate(tenant.LastPaymentAt) } style="border: 1px solid var(--color-border); border-radius: 0.5rem; padding: 0.5rem 0.75rem;" />
-					</div>
-					<div style="display:flex; flex-direction:column; gap:0.5rem;">
-						<label style="font-size:0.75rem; font-weight:600; color: var(--color-muted-fg);" for="next_due_at">Next due</label>
-						<input type="date" name="next_due_at" value={ FormatDate(tenant.NextDueAt) } style="border: 1px solid var(--color-border); border-radius: 0.5rem; padding: 0.5rem 0.75rem;" />
-					</div>
-					<button type="submit" class="btn btn-primary" style="height:2.5rem; font-size:0.75rem;">Update billing</button>
-				</form>
-			</div>
-		</div>
+			}
 
-		<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-			<div class="rounded-xl border p-6" style="background: var(--color-card); border-color: var(--color-border);">
-				<h2 class="text-lg font-semibold mb-4" style="color: var(--color-fg); font-family: var(--font-heading);">Tenant details</h2>
-				<dl class="space-y-3 text-sm">
-					<div class="flex justify-between">
-						<dt style="color: var(--color-muted-fg);">Requested subdomain</dt>
-						<dd style="color: var(--color-fg);">{ OptionalStringValue(tenant.RequestedSubdomain) }</dd>
-					</div>
-					<div class="flex justify-between">
-						<dt style="color: var(--color-muted-fg);">Admin name</dt>
-						<dd style="color: var(--color-fg);">{ OptionalStringValue(tenant.AdminName) }</dd>
-					</div>
-					<div class="flex justify-between">
-						<dt style="color: var(--color-muted-fg);">Admin email</dt>
-						<dd style="color: var(--color-fg);">{ OptionalStringValue(tenant.AdminEmail) }</dd>
-					</div>
-					<div class="flex justify-between">
-						<dt style="color: var(--color-muted-fg);">Admin phone</dt>
-						<dd style="color: var(--color-fg);">{ OptionalStringValue(tenant.AdminPhone) }</dd>
-					</div>
-				</dl>
+			<!-- Grid: 2 columns -->
+			<div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
+				@detailCard("Business & Legal") {
+					<dl style="display:flex; flex-direction:column; gap:0.75rem;">
+						@detailRow("Company", user.Company)
+						@detailRow("Owner", user.Name)
+						@detailRow("Email", user.Email)
+						if user.Phone != nil {
+							@detailRow("Phone", *user.Phone)
+						}
+						if user.TIN != nil {
+							@detailRow("TIN", *user.TIN)
+						}
+						if user.BrelaNumber != nil {
+							@detailRow("BRELA #", *user.BrelaNumber)
+						}
+						@detailRow("Verified", fmt.Sprintf("%t", user.Verified))
+					</dl>
+				}
+				@detailCard("Hotel Information") {
+					<dl style="display:flex; flex-direction:column; gap:0.75rem;">
+						if tenant.HotelName != nil {
+							@detailRow("Hotel Name", *tenant.HotelName)
+						}
+						if tenant.Category != nil {
+							@detailRow("Category", *tenant.Category)
+						}
+						if tenant.RoomCount != nil {
+							@detailRow("Rooms", fmt.Sprintf("%d", *tenant.RoomCount))
+						}
+						if tenant.Address != nil {
+							@detailRow("Address", *tenant.Address)
+						}
+						if tenant.City != nil {
+							@detailRow("City", *tenant.City)
+						}
+						if tenant.Country != nil {
+							@detailRow("Country", *tenant.Country)
+						}
+					</dl>
+				}
 			</div>
-			<div class="rounded-xl border p-6" style="background: var(--color-card); border-color: var(--color-border);">
-				<h2 class="text-lg font-semibold mb-4" style="color: var(--color-fg); font-family: var(--font-heading);">Deployment actions</h2>
-				<div class="flex flex-wrap gap-2">
+
+			<!-- Grid: Tenant Details + Owner Info -->
+			<div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
+				@detailCard("System Info") {
+					<dl style="display:flex; flex-direction:column; gap:0.75rem;">
+						@detailRow("Slug", tenant.Slug)
+						@detailRow("Domain", tenant.Domain)
+						@detailRow("Status", string(tenant.Status))
+						@detailRow("DB Name", tenant.DbName)
+						@detailRow("Created", tenant.CreatedAt.Format("02 Jan 2006 15:04"))
+						if tenant.RequestedSubdomain != nil && *tenant.RequestedSubdomain != "" {
+							@detailRow("Subdomain", *tenant.RequestedSubdomain)
+						}
+						if tenant.AdminName != nil && *tenant.AdminName != "" {
+							@detailRow("Admin Name", *tenant.AdminName)
+						}
+						if tenant.AdminEmail != nil && *tenant.AdminEmail != "" {
+							@detailRow("Admin Email", *tenant.AdminEmail)
+						}
+					</dl>
+				}
+				@detailCard("Billing") {
+					<div style="margin-bottom:0.75rem;">
+						@BillingStatusBadge(tenant.BillingStatus)
+					</div>
+					<form method="POST" action={ templ.URL("/admin/tenants/" + tenant.ID.String() + "/billing") } style="display:flex; flex-direction:column; gap:0.75rem;">
+						<div style="display:flex; flex-direction:column; gap:0.25rem;">
+							<label style="font-size:0.75rem; font-weight:600; color:var(--color-muted-fg);">Billing status</label>
+							<select name="billing_status" style="border:1px solid var(--color-border); border-radius:0.5rem; padding:0.5rem 0.75rem; background:var(--color-bg); font-size:0.875rem; color:var(--color-fg);">
+								<option value="paid" selected={ tenant.BillingStatus == "paid" }>Paid</option>
+								<option value="overdue" selected={ tenant.BillingStatus == "overdue" }>Overdue</option>
+								<option value="suspended" selected={ tenant.BillingStatus == "suspended" }>Suspended</option>
+							</select>
+						</div>
+						<div style="display:flex; flex-direction:column; gap:0.25rem;">
+							<label style="font-size:0.75rem; font-weight:600; color:var(--color-muted-fg);">Last payment</label>
+							<input type="date" name="last_payment_at" value={ FormatDate(tenant.LastPaymentAt) } style="border:1px solid var(--color-border); border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.875rem;"/>
+						</div>
+						<div style="display:flex; flex-direction:column; gap:0.25rem;">
+							<label style="font-size:0.75rem; font-weight:600; color:var(--color-muted-fg);">Next due</label>
+							<input type="date" name="next_due_at" value={ FormatDate(tenant.NextDueAt) } style="border:1px solid var(--color-border); border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.875rem;"/>
+						</div>
+						<button type="submit" class="btn btn-primary" style="height:2.5rem; font-size:0.75rem;">Update billing</button>
+					</form>
+				}
+			</div>
+
+			<!-- Documents Section -->
+			if len(documents) > 0 {
+				<div style="background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.5rem; margin-bottom:1rem;">
+					<h2 style="font-family:var(--font-heading); font-size:1rem; font-weight:700; color:var(--color-fg); margin-bottom:1rem;">Uploaded Documents</h2>
+					<div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:1rem;">
+						for _, d := range documents {
+							<div style="background:var(--color-card); border:1px solid var(--color-border); border-radius:0.75rem; overflow:hidden;">
+								<div style="aspect-ratio:4/3; background:var(--color-secondary); display:flex; align-items:center; justify-content:center; overflow:hidden;">
+									if strings.HasPrefix(d.MimeType, "image/") {
+										<img src={ templ.URL("/" + d.Filename) } alt={ d.OriginalName } style="width:100%; height:100%; object-fit:cover;" loading="lazy"/>
+									} else {
+										<div style="display:flex; flex-direction:column; align-items:center; gap:0.5rem; color:var(--color-muted-fg);">
+											<span class="material-symbols-outlined" style="font-size:2.5rem;">description</span>
+											<span style="font-size:0.75rem;">{ d.MimeType }</span>
+										</div>
+									}
+								</div>
+								<div style="padding:0.75rem 1rem;">
+									<div style="font-size:0.8125rem; font-weight:600; color:var(--color-fg); margin-bottom:0.25rem; word-break:break-all;">{ d.OriginalName }</div>
+									<div style="display:flex; justify-content:space-between; align-items:center; gap:0.5rem;">
+										<span style="display:inline-flex; align-items:center; padding:0.125rem 0.5rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:var(--color-secondary); color:var(--color-fg);">{ DocTypeLabel(d.DocType) }</span>
+										<span style="font-size:0.6875rem; color:var(--color-muted-fg);">{ FormatFileSize(d.SizeBytes) }</span>
+									</div>
+								</div>
+							</div>
+						}
+					</div>
+				</div>
+			}
+
+			<!-- Deployment Actions -->
+			<div style="background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.5rem; margin-bottom:1rem;">
+				<h2 style="font-family:var(--font-heading); font-size:1rem; font-weight:700; color:var(--color-fg); margin-bottom:1rem;">Deployment Actions</h2>
+				<div style="display:flex; flex-wrap:wrap; gap:0.5rem;">
 					<button
 						hx-post={ "/admin/tenants/" + tenant.ID.String() + "/deployments/start" }
 						hx-confirm="Start the tenant container?"
-						class="px-3 py-1 rounded text-xs font-medium hover:opacity-90"
-						style="background: var(--color-brand-blue); color: var(--color-primary-fg);">
-						Start
+						style="display:inline-flex; align-items:center; gap:0.25rem; padding:0.5rem 1.25rem; border-radius:9999px; border:none; font-size:0.75rem; font-weight:600; cursor:pointer; background:var(--color-brand-blue); color:#fff; transition:opacity 0.15s ease;"
+						onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+						<span class="material-symbols-outlined" style="font-size:0.875rem;">play_arrow</span> Start
 					</button>
 					<button
 						hx-post={ "/admin/tenants/" + tenant.ID.String() + "/deployments/stop" }
 						hx-confirm="Stop the tenant container?"
-						class="px-3 py-1 rounded text-xs font-medium hover:opacity-90"
-						style="background: var(--color-destructive); color: var(--color-primary-fg);">
-						Stop
+						style="display:inline-flex; align-items:center; gap:0.25rem; padding:0.5rem 1.25rem; border-radius:9999px; border:1px solid var(--color-destructive); font-size:0.75rem; font-weight:600; cursor:pointer; background:var(--color-bg); color:var(--color-destructive); transition:all 0.15s ease;"
+						onmouseover="this.style.background='var(--color-secondary)'" onmouseout="this.style.background='var(--color-bg)'">
+						<span class="material-symbols-outlined" style="font-size:0.875rem;">stop</span> Stop
 					</button>
 					if tenant.Status == generated.TenantStatusFailed {
 						<button
 							hx-post={ "/admin/tenants/" + tenant.ID.String() + "/retry" }
 							hx-confirm="Retry provisioning this tenant?"
-							class="px-3 py-1 rounded text-xs font-medium hover:opacity-90"
-							style="background: hsl(25, 80%, 50%); color: var(--color-primary-fg);">
-							Retry
+							style="display:inline-flex; align-items:center; gap:0.25rem; padding:0.5rem 1.25rem; border-radius:9999px; border:none; font-size:0.75rem; font-weight:600; cursor:pointer; background:hsl(25, 80%, 50%); color:#fff; transition:opacity 0.15s ease;"
+							onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+							<span class="material-symbols-outlined" style="font-size:0.875rem;">refresh</span> Retry
 						</button>
 					}
+					if tenant.Status == generated.TenantStatusActive {
+						<button
+							hx-post={ "/admin/tenants/" + tenant.ID.String() + "/suspend" }
+							hx-confirm="Suspend this tenant?"
+							style="display:inline-flex; align-items:center; gap:0.25rem; padding:0.5rem 1.25rem; border-radius:9999px; border:1px solid var(--color-destructive); font-size:0.75rem; font-weight:600; cursor:pointer; background:var(--color-bg); color:var(--color-destructive); transition:all 0.15s ease;"
+							onmouseover="this.style.background='var(--color-secondary)'" onmouseout="this.style.background='var(--color-bg)'">
+							<span class="material-symbols-outlined" style="font-size:0.875rem;">block</span> Suspend
+						</button>
+					}
+					<button
+						hx-post={ "/admin/tenants/" + tenant.ID.String() + "/impersonate" }
+						hx-confirm="Impersonate this tenant?"
+						style="display:inline-flex; align-items:center; gap:0.25rem; padding:0.5rem 1.25rem; border-radius:9999px; border:1px solid var(--color-border); font-size:0.75rem; font-weight:600; cursor:pointer; background:var(--color-bg); color:var(--color-fg); transition:all 0.15s ease;"
+						onmouseover="this.style.background='var(--color-secondary)'" onmouseout="this.style.background='var(--color-bg)'">
+						<span class="material-symbols-outlined" style="font-size:0.875rem;">switch_account</span> Impersonate
+					</button>
 				</div>
 			</div>
-		</div>
 
-		<div class="mt-6 rounded-xl border p-6" style="background: var(--color-card); border-color: var(--color-border);">
-			<h2 class="text-lg font-semibold mb-4" style="color: var(--color-fg); font-family: var(--font-heading);">Deployments</h2>
-			if len(deployments) == 0 {
-				<p style="color: var(--color-muted-fg); font-size:0.875rem;">No deployments recorded yet.</p>
-			} else {
-				<table class="w-full text-sm">
-					<thead>
-						<tr class="border-b" style="border-color: var(--color-border); color: var(--color-muted-fg);">
-							<th class="text-left py-3">Action</th>
-							<th class="text-left py-3">Status</th>
-							<th class="text-left py-3">Created</th>
-							<th class="text-left py-3">Completed</th>
-							<th class="text-left py-3">Details</th>
-						</tr>
-					</thead>
-					<tbody>
-						for _, d := range deployments {
-							<tr class="border-b hover:[background-color:var(--color-secondary)]" style="border-color: var(--color-border);">
-								<td class="py-3" style="color: var(--color-fg);">{ d.Action }</td>
-								<td class="py-3">@DeploymentStatusBadge(d.Status)</td>
-								<td class="py-3" style="color: var(--color-muted-fg);">{ d.CreatedAt.Format("02 Jan 2006 15:04") }</td>
-								<td class="py-3" style="color: var(--color-muted-fg);">
-									if d.CompletedAt != nil {
-										{ d.CompletedAt.Format("02 Jan 2006 15:04") }
-									}
-								</td>
-								<td class="py-3">
-									<a href={ templ.URL("/admin/tenants/" + tenant.ID.String() + "/deployments/" + d.ID.String()) }
-									   class="px-3 py-1 rounded text-xs font-medium hover:[background-color:var(--color-muted)]"
-									   style="background: var(--color-secondary); color: var(--color-fg);">
-										View
-									</a>
-								</td>
+			<!-- Deployments Table -->
+			<div style="background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.5rem; margin-bottom:1rem;">
+				<h2 style="font-family:var(--font-heading); font-size:1rem; font-weight:700; color:var(--color-fg); margin-bottom:1rem;">Deployments</h2>
+				if len(deployments) == 0 {
+					<p style="color:var(--color-muted-fg); font-size:0.875rem;">No deployments recorded yet.</p>
+				} else {
+					<table style="width:100%; font-size:0.875rem; border-collapse:collapse;">
+						<thead>
+							<tr style="border-bottom:1px solid var(--color-border); color:var(--color-muted-fg); text-align:left;">
+								<th style="padding:0.5rem 0; font-weight:500;">Action</th>
+								<th style="padding:0.5rem 0; font-weight:500;">Status</th>
+								<th style="padding:0.5rem 0; font-weight:500;">Created</th>
+								<th style="padding:0.5rem 0; font-weight:500;">Completed</th>
+								<th style="padding:0.5rem 0; font-weight:500;">Details</th>
 							</tr>
-						}
-					</tbody>
-				</table>
-			}
-		</div>
+						</thead>
+						<tbody>
+							for _, d := range deployments {
+								<tr style="border-bottom:1px solid var(--color-border);">
+									<td style="padding:0.625rem 0; color:var(--color-fg);">{ d.Action }</td>
+									<td style="padding:0.625rem 0;">@DeploymentStatusBadge(d.Status)</td>
+									<td style="padding:0.625rem 0; color:var(--color-muted-fg);">{ d.CreatedAt.Format("02 Jan 2006 15:04") }</td>
+									<td style="padding:0.625rem 0; color:var(--color-muted-fg);">
+										if d.CompletedAt != nil {
+											{ d.CompletedAt.Format("02 Jan 2006 15:04") }
+										}
+									</td>
+									<td style="padding:0.625rem 0;">
+										<a href={ templ.URL("/admin/tenants/" + tenant.ID.String() + "/deployments/" + d.ID.String()) }
+										   style="display:inline-flex; align-items:center; padding:0.25rem 0.75rem; border-radius:9999px; font-size:0.75rem; font-weight:500; text-decoration:none; background:var(--color-secondary); color:var(--color-fg); transition:all 0.15s ease;"
+										   onmouseover="this.style.background='var(--color-muted)'" onmouseout="this.style.background='var(--color-secondary)'">
+											View
+										</a>
+									</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				}
+			</div>
 
+			<!-- Provision Log -->
 			if tenant.ProvisionLog != nil {
-				<div class="mt-6 rounded-xl border p-6" style="background: var(--color-card); border-color: var(--color-border);">
-					<h2 class="text-lg font-semibold mb-4" style="color: var(--color-fg); font-family: var(--font-heading);">Provision Log</h2>
-					<pre class="rounded p-4 text-xs overflow-x-auto whitespace-pre-wrap" style="background: var(--color-secondary); color: var(--color-muted-fg);">{ *tenant.ProvisionLog }</pre>
+				<div style="background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.5rem;">
+					<h2 style="font-family:var(--font-heading); font-size:1rem; font-weight:700; color:var(--color-fg); margin-bottom:1rem;">Provision Log</h2>
+					<pre style="border-radius:0.75rem; padding:1rem; font-size:0.75rem; overflow-x:auto; white-space:pre-wrap; background:#1e1e1e; color:#d4d4d4; font-family:monospace;">{ *tenant.ProvisionLog }</pre>
 				</div>
 			}
 		</div>
+
 		<script>
 			fetch('/admin/tenants/{ tenant.ID.String() }/health')
 				.then(r => r.json())
@@ -197,30 +277,48 @@ templ TenantDetail(tenant generated.Tenant, user generated.User, deployments []g
 	}
 }
 
+templ detailCard(title string) {
+	<div style="background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; overflow:hidden;">
+		<div style="padding:1.25rem 1.5rem; border-bottom:1px solid var(--color-border);">
+			<h2 style="font-family:var(--font-heading); font-size:0.875rem; font-weight:700; color:var(--color-fg);">{ title }</h2>
+		</div>
+		<div style="padding:1.25rem 1.5rem;">
+			{ children... }
+		</div>
+	</div>
+}
+
+templ detailRow(label, value string) {
+	<div style="display:flex; justify-content:space-between; align-items:center; gap:1rem;">
+		<dt style="font-size:0.8125rem; color:var(--color-muted-fg);">{ label }</dt>
+		<dd style="font-size:0.875rem; color:var(--color-fg); font-weight:500; text-align:right;">{ value }</dd>
+	</div>
+}
+
 templ BillingStatusBadge(status string) {
 	switch status {
 		case "paid":
-			<span class="px-2 py-1 rounded text-xs" style="background: hsl(140, 60%, 95%); color: hsl(140, 60%, 35%);">paid</span>
+			<span style="display:inline-flex; align-items:center; padding:0.125rem 0.625rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:hsl(140, 60%, 95%); color:hsl(140, 60%, 35%);">paid</span>
 		case "overdue":
-			<span class="px-2 py-1 rounded text-xs" style="background: hsl(35, 90%, 95%); color: hsl(35, 90%, 35%);">overdue</span>
+			<span style="display:inline-flex; align-items:center; padding:0.125rem 0.625rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:hsl(35, 90%, 95%); color:hsl(35, 90%, 35%);">overdue</span>
 		case "suspended":
-			<span class="px-2 py-1 rounded text-xs" style="background: hsl(0, 70%, 95%); color: hsl(0, 70%, 40%);">suspended</span>
+			<span style="display:inline-flex; align-items:center; padding:0.125rem 0.625rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:hsl(0, 70%, 95%); color:hsl(0, 70%, 40%);">suspended</span>
 		default:
-			<span class="px-2 py-1 rounded text-xs" style="background: var(--color-secondary); color: var(--color-muted-fg);">{ status }</span>
+			<span style="display:inline-flex; align-items:center; padding:0.125rem 0.625rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:var(--color-secondary); color:var(--color-muted-fg);">{ status }</span>
 	}
 }
 
 templ DeploymentStatusBadge(status string) {
 	switch status {
 		case "provisioning":
-			<span class="px-2 py-1 rounded text-xs animate-pulse" style="background: hsl(200, 80%, 95%); color: hsl(200, 80%, 40%);">provisioning</span>
+			<span style="display:inline-flex; align-items:center; padding:0.125rem 0.625rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:hsl(200, 80%, 95%); color:hsl(200, 80%, 40%);">provisioning</span>
 		case "active":
-			<span class="px-2 py-1 rounded text-xs" style="background: hsl(140, 60%, 95%); color: hsl(140, 60%, 35%);">active</span>
+			<span style="display:inline-flex; align-items:center; padding:0.125rem 0.625rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:hsl(140, 60%, 95%); color:hsl(140, 60%, 35%);">active</span>
 		case "failed":
-			<span class="px-2 py-1 rounded text-xs" style="background: hsl(0, 70%, 95%); color: hsl(0, 70%, 40%);">failed</span>
+			<span style="display:inline-flex; align-items:center; padding:0.125rem 0.625rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:hsl(0, 70%, 95%); color:hsl(0, 70%, 40%);">failed</span>
 		case "stopped":
-			<span class="px-2 py-1 rounded text-xs" style="background: hsl(35, 90%, 95%); color: hsl(35, 90%, 35%);">stopped</span>
+			<span style="display:inline-flex; align-items:center; padding:0.125rem 0.625rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:hsl(35, 90%, 95%); color:hsl(35, 90%, 35%);">stopped</span>
 		default:
-			<span class="px-2 py-1 rounded text-xs" style="background: var(--color-secondary); color: var(--color-muted-fg);">{ status }</span>
+			<span style="display:inline-flex; align-items:center; padding:0.125rem 0.625rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:var(--color-secondary); color:var(--color-muted-fg);">{ status }</span>
 	}
 }

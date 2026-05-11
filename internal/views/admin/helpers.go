@@ -1,6 +1,9 @@
 package admin
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
 func FormatDate(value *time.Time) string {
 	if value == nil {
@@ -14,4 +17,24 @@ func OptionalStringValue(value *string) string {
 		return *value
 	}
 	return ""
+}
+
+func FormatFileSize(bytes int64) string {
+	if bytes < 1024 {
+		return fmt.Sprintf("%d B", bytes)
+	} else if bytes < 1024*1024 {
+		return fmt.Sprintf("%.1f KB", float64(bytes)/1024)
+	}
+	return fmt.Sprintf("%.1f MB", float64(bytes)/(1024*1024))
+}
+
+func DocTypeLabel(docType string) string {
+	switch docType {
+	case "brela_certificate":
+		return "BRELA"
+	case "tra_certificate":
+		return "TRA"
+	default:
+		return docType
+	}
 }
