@@ -1,11 +1,10 @@
 package admin
 
 import (
-	"github.com/dadyutenga/hms-control/internal/views/layout"
-)
+	)
 
 templ SMTPSettingsPage(settings map[string]string) {
-	@layout.Base("SMTP Settings") {
+	@AdminLayout("SMTP Settings", "") {
 		<div class="max-w-3xl mx-auto p-6">
 			<h1 class="text-2xl font-bold mb-6" style="color: var(--color-fg); font-family: var(--font-heading);">SMTP Settings</h1>
 			<form method="POST" action="/admin/settings/smtp" class="space-y-4">

@@ -13,7 +13,6 @@ import (
 	"strconv"
 
 	"github.com/dadyutenga/hms-control/internal/db/generated"
-	"github.com/dadyutenga/hms-control/internal/views/layout"
 )
 
 func TenantList(tenants []generated.ListTenantsRow, search, statusFilter string, page, totalPages int) templ.Component {
@@ -56,7 +55,7 @@ func TenantList(tenants []generated.ListTenantsRow, search, statusFilter string,
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.ResolveAttributeValue(search)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenants_list.templ`, Line: 21, Col: 46}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenants_list.templ`, Line: 20, Col: 46}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var3)
 			if templ_7745c5c3_Err != nil {
@@ -153,7 +152,7 @@ func TenantList(tenants []generated.ListTenantsRow, search, statusFilter string,
 					var templ_7745c5c3_Var4 templ.SafeURL
 					templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinURLErrs(templ.URL(fmt.Sprintf("/admin/tenants?page=%d&q=%s&status=%s", page-1, search, statusFilter)))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenants_list.templ`, Line: 41, Col: 109}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenants_list.templ`, Line: 40, Col: 109}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 					if templ_7745c5c3_Err != nil {
@@ -171,7 +170,7 @@ func TenantList(tenants []generated.ListTenantsRow, search, statusFilter string,
 				var templ_7745c5c3_Var5 string
 				templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(page))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenants_list.templ`, Line: 44, Col: 93}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenants_list.templ`, Line: 43, Col: 93}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 				if templ_7745c5c3_Err != nil {
@@ -184,7 +183,7 @@ func TenantList(tenants []generated.ListTenantsRow, search, statusFilter string,
 				var templ_7745c5c3_Var6 string
 				templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(totalPages))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenants_list.templ`, Line: 44, Col: 125}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenants_list.templ`, Line: 43, Col: 125}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 				if templ_7745c5c3_Err != nil {
@@ -202,7 +201,7 @@ func TenantList(tenants []generated.ListTenantsRow, search, statusFilter string,
 					var templ_7745c5c3_Var7 templ.SafeURL
 					templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinURLErrs(templ.URL(fmt.Sprintf("/admin/tenants?page=%d&q=%s&status=%s", page+1, search, statusFilter)))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenants_list.templ`, Line: 46, Col: 109}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenants_list.templ`, Line: 45, Col: 109}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 					if templ_7745c5c3_Err != nil {
@@ -224,7 +223,7 @@ func TenantList(tenants []generated.ListTenantsRow, search, statusFilter string,
 			}
 			return nil
 		})
-		templ_7745c5c3_Err = layout.Base("Tenants").Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = AdminLayout("Tenants", "").Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -265,7 +264,7 @@ func TenantTable(tenants []generated.ListTenantsRow) templ.Component {
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(t.CompanyName)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenants_list.templ`, Line: 72, Col: 79}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenants_list.templ`, Line: 71, Col: 79}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
@@ -278,7 +277,7 @@ func TenantTable(tenants []generated.ListTenantsRow) templ.Component {
 			var templ_7745c5c3_Var10 string
 			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(t.UserEmail)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenants_list.templ`, Line: 73, Col: 79}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenants_list.templ`, Line: 72, Col: 79}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 			if templ_7745c5c3_Err != nil {
@@ -291,7 +290,7 @@ func TenantTable(tenants []generated.ListTenantsRow) templ.Component {
 			var templ_7745c5c3_Var11 templ.SafeURL
 			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinURLErrs(templ.URL("https://" + t.Domain))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenants_list.templ`, Line: 76, Col: 49}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenants_list.templ`, Line: 75, Col: 49}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 			if templ_7745c5c3_Err != nil {
@@ -304,7 +303,7 @@ func TenantTable(tenants []generated.ListTenantsRow) templ.Component {
 			var templ_7745c5c3_Var12 string
 			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(t.Domain)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenants_list.templ`, Line: 78, Col: 18}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenants_list.templ`, Line: 77, Col: 18}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 			if templ_7745c5c3_Err != nil {
@@ -317,7 +316,7 @@ func TenantTable(tenants []generated.ListTenantsRow) templ.Component {
 			var templ_7745c5c3_Var13 string
 			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.ResolveAttributeValue("status-" + t.ID.String())
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenants_list.templ`, Line: 81, Col: 53}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenants_list.templ`, Line: 80, Col: 53}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var13)
 			if templ_7745c5c3_Err != nil {
@@ -346,7 +345,7 @@ func TenantTable(tenants []generated.ListTenantsRow) templ.Component {
 			var templ_7745c5c3_Var14 string
 			templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(t.CreatedAt.Format("02 Jan 2006"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenants_list.templ`, Line: 88, Col: 42}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenants_list.templ`, Line: 87, Col: 42}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 			if templ_7745c5c3_Err != nil {
@@ -406,7 +405,7 @@ func TenantActions(t generated.ListTenantsRow) templ.Component {
 			var templ_7745c5c3_Var16 string
 			templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.ResolveAttributeValue("/admin/tenants/" + t.ID.String() + "/approve")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenants_list.templ`, Line: 104, Col: 60}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenants_list.templ`, Line: 103, Col: 60}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var16)
 			if templ_7745c5c3_Err != nil {
@@ -419,7 +418,7 @@ func TenantActions(t generated.ListTenantsRow) templ.Component {
 			var templ_7745c5c3_Var17 string
 			templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.ResolveAttributeValue("#status-" + t.ID.String())
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenants_list.templ`, Line: 105, Col: 42}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenants_list.templ`, Line: 104, Col: 42}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var17)
 			if templ_7745c5c3_Err != nil {
@@ -438,7 +437,7 @@ func TenantActions(t generated.ListTenantsRow) templ.Component {
 			var templ_7745c5c3_Var18 string
 			templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.ResolveAttributeValue("/admin/tenants/" + t.ID.String() + "/suspend")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenants_list.templ`, Line: 115, Col: 60}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenants_list.templ`, Line: 114, Col: 60}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var18)
 			if templ_7745c5c3_Err != nil {
@@ -451,7 +450,7 @@ func TenantActions(t generated.ListTenantsRow) templ.Component {
 			var templ_7745c5c3_Var19 string
 			templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.ResolveAttributeValue("#status-" + t.ID.String())
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenants_list.templ`, Line: 116, Col: 42}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenants_list.templ`, Line: 115, Col: 42}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var19)
 			if templ_7745c5c3_Err != nil {
@@ -470,7 +469,7 @@ func TenantActions(t generated.ListTenantsRow) templ.Component {
 			var templ_7745c5c3_Var20 string
 			templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.ResolveAttributeValue("/admin/tenants/" + t.ID.String() + "/retry")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenants_list.templ`, Line: 125, Col: 58}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenants_list.templ`, Line: 124, Col: 58}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var20)
 			if templ_7745c5c3_Err != nil {
@@ -483,7 +482,7 @@ func TenantActions(t generated.ListTenantsRow) templ.Component {
 			var templ_7745c5c3_Var21 string
 			templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.ResolveAttributeValue("#status-" + t.ID.String())
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenants_list.templ`, Line: 126, Col: 42}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenants_list.templ`, Line: 125, Col: 42}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var21)
 			if templ_7745c5c3_Err != nil {
@@ -501,7 +500,7 @@ func TenantActions(t generated.ListTenantsRow) templ.Component {
 		var templ_7745c5c3_Var22 templ.SafeURL
 		templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinURLErrs(templ.URL("/admin/tenants/" + t.ID.String()))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenants_list.templ`, Line: 133, Col: 56}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenants_list.templ`, Line: 132, Col: 56}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 		if templ_7745c5c3_Err != nil {
@@ -575,7 +574,7 @@ func StatusBadge(status string) templ.Component {
 			var templ_7745c5c3_Var24 string
 			templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.JoinStringErrs(status)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenants_list.templ`, Line: 156, Col: 125}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenants_list.templ`, Line: 155, Col: 125}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var24))
 			if templ_7745c5c3_Err != nil {

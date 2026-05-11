@@ -1,11 +1,10 @@
 package admin
 
 import (
-	"github.com/dadyutenga/hms-control/internal/views/layout"
-)
+	)
 
 templ ProvisionerSettingsPage(settings map[string]string) {
-	@layout.Base("Provisioner Settings") {
+	@AdminLayout("Provisioner Settings", "") {
 		<div class="max-w-3xl mx-auto p-6">
 			<h1 class="text-2xl font-bold mb-6" style="color: var(--color-fg); font-family: var(--font-heading);">Provisioner Settings</h1>
 			<form method="POST" action="/admin/settings/provisioner" class="space-y-4">

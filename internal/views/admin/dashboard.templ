@@ -4,82 +4,46 @@ import (
 	"strconv"
 
 	"github.com/dadyutenga/hms-control/internal/models"
-	"github.com/dadyutenga/hms-control/internal/views/layout"
 )
 
 templ DashboardPage(stats models.DashboardStats) {
-	@layout.Base("Dashboard") {
-		<div class="max-w-7xl mx-auto p-6">
-			<h1 class="text-2xl font-bold mb-6" style="color: var(--color-fg); font-family: var(--font-heading);">Dashboard</h1>
+	@AdminLayout("Dashboard", "") {
+		<div style="max-width:1400px; margin:0 auto;">
+			<h1 style="font-family:var(--font-heading); font-size:1.5rem; font-weight:700; letter-spacing:-0.025em; color:var(--color-fg); margin-bottom:1.5rem;">Dashboard</h1>
 
-			<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-				<div class="rounded-2xl border p-5" style="border-color: var(--color-border);">
-					<div class="text-3xl font-bold mb-1" style="color: var(--color-brand-blue);">{ strconv.Itoa(stats.TotalTenants) }</div>
-					<div class="text-xs" style="color: var(--color-muted-fg);">Total Tenants</div>
-				</div>
-				<div class="rounded-2xl border p-5" style="border-color: var(--color-border);">
-					<div class="text-3xl font-bold mb-1" style="color: hsl(140, 60%, 40%);">{ strconv.Itoa(stats.ActiveTenants) }</div>
-					<div class="text-xs" style="color: var(--color-muted-fg);">Active</div>
-				</div>
-				<div class="rounded-2xl border p-5" style="border-color: var(--color-border);">
-					<div class="text-3xl font-bold mb-1" style="color: hsl(270, 50%, 40%);">{ strconv.Itoa(stats.PendingTenants) }</div>
-					<div class="text-xs" style="color: var(--color-muted-fg);">Pending</div>
-				</div>
-				<div class="rounded-2xl border p-5" style="border-color: var(--color-border);">
-					<div class="text-3xl font-bold mb-1" style="color: hsl(0, 70%, 40%);">{ strconv.Itoa(stats.SuspendedTenants) }</div>
-					<div class="text-xs" style="color: var(--color-muted-fg);">Suspended</div>
-				</div>
+			<!-- Stat cards row -->
+			<div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:1rem; margin-bottom:1.5rem;">
+				@statCard(strconv.Itoa(stats.TotalTenants), "Total Tenants", "#3b82f6")
+				@statCard(strconv.Itoa(stats.ActiveTenants), "Active", "#22c55e")
+				@statCard(strconv.Itoa(stats.PendingTenants), "Pending", "#8b5cf6")
+				@statCard(strconv.Itoa(stats.SuspendedTenants), "Suspended", "#ef4444")
 			</div>
 
-			<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-				<div class="rounded-2xl border p-5" style="border-color: var(--color-border);">
-					<h2 class="text-lg font-semibold mb-3" style="color: var(--color-fg); font-family: var(--font-heading);">Deployments</h2>
-					<div class="flex gap-6">
-						<div>
-							<div class="text-2xl font-bold" style="color: hsl(140, 60%, 40%);">{ strconv.Itoa(stats.RunningDeployments) }</div>
-							<div class="text-xs" style="color: var(--color-muted-fg);">Active</div>
-						</div>
-						<div>
-							<div class="text-2xl font-bold" style="color: hsl(0, 70%, 40%);">{ strconv.Itoa(stats.FailedDeployments) }</div>
-							<div class="text-xs" style="color: var(--color-muted-fg);">Failed</div>
+			<!-- Middle row -->
+			<div style="display:grid; grid-template-columns:1fr; gap:1rem; margin-bottom:1.5rem;">
+				if stats.RunningDeployments > 0 || stats.FailedDeployments > 0 {
+					<div style="background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.5rem;">
+						<h2 style="font-family:var(--font-heading); font-size:1rem; font-weight:700; color:var(--color-fg); margin-bottom:1rem;">Deployments</h2>
+						<div style="display:flex; gap:2rem;">
+							<div>
+								<div style="font-size:1.5rem; font-weight:700; color:#22c55e;">{ strconv.Itoa(stats.RunningDeployments) }</div>
+								<div style="font-size:0.75rem; color:var(--color-muted-fg);">Active</div>
+							</div>
+							<div>
+								<div style="font-size:1.5rem; font-weight:700; color:#ef4444;">{ strconv.Itoa(stats.FailedDeployments) }</div>
+								<div style="font-size:0.75rem; color:var(--color-muted-fg);">Failed</div>
+							</div>
 						</div>
 					</div>
-				</div>
-				<div class="rounded-2xl border p-5" style="border-color: var(--color-border);">
-					<h2 class="text-lg font-semibold mb-3" style="color: var(--color-fg); font-family: var(--font-heading);">Quick Links</h2>
-					<div class="flex flex-col gap-2">
-						<a href="/admin/tenants" class="hover:underline" style="color: var(--color-brand-blue);">Manage Tenants</a>
-						<a href="/admin/audit" class="hover:underline" style="color: var(--color-brand-blue);">Audit Log</a>
-						<a href="/admin/settings/contact" class="hover:underline" style="color: var(--color-brand-blue);">Contact Settings</a>
-					</div>
-				</div>
+				}
 			</div>
-
-			if len(stats.RecentActions) > 0 {
-				<div class="rounded-2xl border p-5" style="border-color: var(--color-border);">
-					<h2 class="text-lg font-semibold mb-3" style="color: var(--color-fg); font-family: var(--font-heading);">Recent Actions</h2>
-					<table class="w-full text-sm" style="font-family: var(--font-body);">
-						<thead>
-							<tr class="border-b" style="border-color: var(--color-border); color: var(--color-muted-fg);">
-								<th class="text-left py-2">Admin</th>
-								<th class="text-left py-2">Action</th>
-								<th class="text-left py-2">Date</th>
-							</tr>
-						</thead>
-						<tbody>
-							for _, l := range stats.RecentActions {
-								<tr class="border-b" style="border-color: var(--color-border);">
-									<td class="py-2" style="color: var(--color-fg);">{ l.AdminEmail }</td>
-									<td class="py-2">
-										<span class="px-2 py-1 rounded text-xs" style="background: var(--color-secondary); color: var(--color-fg);">{ l.Action }</span>
-									</td>
-									<td class="py-2" style="color: var(--color-muted-fg);">{ l.CreatedAt.Format("02 Jan 2006 15:04") }</td>
-								</tr>
-							}
-						</tbody>
-					</table>
-				</div>
-			}
 		</div>
 	}
+}
+
+templ statCard(value string, label string, color string) {
+	<div style="background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.5rem;">
+		<div style="font-size:2rem; font-weight:700; color:{ color }; margin-bottom:0.25rem;">{ value }</div>
+		<div style="font-size:0.75rem; color:var(--color-muted-fg);">{ label }</div>
+	</div>
 }

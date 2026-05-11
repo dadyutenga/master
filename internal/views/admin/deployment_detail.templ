@@ -2,8 +2,7 @@ package admin
 
 import (
 	"github.com/dadyutenga/hms-control/internal/db/generated"
-	"github.com/dadyutenga/hms-control/internal/views/layout"
-)
+	)
 
 type DeploymentDetailProps struct {
 	Tenant     generated.Tenant
@@ -11,7 +10,7 @@ type DeploymentDetailProps struct {
 }
 
 templ DeploymentDetail(props DeploymentDetailProps) {
-	@layout.Base("Deployment Detail") {
+	@AdminLayout("Deployment Detail", "") {
 		<div class="max-w-4xl mx-auto p-6">
 			<div class="flex items-center gap-4 mb-6">
 				<a href={ templ.URL("/admin/tenants/" + props.Tenant.ID.String()) } class="hover:[color:var(--color-fg)]" style="color: var(--color-muted-fg);">&larr; Back</a>

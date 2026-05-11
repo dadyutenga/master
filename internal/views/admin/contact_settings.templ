@@ -2,8 +2,7 @@ package admin
 
 import (
 	"github.com/dadyutenga/hms-control/internal/db/generated"
-	"github.com/dadyutenga/hms-control/internal/views/layout"
-)
+	)
 
 type ContactSettingsProps struct {
 	Contact generated.ContactDetails
@@ -12,7 +11,7 @@ type ContactSettingsProps struct {
 }
 
 templ ContactSettings(props ContactSettingsProps) {
-	@layout.Base("Contact Settings") {
+	@AdminLayout("Contact Settings", "") {
 		<div class="max-w-3xl mx-auto p-6">
 			<div class="flex items-center gap-4 mb-6">
 				<a href="/admin/tenants" class="hover:[color:var(--color-fg)]" style="color: var(--color-muted-fg);">&larr; Back</a>

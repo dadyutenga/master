@@ -4,11 +4,10 @@ import (
 	"strconv"
 
 	"github.com/dadyutenga/hms-control/internal/models"
-	"github.com/dadyutenga/hms-control/internal/views/layout"
-)
+	)
 
 templ AuditLogPage(logs []models.AuditLog, page int) {
-	@layout.Base("Audit Log") {
+	@AdminLayout("Audit Log", "") {
 		<div class="max-w-7xl mx-auto p-6">
 			<div class="flex flex-wrap justify-between items-center gap-3 mb-6">
 				<h1 class="text-2xl font-bold" style="color: var(--color-fg); font-family: var(--font-heading);">Audit Log</h1>
