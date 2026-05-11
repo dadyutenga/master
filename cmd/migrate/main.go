@@ -41,12 +41,7 @@ func runMigrationsUp(db *sql.DB) {
 	migrations := []string{
 		migrationUsers,
 		migrationTenants,
-		migrationVerifyTokens,
-		migrationDocuments,
-		migrationContactDetails,
-		migrationDeployments,
 	}
-
 	for i, m := range migrations {
 		fmt.Printf("Running migration %d...\n", i+1)
 		_, err := db.Exec(m)
@@ -54,7 +49,9 @@ func runMigrationsUp(db *sql.DB) {
 			log.Fatalf("Migration %d failed: %v", i+1, err)
 		}
 	}
+
 	// Add columns that may be missing from existing tables (ignore errors)
+	// Must run BEFORE any index creation that references these columns
 	alterColumns := []string{
 		"ALTER TABLE users ADD COLUMN tin TEXT",
 		"ALTER TABLE users ADD COLUMN brela_number TEXT",
@@ -74,6 +71,23 @@ func runMigrationsUp(db *sql.DB) {
 	}
 	for _, a := range alterColumns {
 		db.Exec(a) // ignore error if column already exists
+	}
+
+	// Create index on requested_subdomain (now that column exists)
+	db.Exec("CREATE UNIQUE INDEX IF NOT EXISTS idx_tenants_requested_subdomain ON tenants(requested_subdomain)")
+
+	remaining := []string{
+		migrationVerifyTokens,
+		migrationDocuments,
+		migrationContactDetails,
+		migrationDeployments,
+	}
+	for i, m := range remaining {
+		fmt.Printf("Running migration %d...\n", i+len(migrations)+1)
+		_, err := db.Exec(m)
+		if err != nil {
+			log.Fatalf("Migration %d failed: %v", i+len(migrations)+1, err)
+		}
 	}
 	fmt.Println("All migrations applied successfully.")
 }
@@ -169,7 +183,6 @@ CREATE TABLE IF NOT EXISTS tenants (
     created_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
-CREATE UNIQUE INDEX IF NOT EXISTS idx_tenants_requested_subdomain ON tenants(requested_subdomain);
 `
 
 const migrationDocuments = `
