@@ -51,7 +51,6 @@ func runMigrationsUp(db *sql.DB) {
 	}
 
 	// Add columns that may be missing from existing tables (ignore errors)
-	// Must run BEFORE any index creation that references these columns
 	alterColumns := []string{
 		"ALTER TABLE users ADD COLUMN tin TEXT",
 		"ALTER TABLE users ADD COLUMN brela_number TEXT",
@@ -70,17 +69,22 @@ func runMigrationsUp(db *sql.DB) {
 		"ALTER TABLE tenants ADD COLUMN next_due_at DATETIME",
 	}
 	for _, a := range alterColumns {
-		db.Exec(a) // ignore error if column already exists
+		db.Exec(a)
 	}
 
 	// Create index on requested_subdomain (now that column exists)
 	db.Exec("CREATE UNIQUE INDEX IF NOT EXISTS idx_tenants_requested_subdomain ON tenants(requested_subdomain)")
+
+	// Rename superadmin -> admin (idempotent)
+	db.Exec("UPDATE users SET role = 'admin' WHERE role = 'superadmin'")
 
 	remaining := []string{
 		migrationVerifyTokens,
 		migrationDocuments,
 		migrationContactDetails,
 		migrationDeployments,
+		migrationAuditLog,
+		migrationSettings,
 	}
 	for i, m := range remaining {
 		fmt.Printf("Running migration %d...\n", i+len(migrations)+1)
@@ -94,6 +98,8 @@ func runMigrationsUp(db *sql.DB) {
 
 func runMigrationsDown(db *sql.DB) {
 	drops := []string{
+		"DROP TABLE IF EXISTS audit_logs",
+		"DROP TABLE IF EXISTS settings",
 		"DROP TABLE IF EXISTS deployments",
 		"DROP TABLE IF EXISTS contact_details",
 		"DROP TABLE IF EXISTS documents",
@@ -113,12 +119,12 @@ func runMigrationsDown(db *sql.DB) {
 
 func seedSuperadmin(db *sql.DB, cfg *config.Config) {
 	if cfg.SuperAdminEmail == "" || cfg.SuperAdminPass == "" || cfg.SuperAdminName == "" {
-		fmt.Println("Superadmin seed skipped: set SUPERADMIN_NAME, SUPERADMIN_EMAIL, SUPERADMIN_PASSWORD")
+		fmt.Println("Admin seed skipped: set SUPERADMIN_NAME, SUPERADMIN_EMAIL, SUPERADMIN_PASSWORD")
 		return
 	}
 	hash, err := bcrypt.GenerateFromPassword([]byte(cfg.SuperAdminPass), bcrypt.DefaultCost)
 	if err != nil {
-		log.Printf("Warning seeding superadmin: %v", err)
+		log.Printf("Warning seeding admin: %v", err)
 		return
 	}
 	_, err = db.Exec(
@@ -235,4 +241,35 @@ CREATE TABLE IF NOT EXISTS verify_tokens (
     expires_at DATETIME NOT NULL,
     used       INTEGER NOT NULL DEFAULT 0
 );
+`
+
+const migrationAuditLog = `
+CREATE TABLE IF NOT EXISTS audit_logs (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    admin_id   INTEGER NOT NULL,
+    action     TEXT    NOT NULL,
+    tenant_id  TEXT,
+    detail     TEXT    DEFAULT '',
+    ip_address TEXT    DEFAULT '',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (admin_id) REFERENCES users(id)
+);
+CREATE INDEX IF NOT EXISTS idx_audit_logs_created_at ON audit_logs(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_audit_logs_tenant_id  ON audit_logs(tenant_id);
+`
+
+const migrationSettings = `
+CREATE TABLE IF NOT EXISTS settings (
+    key        TEXT PRIMARY KEY,
+    value      TEXT NOT NULL DEFAULT '',
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+INSERT OR IGNORE INTO settings (key, value) VALUES
+    ('smtp_host',        ''),
+    ('smtp_port',        '587'),
+    ('smtp_user',        ''),
+    ('smtp_pass',        ''),
+    ('smtp_from',        'noreply@localhost'),
+    ('provision_script', './scripts/provision.sh'),
+    ('docker_template',  'default');
 `
