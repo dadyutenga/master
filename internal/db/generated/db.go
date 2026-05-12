@@ -755,3 +755,359 @@ func (q *Queries) MarkTenantPaid(ctx context.Context, tenantID string) error {
 		tenantID)
 	return err
 }
+
+// ── Instances ──────────────────────────────────────────────────────────────
+
+const instanceCols = `id, tenant_id, hotel_name, slug, domain, db_name, db_user, db_password, app_key, status, admin_disabled, billing_status, price, package_name, last_payment_at, next_due_at, provision_log, approved_at, provisioned_at, archived_at, deleted_at, created_at, updated_at`
+
+func scanInstance(scanner interface{ Scan(dest ...any) error }) (Instance, error) {
+	var inst Instance
+	var appKey, provisionLog sql.NullString
+	var lastPaymentAt, nextDueAt, approvedAt, provisionedAt, archivedAt, deletedAt sql.NullTime
+	var price sql.NullFloat64
+	err := scanner.Scan(
+		&inst.ID, &inst.TenantID, &inst.HotelName, &inst.Slug, &inst.Domain,
+		&inst.DbName, &inst.DbUser, &inst.DbPassword, &appKey, &inst.Status,
+		&inst.AdminDisabled, &inst.BillingStatus, &price, &inst.PackageName,
+		&lastPaymentAt, &nextDueAt, &provisionLog,
+		&approvedAt, &provisionedAt, &archivedAt, &deletedAt,
+		&inst.CreatedAt, &inst.UpdatedAt,
+	)
+	if err != nil {
+		return inst, err
+	}
+	if appKey.Valid {
+		inst.AppKey = &appKey.String
+	}
+	if provisionLog.Valid {
+		inst.ProvisionLog = &provisionLog.String
+	}
+	if lastPaymentAt.Valid {
+		inst.LastPaymentAt = &lastPaymentAt.Time
+	}
+	if nextDueAt.Valid {
+		inst.NextDueAt = &nextDueAt.Time
+	}
+	if approvedAt.Valid {
+		inst.ApprovedAt = &approvedAt.Time
+	}
+	if provisionedAt.Valid {
+		inst.ProvisionedAt = &provisionedAt.Time
+	}
+	if archivedAt.Valid {
+		inst.ArchivedAt = &archivedAt.Time
+	}
+	if deletedAt.Valid {
+		inst.DeletedAt = &deletedAt.Time
+	}
+	if price.Valid {
+		inst.Price = price.Float64
+	}
+	return inst, nil
+}
+
+func (q *Queries) GetInstanceByID(ctx context.Context, id uuid.UUID) (Instance, error) {
+	return scanInstance(q.db.QueryRowContext(ctx, `SELECT `+instanceCols+` FROM instances WHERE id = ?`, id))
+}
+
+func (q *Queries) ListInstancesByTenantID(ctx context.Context, tenantID uuid.UUID) ([]Instance, error) {
+	rows, err := q.db.QueryContext(ctx,
+		`SELECT `+instanceCols+` FROM instances WHERE tenant_id = ? AND deleted_at IS NULL ORDER BY created_at DESC`,
+		tenantID,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var instances []Instance
+	for rows.Next() {
+		inst, err := scanInstance(rows)
+		if err != nil {
+			return nil, err
+		}
+		instances = append(instances, inst)
+	}
+	return instances, rows.Err()
+}
+
+func (q *Queries) ListAllInstances(ctx context.Context) ([]Instance, error) {
+	rows, err := q.db.QueryContext(ctx,
+		`SELECT `+instanceCols+` FROM instances WHERE deleted_at IS NULL ORDER BY created_at DESC`,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var instances []Instance
+	for rows.Next() {
+		inst, err := scanInstance(rows)
+		if err != nil {
+			return nil, err
+		}
+		instances = append(instances, inst)
+	}
+	return instances, rows.Err()
+}
+
+func (q *Queries) ListArchivedInstances(ctx context.Context) ([]Instance, error) {
+	rows, err := q.db.QueryContext(ctx,
+		`SELECT `+instanceCols+` FROM instances WHERE archived_at IS NOT NULL AND deleted_at IS NULL ORDER BY archived_at DESC`,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var instances []Instance
+	for rows.Next() {
+		inst, err := scanInstance(rows)
+		if err != nil {
+			return nil, err
+		}
+		instances = append(instances, inst)
+	}
+	return instances, rows.Err()
+}
+
+func (q *Queries) CreateInstance(ctx context.Context, tenantID uuid.UUID, hotelName, slug, dbName, dbUser, dbPassword, packageName string, price float64) (Instance, error) {
+	id := uuid.New()
+	_, err := q.db.ExecContext(ctx,
+		`INSERT INTO instances (id, tenant_id, hotel_name, slug, domain, db_name, db_user, db_password, status, billing_status, price, package_name)
+		 VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending_payment', 'unpaid', ?, ?)`,
+		id, tenantID, hotelName, slug, slug+".hms.local", dbName, dbUser, dbPassword, price, packageName,
+	)
+	if err != nil {
+		return Instance{}, err
+	}
+	return q.GetInstanceByID(ctx, id)
+}
+
+func (q *Queries) UpdateInstanceStatus(ctx context.Context, id uuid.UUID, status string) error {
+	_, err := q.db.ExecContext(ctx,
+		`UPDATE instances SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`,
+		status, id,
+	)
+	return err
+}
+
+func (q *Queries) SetInstanceAdminDisabled(ctx context.Context, id uuid.UUID, disabled bool) error {
+	_, err := q.db.ExecContext(ctx,
+		`UPDATE instances SET admin_disabled = ?, status = CASE WHEN ? = 1 THEN 'disabled' ELSE 'active' END, updated_at = CURRENT_TIMESTAMP WHERE id = ?`,
+		disabled, disabled, id,
+	)
+	return err
+}
+
+func (q *Queries) ArchiveInstance(ctx context.Context, id uuid.UUID) error {
+	_, err := q.db.ExecContext(ctx,
+		`UPDATE instances SET status = 'archived', archived_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP WHERE id = ?`,
+		id,
+	)
+	return err
+}
+
+func (q *Queries) DeleteInstance(ctx context.Context, id uuid.UUID) error {
+	_, err := q.db.ExecContext(ctx,
+		`UPDATE instances SET status = 'deleted', deleted_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP WHERE id = ?`,
+		id,
+	)
+	return err
+}
+
+func (q *Queries) UpdateInstanceBilling(ctx context.Context, id uuid.UUID, billingStatus string, lastPayment, nextDue *time.Time) error {
+	_, err := q.db.ExecContext(ctx,
+		`UPDATE instances SET billing_status = ?, last_payment_at = ?, next_due_at = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`,
+		billingStatus, lastPayment, nextDue, id,
+	)
+	return err
+}
+
+func (q *Queries) UpdateInstancePrice(ctx context.Context, id uuid.UUID, price float64, packageName string) error {
+	_, err := q.db.ExecContext(ctx,
+		`UPDATE instances SET price = ?, package_name = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`,
+		price, packageName, id,
+	)
+	return err
+}
+
+func (q *Queries) MarkInstancePaid(ctx context.Context, id uuid.UUID) error {
+	_, err := q.db.ExecContext(ctx,
+		`UPDATE instances SET billing_status = 'paid', last_payment_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP WHERE id = ?`,
+		id,
+	)
+	return err
+}
+
+func (q *Queries) GetInstanceBySlug(ctx context.Context, slug string) (Instance, error) {
+	return scanInstance(q.db.QueryRowContext(ctx, `SELECT `+instanceCols+` FROM instances WHERE slug = ?`, slug))
+}
+
+func (q *Queries) CountInstancesByTenantID(ctx context.Context, tenantID uuid.UUID) (int, error) {
+	var count int
+	err := q.db.QueryRowContext(ctx,
+		`SELECT COUNT(*) FROM instances WHERE tenant_id = ? AND deleted_at IS NULL`,
+		tenantID,
+	).Scan(&count)
+	return count, err
+}
+
+func (q *Queries) CountInstancesByStatus(ctx context.Context) (active, paused, disabled, failed int, err error) {
+	err = q.db.QueryRowContext(ctx,
+		`SELECT
+			COALESCE(SUM(CASE WHEN status='active' THEN 1 ELSE 0 END), 0),
+			COALESCE(SUM(CASE WHEN status='paused' THEN 1 ELSE 0 END), 0),
+			COALESCE(SUM(CASE WHEN status='disabled' THEN 1 ELSE 0 END), 0),
+			COALESCE(SUM(CASE WHEN status='failed' THEN 1 ELSE 0 END), 0)
+		FROM instances WHERE deleted_at IS NULL`,
+	).Scan(&active, &paused, &disabled, &failed)
+	return
+}
+
+func (q *Queries) ListOverdueInstances(ctx context.Context) ([]Instance, error) {
+	rows, err := q.db.QueryContext(ctx,
+		`SELECT `+instanceCols+` FROM instances
+		 WHERE billing_status = 'paid' AND next_due_at IS NOT NULL AND next_due_at < datetime('now') AND deleted_at IS NULL`,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var instances []Instance
+	for rows.Next() {
+		inst, err := scanInstance(rows)
+		if err != nil {
+			return nil, err
+		}
+		instances = append(instances, inst)
+	}
+	return instances, rows.Err()
+}
+
+// ── Instance Deployments ──────────────────────────────────────────────────
+
+func scanInstanceDeployment(scanner interface{ Scan(dest ...any) error }) (InstanceDeployment, error) {
+	var d InstanceDeployment
+	var logText, errText sql.NullString
+	var completedAt sql.NullTime
+	err := scanner.Scan(
+		&d.ID, &d.InstanceID, &d.Action, &d.Status, &logText, &errText,
+		&d.CreatedAt, &d.UpdatedAt, &completedAt,
+	)
+	if logText.Valid {
+		d.Log = &logText.String
+	}
+	if errText.Valid {
+		d.ErrorMessage = &errText.String
+	}
+	if completedAt.Valid {
+		d.CompletedAt = &completedAt.Time
+	}
+	return d, err
+}
+
+func (q *Queries) CreateInstanceDeployment(ctx context.Context, instanceID uuid.UUID, action, status string) (InstanceDeployment, error) {
+	id := uuid.New()
+	return scanInstanceDeployment(q.db.QueryRowContext(ctx,
+		`INSERT INTO instance_deployments (id, instance_id, action, status)
+		 VALUES (?, ?, ?, ?)
+		 RETURNING id, instance_id, action, status, log, error_message, created_at, updated_at, completed_at`,
+		id, instanceID, action, status,
+	))
+}
+
+func (q *Queries) ListInstanceDeployments(ctx context.Context, instanceID uuid.UUID) ([]InstanceDeployment, error) {
+	rows, err := q.db.QueryContext(ctx,
+		`SELECT id, instance_id, action, status, log, error_message, created_at, updated_at, completed_at
+		 FROM instance_deployments WHERE instance_id = ? ORDER BY created_at DESC`,
+		instanceID,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var result []InstanceDeployment
+	for rows.Next() {
+		d, err := scanInstanceDeployment(rows)
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, d)
+	}
+	return result, rows.Err()
+}
+
+// ── Billing Packages ──────────────────────────────────────────────────────
+
+func (q *Queries) ListBillingPackages(ctx context.Context) ([]BillingPackage, error) {
+	rows, err := q.db.QueryContext(ctx,
+		`SELECT id, name, description, price, currency, billing_cycle, is_active, created_at, updated_at
+		 FROM billing_packages WHERE is_active = 1 ORDER BY price ASC`,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var packages []BillingPackage
+	for rows.Next() {
+		var p BillingPackage
+		err := rows.Scan(&p.ID, &p.Name, &p.Description, &p.Price, &p.Currency, &p.BillingCycle, &p.IsActive, &p.CreatedAt, &p.UpdatedAt)
+		if err != nil {
+			return nil, err
+		}
+		packages = append(packages, p)
+	}
+	return packages, rows.Err()
+}
+
+func (q *Queries) GetAllBillingPackages(ctx context.Context) ([]BillingPackage, error) {
+	rows, err := q.db.QueryContext(ctx,
+		`SELECT id, name, description, price, currency, billing_cycle, is_active, created_at, updated_at
+		 FROM billing_packages ORDER BY price ASC`,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var packages []BillingPackage
+	for rows.Next() {
+		var p BillingPackage
+		err := rows.Scan(&p.ID, &p.Name, &p.Description, &p.Price, &p.Currency, &p.BillingCycle, &p.IsActive, &p.CreatedAt, &p.UpdatedAt)
+		if err != nil {
+			return nil, err
+		}
+		packages = append(packages, p)
+	}
+	return packages, rows.Err()
+}
+
+func (q *Queries) CreateBillingPackage(ctx context.Context, name, description string, price float64, currency, billingCycle string) (BillingPackage, error) {
+	result, err := q.db.ExecContext(ctx,
+		`INSERT INTO billing_packages (name, description, price, currency, billing_cycle)
+		 VALUES (?, ?, ?, ?, ?)`,
+		name, description, price, currency, billingCycle,
+	)
+	if err != nil {
+		return BillingPackage{}, err
+	}
+	id, _ := result.LastInsertId()
+	return BillingPackage{
+		ID: id, Name: name, Description: description, Price: price,
+		Currency: currency, BillingCycle: billingCycle, IsActive: true,
+		CreatedAt: time.Now(), UpdatedAt: time.Now(),
+	}, nil
+}
+
+func (q *Queries) UpdateBillingPackage(ctx context.Context, id int64, name, description string, price float64, billingCycle string, isActive bool) error {
+	_, err := q.db.ExecContext(ctx,
+		`UPDATE billing_packages SET name = ?, description = ?, price = ?, billing_cycle = ?, is_active = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`,
+		name, description, price, billingCycle, isActive, id,
+	)
+	return err
+}
+
+func (q *Queries) DeleteBillingPackage(ctx context.Context, id int64) error {
+	_, err := q.db.ExecContext(ctx,
+		`UPDATE billing_packages SET is_active = 0, updated_at = CURRENT_TIMESTAMP WHERE id = ?`,
+		id,
+	)
+	return err
+}

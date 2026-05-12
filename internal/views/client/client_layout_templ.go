@@ -43,19 +43,23 @@ func ClientLayout(title string, userName string) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<style>\n\t\t\t.client-shell { display:flex; min-height:100vh; }\n\t\t\t.client-sidebar {\n\t\t\t\twidth: 260px;\n\t\t\t\tbackground: #1f2937;\n\t\t\t\tcolor: #f9fafb;\n\t\t\t\tposition: fixed;\n\t\t\t\ttop: 0; left: 0; bottom: 0;\n\t\t\t\toverflow-y: auto;\n\t\t\t\tpadding: 1.5rem;\n\t\t\t\tz-index: 60;\n\t\t\t\ttransition: transform 0.25s ease;\n\t\t\t}\n\t\t\t.client-sidebar.collapsed { transform: translateX(-100%); }\n\t\t\t.client-sidebar-link {\n\t\t\t\tdisplay: flex; align-items: center; gap: 0.625rem;\n\t\t\t\tpadding: 0.625rem 0.75rem;\n\t\t\t\tborder-radius: 0.5rem;\n\t\t\t\tfont-size: 0.875rem;\n\t\t\t\ttext-decoration: none;\n\t\t\t\tcolor: #d1d5db;\n\t\t\t\ttransition: all 0.15s ease;\n\t\t\t\tmargin-bottom: 0.125rem;\n\t\t\t}\n\t\t\t.client-sidebar-link:hover,\n\t\t\t.client-sidebar-link.active {\n\t\t\t\tbackground: #374151;\n\t\t\t\tcolor: #f9fafb;\n\t\t\t}\n\t\t\t.client-sidebar-link .material-symbols-outlined { font-size: 1.125rem; }\n\t\t\t.client-main { flex: 1; margin-left: 260px; transition: margin-left 0.25s ease; }\n\t\t\t.client-main.expanded { margin-left: 0; }\n\t\t\t.client-topbar {\n\t\t\t\tposition: sticky; top: 0; z-index: 50;\n\t\t\t\tbackground: var(--color-bg);\n\t\t\t\tborder-bottom: 1px solid var(--color-border);\n\t\t\t\theight: 4rem;\n\t\t\t\tdisplay: flex; align-items: center; justify-content: space-between;\n\t\t\t\tpadding: 0 1.5rem;\n\t\t\t}\n\t\t\t.client-toggle {\n\t\t\t\tbackground: transparent; border: none; cursor: pointer;\n\t\t\t\tcolor: var(--color-fg); padding: 0.25rem; border-radius: 0.5rem;\n\t\t\t\tdisplay: flex; align-items: center; justify-content: center;\n\t\t\t}\n\t\t\t.client-toggle:hover { background: var(--color-secondary); }\n\t\t\t@media (max-width: 1023px) {\n\t\t\t\t.client-sidebar { transform: translateX(-100%); }\n\t\t\t\t.client-sidebar.open { transform: translateX(0); }\n\t\t\t\t.client-main { margin-left: 0; }\n\t\t\t}\n\t\t</style> <div class=\"client-shell\" id=\"client-shell\"><!-- Sidebar --><aside class=\"client-sidebar\" id=\"client-sidebar\"><div style=\"display:flex; align-items:center; justify-content:space-between; margin-bottom:2rem;\"><a href=\"/dashboard\" style=\"font-family:var(--font-heading); font-weight:800; font-size:1.125rem; color:#f9fafb; text-decoration:none;\">HMS</a> <button class=\"client-toggle\" onclick=\"toggleClientSidebar()\" style=\"display:none;\" id=\"client-sidebar-close\"><span class=\"material-symbols-outlined\" style=\"font-size:1.25rem; color:#f9fafb;\">close</span></button></div><nav>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<style>\n\t\t\t.client-shell { display:flex; min-height:100vh; }\n\t\t\t.client-sidebar {\n\t\t\t\twidth: 260px;\n\t\t\t\tbackground: #1f2937;\n\t\t\t\tcolor: #f9fafb;\n\t\t\t\tposition: fixed;\n\t\t\t\ttop: 0; left: 0; bottom: 0;\n\t\t\t\toverflow-y: auto;\n\t\t\t\tpadding: 1.5rem;\n\t\t\t\tz-index: 60;\n\t\t\t\ttransition: transform 0.25s ease;\n\t\t\t}\n\t\t\t.client-sidebar.collapsed { transform: translateX(-100%); }\n\t\t\t.client-sidebar-link {\n\t\t\t\tdisplay: flex; align-items: center; gap: 0.625rem;\n\t\t\t\tpadding: 0.625rem 0.75rem;\n\t\t\t\tborder-radius: 0.5rem;\n\t\t\t\tfont-size: 0.875rem;\n\t\t\t\ttext-decoration: none;\n\t\t\t\tcolor: #d1d5db;\n\t\t\t\ttransition: all 0.15s ease;\n\t\t\t\tmargin-bottom: 0.125rem;\n\t\t\t}\n\t\t\t.client-sidebar-link:hover,\n\t\t\t.client-sidebar-link.active {\n\t\t\t\tbackground: #374151;\n\t\t\t\tcolor: #f9fafb;\n\t\t\t}\n\t\t\t.client-sidebar-link .material-symbols-outlined { font-size: 1.125rem; }\n\t\t\t.client-main { flex: 1; margin-left: 260px; transition: margin-left 0.25s ease; }\n\t\t\t.client-main.expanded { margin-left: 0; }\n\t\t\t.client-topbar {\n\t\t\t\tposition: sticky; top: 0; z-index: 50;\n\t\t\t\tbackground: var(--color-bg);\n\t\t\t\tborder-bottom: 1px solid var(--color-border);\n\t\t\t\theight: 4rem;\n\t\t\t\tdisplay: flex; align-items: center; justify-content: space-between;\n\t\t\t\tpadding: 0 1.5rem;\n\t\t\t}\n\t\t\t.client-toggle {\n\t\t\t\tbackground: transparent; border: none; cursor: pointer;\n\t\t\t\tcolor: var(--color-fg); padding: 0.25rem; border-radius: 0.5rem;\n\t\t\t\tdisplay: flex; align-items: center; justify-content: center;\n\t\t\t}\n\t\t\t.client-toggle:hover { background: var(--color-secondary); }\n\t\t\t@media (max-width: 1023px) {\n\t\t\t\t.client-sidebar { transform: translateX(-100%); }\n\t\t\t\t.client-sidebar.open { transform: translateX(0); }\n\t\t\t\t.client-main { margin-left: 0; }\n\t\t\t}\n\t\t</style> <div class=\"client-shell\" id=\"client-shell\"><!-- Sidebar --><aside class=\"client-sidebar\" id=\"client-sidebar\"><div style=\"display:flex; align-items:center; justify-content:space-between; margin-bottom:2rem;\"><a href=\"/dashboard\" style=\"font-family:var(--font-heading); font-weight:800; font-size:1.125rem; color:#f9fafb; text-decoration:none;\">HMS</a> <button class=\"client-toggle\" onclick=\"toggleClientSidebar()\" style=\"display:none;\" id=\"client-sidebar-close\"><i data-lucide=\"x\" style=\"width:1.25rem; height:1.25rem; color:#f9fafb;\"></i></button></div><nav>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = clientSidebarLink("/dashboard", "dashboard", "Dashboard", false).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = clientSidebarLink("/dashboard", "layout-dashboard", "Dashboard", false).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = clientSidebarLink("/dashboard/billing", "payments", "Billing", false).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = clientSidebarLink("/dashboard/instances", "server", "Instances", false).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = clientSidebarLink("/dashboard/details", "apartment", "Tenant Details", false).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = clientSidebarLink("/dashboard/billing", "wallet", "Billing", false).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = clientSidebarLink("/dashboard/details", "building-2", "Tenant Details", false).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -63,20 +67,20 @@ func ClientLayout(title string, userName string) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</nav><div style=\"position:absolute; bottom:1.5rem; left:1.5rem; right:1.5rem;\"><form method=\"POST\" action=\"/logout\"><button type=\"submit\" style=\"width:100%; display:flex; align-items:center; gap:0.625rem; padding:0.625rem 0.75rem; border-radius:0.5rem; font-size:0.875rem; background:transparent; border:none; color:#d1d5db; cursor:pointer; transition:all 0.15s ease;\" onmouseover=\"this.style.background='#374151';this.style.color='#f9fafb'\" onmouseout=\"this.style.background='transparent';this.style.color='#d1d5db'\"><span class=\"material-symbols-outlined\" style=\"font-size:1.125rem;\">logout</span> Logout</button></form></div></aside><!-- Overlay for mobile --><div id=\"client-sidebar-overlay\" style=\"display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:55;\" onclick=\"toggleClientSidebar()\"></div><!-- Main content --><div class=\"client-main\" id=\"client-main\"><header class=\"client-topbar\"><div style=\"display:flex; align-items:center; gap:0.75rem;\"><button class=\"client-toggle\" onclick=\"toggleClientSidebar()\" id=\"client-sidebar-toggle\"><span class=\"material-symbols-outlined\" style=\"font-size:1.25rem;\">menu</span></button> <span style=\"font-family:var(--font-heading); font-weight:700; font-size:1rem; color:var(--color-fg);\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</nav><div style=\"position:absolute; bottom:1.5rem; left:1.5rem; right:1.5rem;\"><form method=\"POST\" action=\"/logout\"><button type=\"submit\" style=\"width:100%; display:flex; align-items:center; gap:0.625rem; padding:0.625rem 0.75rem; border-radius:0.5rem; font-size:0.875rem; background:transparent; border:none; color:#d1d5db; cursor:pointer; transition:all 0.15s ease;\" onmouseover=\"this.style.background='#374151';this.style.color='#f9fafb'\" onmouseout=\"this.style.background='transparent';this.style.color='#d1d5db'\"><i data-lucide=\"log-out\" style=\"width:1.125rem; height:1.125rem;\"></i> Logout</button></form></div></aside><!-- Overlay for mobile --><div id=\"client-sidebar-overlay\" style=\"display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:55;\" onclick=\"toggleClientSidebar()\"></div><!-- Main content --><div class=\"client-main\" id=\"client-main\"><header class=\"client-topbar\"><div style=\"display:flex; align-items:center; gap:0.75rem;\"><button class=\"client-toggle\" onclick=\"toggleClientSidebar()\" id=\"client-sidebar-toggle\"><i data-lucide=\"menu\" style=\"width:1.25rem; height:1.25rem;\"></i></button> <span style=\"font-family:var(--font-heading); font-weight:700; font-size:1rem; color:var(--color-fg);\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/client_layout.templ`, Line: 95, Col: 116}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/client_layout.templ`, Line: 96, Col: 116}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</span></div><div style=\"display:flex; align-items:center; gap:0.5rem; font-size:0.875rem; color:var(--color-fg);\"><span class=\"material-symbols-outlined\" style=\"font-size:1.25rem; color:var(--color-muted-fg);\">account_circle</span> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</span></div><div style=\"display:flex; align-items:center; gap:0.5rem; font-size:0.875rem; color:var(--color-fg);\"><i data-lucide=\"user\" style=\"width:1.25rem; height:1.25rem; color:var(--color-muted-fg);\"></i> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -84,7 +88,7 @@ func ClientLayout(title string, userName string) templ.Component {
 				var templ_7745c5c3_Var4 string
 				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(userName)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/client_layout.templ`, Line: 100, Col: 17}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/client_layout.templ`, Line: 101, Col: 17}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 				if templ_7745c5c3_Err != nil {
@@ -99,7 +103,7 @@ func ClientLayout(title string, userName string) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</main></div></div><script>\n\t\t\t(function() {\n\t\t\t\tvar sidebar = document.getElementById('client-sidebar');\n\t\t\t\tvar main = document.getElementById('client-main');\n\t\t\t\tvar overlay = document.getElementById('client-sidebar-overlay');\n\t\t\t\tvar closeBtn = document.getElementById('client-sidebar-close');\n\t\t\t\tvar isMobile = window.innerWidth < 1024;\n\n\t\t\t\tif (!isMobile) {\n\t\t\t\t\tcloseBtn.style.display = 'none';\n\t\t\t\t} else {\n\t\t\t\t\tcloseBtn.style.display = 'flex';\n\t\t\t\t}\n\n\t\t\t\twindow.toggleClientSidebar = function() {\n\t\t\t\t\tisMobile = window.innerWidth < 1024;\n\t\t\t\t\tif (isMobile) {\n\t\t\t\t\t\tsidebar.classList.toggle('open');\n\t\t\t\t\t\toverlay.style.display = sidebar.classList.contains('open') ? 'block' : 'none';\n\t\t\t\t\t} else {\n\t\t\t\t\t\tsidebar.classList.toggle('collapsed');\n\t\t\t\t\t\tmain.classList.toggle('expanded');\n\t\t\t\t\t}\n\t\t\t\t};\n\n\t\t\t\twindow.addEventListener('resize', function() {\n\t\t\t\t\tisMobile = window.innerWidth < 1024;\n\t\t\t\t\tcloseBtn.style.display = isMobile ? 'flex' : 'none';\n\t\t\t\t\tif (!isMobile) {\n\t\t\t\t\t\tsidebar.classList.remove('open');\n\t\t\t\t\t\toverlay.style.display = 'none';\n\t\t\t\t\t}\n\t\t\t\t});\n\t\t\t})();\n\t\t</script>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</main></div></div><script>\n\t\t\t(function() {\n\t\t\t\tvar sidebar = document.getElementById('client-sidebar');\n\t\t\t\tvar main = document.getElementById('client-main');\n\t\t\t\tvar overlay = document.getElementById('client-sidebar-overlay');\n\t\t\t\tvar closeBtn = document.getElementById('client-sidebar-close');\n\t\t\t\tvar isMobile = window.innerWidth < 1024;\n\n\t\t\t\tif (!isMobile) {\n\t\t\t\t\tcloseBtn.style.display = 'none';\n\t\t\t\t} else {\n\t\t\t\t\tcloseBtn.style.display = 'flex';\n\t\t\t\t}\n\n\t\t\t\twindow.toggleClientSidebar = function() {\n\t\t\t\t\tisMobile = window.innerWidth < 1024;\n\t\t\t\t\tif (isMobile) {\n\t\t\t\t\t\tsidebar.classList.toggle('open');\n\t\t\t\t\t\toverlay.style.display = sidebar.classList.contains('open') ? 'block' : 'none';\n\t\t\t\t\t} else {\n\t\t\t\t\t\tsidebar.classList.toggle('collapsed');\n\t\t\t\t\t\tmain.classList.toggle('expanded');\n\t\t\t\t\t}\n\t\t\t\t};\n\n\t\t\t\twindow.addEventListener('resize', function() {\n\t\t\t\t\tisMobile = window.innerWidth < 1024;\n\t\t\t\t\tcloseBtn.style.display = isMobile ? 'flex' : 'none';\n\t\t\t\t\tif (!isMobile) {\n\t\t\t\t\t\tsidebar.classList.remove('open');\n\t\t\t\t\t\toverlay.style.display = 'none';\n\t\t\t\t\t}\n\t\t\t\t});\n\n\t\t\t\tif (typeof lucide !== 'undefined') { lucide.createIcons(); }\n\t\t\t})();\n\t\t</script>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -146,7 +150,7 @@ func clientSidebarLink(href string, icon string, label string, isActive bool) te
 		var templ_7745c5c3_Var7 templ.SafeURL
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinURLErrs(templ.URL(href))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/client_layout.templ`, Line: 149, Col: 26}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/client_layout.templ`, Line: 152, Col: 26}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
@@ -165,27 +169,27 @@ func clientSidebarLink(href string, icon string, label string, isActive bool) te
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\"><span class=\"material-symbols-outlined\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\"><i data-lucide=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var9 string
-		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(icon)
+		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.ResolveAttributeValue(icon)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/client_layout.templ`, Line: 150, Col: 48}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/client_layout.templ`, Line: 153, Col: 23}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var9)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</span> ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\" style=\"width:1.125rem; height:1.125rem;\"></i> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var10 string
 		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(label)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/client_layout.templ`, Line: 151, Col: 9}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/client_layout.templ`, Line: 154, Col: 9}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {

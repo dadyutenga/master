@@ -11,6 +11,7 @@ templ Base(title string) {
 		<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 		<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 		<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+		<script src="https://unpkg.com/lucide@latest"></script>
 		<script src="https://unpkg.com/htmx.org@1.9.12"></script>
 		<style>
 			/* ===== DESIGN SYSTEM TOKENS ===== */
@@ -355,6 +356,7 @@ templ Base(title string) {
 			})();
 			// Splash screen
 			window.addEventListener('load', function () {
+				if (typeof lucide !== 'undefined') { lucide.createIcons(); }
 				setTimeout(function () {
 					var s = document.getElementById('app-splash');
 					if (s) { s.classList.add('fade'); setTimeout(function () { s.remove(); }, 500); }

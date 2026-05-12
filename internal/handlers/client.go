@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"github.com/dadyutenga/hms-control/internal/db/generated"
+	"github.com/dadyutenga/hms-control/internal/models"
 	"github.com/dadyutenga/hms-control/internal/views/client"
 
 	"github.com/gofiber/fiber/v2"
@@ -47,9 +48,29 @@ func (h *Handler) ClientDashboard(c *fiber.Ctx) error {
 		h.pauseTenantContainer(tenant.ID)
 	}
 
+	// Get instance stats
+	var stats models.ClientDashboardStats
+	instances, err := q.ListInstancesByTenantID(c.Context(), tenant.ID)
+	if err == nil {
+		stats.TotalInstances = len(instances)
+		for _, inst := range instances {
+			switch inst.Status {
+			case "active":
+				stats.ActiveInstances++
+			case "paused":
+				stats.PausedInstances++
+			case "disabled":
+				stats.DisabledInstances++
+			case "failed":
+				stats.FailedInstances++
+			}
+		}
+	}
+
 	return render(c, client.Dashboard(client.DashboardProps{
 		Tenant: tenant,
 		User:   user,
+		Stats:  stats,
 	}))
 }
 

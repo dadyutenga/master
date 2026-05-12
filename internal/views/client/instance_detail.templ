@@ -1,0 +1,172 @@
+package client
+
+import (
+	"fmt"
+
+	"github.com/dadyutenga/hms-control/internal/db/generated"
+)
+
+type InstanceDetailProps struct {
+	User        generated.User
+	Instance    generated.Instance
+	Deployments []generated.InstanceDeployment
+}
+
+templ InstanceDetail(props InstanceDetailProps) {
+	@ClientLayout(props.Instance.HotelName, props.User.Name) {
+		<div style="max-width:1200px; margin:0 auto;">
+			<div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:1.5rem; flex-wrap:wrap;">
+				<a href="/dashboard/instances" style="color:var(--color-muted-fg); text-decoration:none; font-size:0.875rem;">&larr; Back to Instances</a>
+				<h1 style="font-family:var(--font-heading); font-size:1.5rem; font-weight:700; color:var(--color-fg);">{ props.Instance.HotelName }</h1>
+				@instanceStatusBadge(props.Instance.Status)
+				@clientBillingBadge(props.Instance.BillingStatus)
+				if props.Instance.AdminDisabled {
+					<span style="display:inline-flex; align-items:center; padding:0.125rem 0.625rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:hsl(0, 70%, 95%); color:hsl(0, 70%, 40%);">admin disabled</span>
+				}
+			</div>
+
+			<!-- Instance Info Grid -->
+			<div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
+				<div style="background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; overflow:hidden;">
+					<div style="padding:1.25rem 1.5rem; border-bottom:1px solid var(--color-border);">
+						<h2 style="font-family:var(--font-heading); font-size:0.875rem; font-weight:700; color:var(--color-fg);">Instance Details</h2>
+					</div>
+					<div style="padding:1.25rem 1.5rem;">
+						<dl style="display:flex; flex-direction:column; gap:0.75rem;">
+							<div style="display:flex; justify-content:space-between; align-items:center; gap:1rem;">
+								<dt style="font-size:0.8125rem; color:var(--color-muted-fg);">Domain</dt>
+								<dd style="font-size:0.875rem; color:var(--color-fg); font-weight:500; text-align:right;">
+									if props.Instance.Domain != "" {
+										<a href={ templ.URL("https://" + props.Instance.Domain) } target="_blank" style="color:var(--color-brand-blue); text-decoration:none;">{ props.Instance.Domain }</a>
+									} else {
+										Not set
+									}
+								</dd>
+							</div>
+							<div style="display:flex; justify-content:space-between; align-items:center; gap:1rem;">
+								<dt style="font-size:0.8125rem; color:var(--color-muted-fg);">Slug</dt>
+								<dd style="font-size:0.875rem; color:var(--color-fg); font-weight:500; text-align:right;">{ props.Instance.Slug }</dd>
+							</div>
+							<div style="display:flex; justify-content:space-between; align-items:center; gap:1rem;">
+								<dt style="font-size:0.8125rem; color:var(--color-muted-fg);">Created</dt>
+								<dd style="font-size:0.875rem; color:var(--color-fg); font-weight:500; text-align:right;">{ props.Instance.CreatedAt.Format("02 Jan 2006") }</dd>
+							</div>
+							if props.Instance.ProvisionedAt != nil {
+								<div style="display:flex; justify-content:space-between; align-items:center; gap:1rem;">
+									<dt style="font-size:0.8125rem; color:var(--color-muted-fg);">Provisioned</dt>
+									<dd style="font-size:0.875rem; color:var(--color-fg); font-weight:500; text-align:right;">{ props.Instance.ProvisionedAt.Format("02 Jan 2006") }</dd>
+								</div>
+							}
+						</dl>
+					</div>
+				</div>
+
+				<div style="background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; overflow:hidden;">
+					<div style="padding:1.25rem 1.5rem; border-bottom:1px solid var(--color-border);">
+						<h2 style="font-family:var(--font-heading); font-size:0.875rem; font-weight:700; color:var(--color-fg);">Billing</h2>
+					</div>
+					<div style="padding:1.25rem 1.5rem;">
+						<dl style="display:flex; flex-direction:column; gap:0.75rem;">
+							<div style="display:flex; justify-content:space-between; align-items:center; gap:1rem;">
+								<dt style="font-size:0.8125rem; color:var(--color-muted-fg);">Package</dt>
+								<dd style="font-size:0.875rem; color:var(--color-fg); font-weight:500; text-align:right;">{ props.Instance.PackageName }</dd>
+							</div>
+							<div style="display:flex; justify-content:space-between; align-items:center; gap:1rem;">
+								<dt style="font-size:0.8125rem; color:var(--color-muted-fg);">Price</dt>
+								<dd style="font-size:0.875rem; color:var(--color-fg); font-weight:500; text-align:right;">{ fmt.Sprintf("%,.0f", props.Instance.Price) } TZS/mo</dd>
+							</div>
+							<div style="display:flex; justify-content:space-between; align-items:center; gap:1rem;">
+								<dt style="font-size:0.8125rem; color:var(--color-muted-fg);">Status</dt>
+								<dd style="font-size:0.875rem; font-weight:500; text-align:right;">@clientBillingBadge(props.Instance.BillingStatus)</dd>
+							</div>
+							if props.Instance.LastPaymentAt != nil {
+								<div style="display:flex; justify-content:space-between; align-items:center; gap:1rem;">
+									<dt style="font-size:0.8125rem; color:var(--color-muted-fg);">Last Payment</dt>
+									<dd style="font-size:0.875rem; color:var(--color-fg); font-weight:500; text-align:right;">{ props.Instance.LastPaymentAt.Format("02 Jan 2006") }</dd>
+								</div>
+							}
+							if props.Instance.NextDueAt != nil {
+								<div style="display:flex; justify-content:space-between; align-items:center; gap:1rem;">
+									<dt style="font-size:0.8125rem; color:var(--color-muted-fg);">Next Due</dt>
+									<dd style="font-size:0.875rem; color:var(--color-fg); font-weight:500; text-align:right;">{ props.Instance.NextDueAt.Format("02 Jan 2006") }</dd>
+								</div>
+							}
+						</dl>
+					</div>
+				</div>
+			</div>
+
+			<!-- Actions -->
+			if props.Instance.Status == "active" || props.Instance.Status == "paused" || props.Instance.Status == "disabled" {
+				<div style="background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.5rem; margin-bottom:1rem;">
+					<h2 style="font-family:var(--font-heading); font-size:1rem; font-weight:700; color:var(--color-fg); margin-bottom:1rem;">Actions</h2>
+					<div style="display:flex; flex-wrap:wrap; gap:0.5rem;">
+						if props.Instance.Status == "active" {
+							<button
+								hx-post={ "/dashboard/instances/" + props.Instance.ID.String() + "/pause" }
+								hx-confirm="Pause this instance?"
+								style="display:inline-flex; align-items:center; gap:0.25rem; padding:0.5rem 1.25rem; border-radius:9999px; border:1px solid #f59e0b; font-size:0.75rem; font-weight:600; cursor:pointer; background:var(--color-bg); color:#f59e0b; transition:all 0.15s ease;"
+								onmouseover="this.style.background='#fef3c7'" onmouseout="this.style.background='var(--color-bg)'">
+								<i data-lucide="pause" style="width:0.875rem; height:0.875rem;"></i> Pause
+							</button>
+						}
+						if props.Instance.Status == "paused" {
+							<button
+								hx-post={ "/dashboard/instances/" + props.Instance.ID.String() + "/restart" }
+								hx-confirm="Restart this instance?"
+								style="display:inline-flex; align-items:center; gap:0.25rem; padding:0.5rem 1.25rem; border-radius:9999px; border:none; font-size:0.75rem; font-weight:600; cursor:pointer; background:#22c55e; color:#fff; transition:opacity 0.15s ease;"
+								onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+								<i data-lucide="play" style="width:0.875rem; height:0.875rem;"></i> Restart
+							</button>
+						}
+						if props.Instance.Status == "active" || props.Instance.Status == "paused" {
+							<button
+								hx-post={ "/dashboard/instances/" + props.Instance.ID.String() + "/disable" }
+								hx-confirm="Disable this instance? Admin will need to re-enable it."
+								style="display:inline-flex; align-items:center; gap:0.25rem; padding:0.5rem 1.25rem; border-radius:9999px; border:1px solid var(--color-destructive); font-size:0.75rem; font-weight:600; cursor:pointer; background:var(--color-bg); color:var(--color-destructive); transition:all 0.15s ease;"
+								onmouseover="this.style.background='var(--color-secondary)'" onmouseout="this.style.background='var(--color-bg)'">
+								<i data-lucide="x-circle" style="width:0.875rem; height:0.875rem;"></i> Disable
+							</button>
+						}
+					</div>
+				</div>
+			}
+
+			<!-- Deployment History -->
+			<div style="background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.5rem;">
+				<h2 style="font-family:var(--font-heading); font-size:1rem; font-weight:700; color:var(--color-fg); margin-bottom:1rem;">Deployment History</h2>
+				if len(props.Deployments) == 0 {
+					<p style="color:var(--color-muted-fg); font-size:0.875rem;">No deployments recorded yet.</p>
+				} else {
+					<table style="width:100%; font-size:0.875rem; border-collapse:collapse;">
+						<thead>
+							<tr style="border-bottom:1px solid var(--color-border); color:var(--color-muted-fg); text-align:left;">
+								<th style="padding:0.5rem 0; font-weight:500;">Action</th>
+								<th style="padding:0.5rem 0; font-weight:500;">Status</th>
+								<th style="padding:0.5rem 0; font-weight:500;">Created</th>
+								<th style="padding:0.5rem 0; font-weight:500;">Completed</th>
+							</tr>
+						</thead>
+						<tbody>
+							for _, d := range props.Deployments {
+								<tr style="border-bottom:1px solid var(--color-border);">
+									<td style="padding:0.625rem 0; color:var(--color-fg);">{ d.Action }</td>
+									<td style="padding:0.625rem 0;">
+										@instanceStatusBadge(d.Status)
+									</td>
+									<td style="padding:0.625rem 0; color:var(--color-muted-fg);">{ d.CreatedAt.Format("02 Jan 2006 15:04") }</td>
+									<td style="padding:0.625rem 0; color:var(--color-muted-fg);">
+										if d.CompletedAt != nil {
+											{ d.CompletedAt.Format("02 Jan 2006 15:04") }
+										}
+									</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				}
+			</div>
+		</div>
+		<script>if(typeof lucide!=='undefined'){lucide.createIcons();}</script>
+	}
+}

@@ -135,6 +135,56 @@ type BillingTransaction struct {
 	CreatedAt       time.Time  `json:"created_at"`
 }
 
+type Instance struct {
+	ID             uuid.UUID  `json:"id"`
+	TenantID       uuid.UUID  `json:"tenant_id"`
+	HotelName      string     `json:"hotel_name"`
+	Slug           string     `json:"slug"`
+	Domain         string     `json:"domain"`
+	DbName         string     `json:"db_name"`
+	DbUser         string     `json:"db_user"`
+	DbPassword     string     `json:"db_password"`
+	AppKey         *string    `json:"app_key"`
+	Status         string     `json:"status"`
+	AdminDisabled  bool       `json:"admin_disabled"`
+	BillingStatus  string     `json:"billing_status"`
+	Price          float64    `json:"price"`
+	PackageName    string     `json:"package_name"`
+	LastPaymentAt  *time.Time `json:"last_payment_at"`
+	NextDueAt      *time.Time `json:"next_due_at"`
+	ProvisionLog   *string    `json:"provision_log"`
+	ApprovedAt     *time.Time `json:"approved_at"`
+	ProvisionedAt  *time.Time `json:"provisioned_at"`
+	ArchivedAt     *time.Time `json:"archived_at"`
+	DeletedAt      *time.Time `json:"deleted_at"`
+	CreatedAt      time.Time  `json:"created_at"`
+	UpdatedAt      time.Time  `json:"updated_at"`
+}
+
+type InstanceDeployment struct {
+	ID           uuid.UUID  `json:"id"`
+	InstanceID   uuid.UUID  `json:"instance_id"`
+	Action       string     `json:"action"`
+	Status       string     `json:"status"`
+	Log          *string    `json:"log"`
+	ErrorMessage *string    `json:"error_message"`
+	CreatedAt    time.Time  `json:"created_at"`
+	UpdatedAt    time.Time  `json:"updated_at"`
+	CompletedAt  *time.Time `json:"completed_at"`
+}
+
+type BillingPackage struct {
+	ID           int64     `json:"id"`
+	Name         string    `json:"name"`
+	Description  string    `json:"description"`
+	Price        float64   `json:"price"`
+	Currency     string    `json:"currency"`
+	BillingCycle string    `json:"billing_cycle"`
+	IsActive     bool      `json:"is_active"`
+	CreatedAt    time.Time `json:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at"`
+}
+
 type Queries struct {
 	db *sql.DB
 }

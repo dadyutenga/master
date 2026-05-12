@@ -63,19 +63,20 @@ templ ClientLayout(title string, userName string) {
 				<div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:2rem;">
 					<a href="/dashboard" style="font-family:var(--font-heading); font-weight:800; font-size:1.125rem; color:#f9fafb; text-decoration:none;">HMS</a>
 					<button class="client-toggle" onclick="toggleClientSidebar()" style="display:none;" id="client-sidebar-close">
-						<span class="material-symbols-outlined" style="font-size:1.25rem; color:#f9fafb;">close</span>
+						<i data-lucide="x" style="width:1.25rem; height:1.25rem; color:#f9fafb;"></i>
 					</button>
 				</div>
 				<nav>
-					@clientSidebarLink("/dashboard", "dashboard", "Dashboard", false)
-					@clientSidebarLink("/dashboard/billing", "payments", "Billing", false)
-					@clientSidebarLink("/dashboard/details", "apartment", "Tenant Details", false)
+					@clientSidebarLink("/dashboard", "layout-dashboard", "Dashboard", false)
+					@clientSidebarLink("/dashboard/instances", "server", "Instances", false)
+					@clientSidebarLink("/dashboard/billing", "wallet", "Billing", false)
+					@clientSidebarLink("/dashboard/details", "building-2", "Tenant Details", false)
 					@clientSidebarLink("/dashboard/change-password", "lock", "Change Password", false)
 				</nav>
 				<div style="position:absolute; bottom:1.5rem; left:1.5rem; right:1.5rem;">
 					<form method="POST" action="/logout">
 						<button type="submit" style="width:100%; display:flex; align-items:center; gap:0.625rem; padding:0.625rem 0.75rem; border-radius:0.5rem; font-size:0.875rem; background:transparent; border:none; color:#d1d5db; cursor:pointer; transition:all 0.15s ease;" onmouseover="this.style.background='#374151';this.style.color='#f9fafb'" onmouseout="this.style.background='transparent';this.style.color='#d1d5db'">
-							<span class="material-symbols-outlined" style="font-size:1.125rem;">logout</span>
+							<i data-lucide="log-out" style="width:1.125rem; height:1.125rem;"></i>
 							Logout
 						</button>
 					</form>
@@ -90,12 +91,12 @@ templ ClientLayout(title string, userName string) {
 				<header class="client-topbar">
 					<div style="display:flex; align-items:center; gap:0.75rem;">
 						<button class="client-toggle" onclick="toggleClientSidebar()" id="client-sidebar-toggle">
-							<span class="material-symbols-outlined" style="font-size:1.25rem;">menu</span>
+							<i data-lucide="menu" style="width:1.25rem; height:1.25rem;"></i>
 						</button>
 						<span style="font-family:var(--font-heading); font-weight:700; font-size:1rem; color:var(--color-fg);">{ title }</span>
 					</div>
 					<div style="display:flex; align-items:center; gap:0.5rem; font-size:0.875rem; color:var(--color-fg);">
-						<span class="material-symbols-outlined" style="font-size:1.25rem; color:var(--color-muted-fg);">account_circle</span>
+						<i data-lucide="user" style="width:1.25rem; height:1.25rem; color:var(--color-muted-fg);"></i>
 						if userName != "" {
 							{ userName }
 						}
@@ -140,6 +141,8 @@ templ ClientLayout(title string, userName string) {
 						overlay.style.display = 'none';
 					}
 				});
+
+				if (typeof lucide !== 'undefined') { lucide.createIcons(); }
 			})();
 		</script>
 	}
@@ -147,7 +150,7 @@ templ ClientLayout(title string, userName string) {
 
 templ clientSidebarLink(href string, icon string, label string, isActive bool) {
 	<a href={ templ.URL(href) } class={"client-sidebar-link", templ.KV("active", isActive)}>
-		<span class="material-symbols-outlined">{ icon }</span>
+		<i data-lucide={ icon } style="width:1.125rem; height:1.125rem;"></i>
 		{ label }
 	</a>
 }

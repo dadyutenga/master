@@ -69,6 +69,15 @@ func main() {
 	client.Post("/billing/payment", h.ClientSubmitPayment)
 	client.Post("/billing/receipt", h.ClientUploadReceipt)
 
+	// Instance management
+	client.Get("/instances", h.ClientInstancesList)
+	client.Get("/instances/new", h.ClientShownewInstance)
+	client.Post("/instances/new", h.ClientCreateInstance)
+	client.Get("/instances/:id", h.ClientInstanceDetail)
+	client.Post("/instances/:id/pause", h.ClientPauseInstance)
+	client.Post("/instances/:id/restart", h.ClientRestartInstance)
+	client.Post("/instances/:id/disable", h.ClientDisableInstance)
+
 	billingProtected := client.Group("", middleware.RequireBilling(database))
 	billingProtected.Get("/details", h.ShowTenantDetails)
 	billingProtected.Post("/details", h.UpdateTenantDetails)
@@ -118,6 +127,22 @@ func main() {
 	admin.Get("/docker-templates/:id/edit", h.ShowEditDockerTemplate)
 	admin.Post("/docker-templates/:id/edit", h.UpdateDockerTemplate)
 	admin.Post("/docker-templates/:id/delete", h.DeleteDockerTemplate)
+
+	// Instance Management
+	admin.Get("/instances", h.AdminInstancesList)
+	admin.Get("/instances/:id", h.AdminInstanceDetail)
+	admin.Post("/instances/:id/enable", h.AdminEnableInstance)
+	admin.Post("/instances/:id/disable", h.AdminDisableInstance)
+	admin.Post("/instances/:id/start", h.AdminStartInstance)
+	admin.Post("/instances/:id/stop", h.AdminStopInstance)
+	admin.Post("/instances/:id/archive", h.AdminArchiveInstance)
+	admin.Post("/instances/:id/delete", h.AdminDeleteInstance)
+	admin.Post("/instances/:id/price", h.AdminUpdateInstancePrice)
+
+	// Billing Packages
+	admin.Get("/billing-packages", h.AdminBillingPackages)
+	admin.Post("/billing-packages/new", h.AdminCreateBillingPackage)
+	admin.Post("/billing-packages/:id/delete", h.AdminDeleteBillingPackage)
 
 	log.Fatal(app.Listen(":8080"))
 }

@@ -1,14 +1,16 @@
 package client
 
 import (
-	"strings"
+	"strconv"
 
 	"github.com/dadyutenga/hms-control/internal/db/generated"
+	"github.com/dadyutenga/hms-control/internal/models"
 )
 
 type DashboardProps struct {
 	Tenant generated.Tenant
 	User   generated.User
+	Stats  models.ClientDashboardStats
 }
 
 templ Dashboard(props DashboardProps) {
@@ -16,71 +18,164 @@ templ Dashboard(props DashboardProps) {
 		<div style="max-width:1200px; margin:0 auto;">
 			<div style="margin-bottom:1.5rem;">
 				<h1 style="font-family:var(--font-heading); font-size:1.5rem; font-weight:700; color:var(--color-fg);">Hello, { props.User.Name }</h1>
-				<p style="font-size:0.875rem; color:var(--color-muted-fg); margin-top:0.25rem;">Welcome to your hotel dashboard</p>
+				<p style="font-size:0.875rem; color:var(--color-muted-fg); margin-top:0.25rem;">Manage your hotel instances</p>
 			</div>
 
-			<!-- Quick Stats -->
-			<div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:1rem; margin-bottom:1.5rem;">
+			<!-- Instance Stats -->
+			<div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(180px, 1fr)); gap:1rem; margin-bottom:1.5rem;">
 				<div style="background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.25rem;">
 					<div style="width:2.25rem; height:2.25rem; border-radius:0.625rem; display:flex; align-items:center; justify-content:center; background:color-mix(in srgb, #3b82f6 12%, transparent); margin-bottom:0.75rem;">
-						<span class="material-symbols-outlined" style="font-size:1.25rem; color:#3b82f6;">apartment</span>
+						<i data-lucide="server" style="width:1.25rem; height:1.25rem; color:#3b82f6;"></i>
 					</div>
-					<div style="font-size:0.75rem; color:var(--color-muted-fg); margin-bottom:0.25rem;">Company</div>
-					<div style="font-size:1rem; font-weight:600; color:var(--color-fg);">{ props.Tenant.CompanyName }</div>
+					<div style="font-size:2rem; font-weight:700; color:#3b82f6; line-height:1;">{ strconv.Itoa(props.Stats.TotalInstances) }</div>
+					<div style="font-size:0.75rem; color:var(--color-muted-fg);">Total Instances</div>
 				</div>
 				<div style="background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.25rem;">
 					<div style="width:2.25rem; height:2.25rem; border-radius:0.625rem; display:flex; align-items:center; justify-content:center; background:color-mix(in srgb, #22c55e 12%, transparent); margin-bottom:0.75rem;">
-						<span class="material-symbols-outlined" style="font-size:1.25rem; color:#22c55e;">language</span>
+						<i data-lucide="check-circle" style="width:1.25rem; height:1.25rem; color:#22c55e;"></i>
 					</div>
-					<div style="font-size:0.75rem; color:var(--color-muted-fg); margin-bottom:0.25rem;">Domain</div>
-					if strings.HasPrefix(props.Tenant.Domain, "pending-") {
-						<div style="font-size:1rem; font-weight:600; color:var(--color-muted-fg);">Not set</div>
-						<a href="/dashboard/details" style="font-size:0.75rem; color:var(--color-brand-blue); text-decoration:none;">Set your domain</a>
-					} else if props.Tenant.Status == generated.TenantStatusActive {
-						<a href={ templ.URL("https://" + props.Tenant.Domain) } target="_blank" style="font-size:1rem; font-weight:600; color:var(--color-brand-blue); text-decoration:none;">{ props.Tenant.Domain }</a>
-					} else {
-						<div style="font-size:1rem; font-weight:600; color:var(--color-fg);">{ props.Tenant.Domain }</div>
-					}
+					<div style="font-size:2rem; font-weight:700; color:#22c55e; line-height:1;">{ strconv.Itoa(props.Stats.ActiveInstances) }</div>
+					<div style="font-size:0.75rem; color:var(--color-muted-fg);">Active</div>
 				</div>
 				<div style="background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.25rem;">
-					<div style="width:2.25rem; height:2.25rem; border-radius:0.625rem; display:flex; align-items:center; justify-content:center; background:color-mix(in srgb, #8b5cf6 12%, transparent); margin-bottom:0.75rem;">
-						<span class="material-symbols-outlined" style="font-size:1.25rem; color:#8b5cf6;">credit_card</span>
+					<div style="width:2.25rem; height:2.25rem; border-radius:0.625rem; display:flex; align-items:center; justify-content:center; background:color-mix(in srgb, #f59e0b 12%, transparent); margin-bottom:0.75rem;">
+						<i data-lucide="pause-circle" style="width:1.25rem; height:1.25rem; color:#f59e0b;"></i>
 					</div>
-					<div style="font-size:0.75rem; color:var(--color-muted-fg); margin-bottom:0.25rem;">Billing</div>
-					@BillingStatusBadge(props.Tenant.BillingStatus)
+					<div style="font-size:2rem; font-weight:700; color:#f59e0b; line-height:1;">{ strconv.Itoa(props.Stats.PausedInstances) }</div>
+					<div style="font-size:0.75rem; color:var(--color-muted-fg);">Paused</div>
+				</div>
+				<div style="background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.25rem;">
+					<div style="width:2.25rem; height:2.25rem; border-radius:0.625rem; display:flex; align-items:center; justify-content:center; background:color-mix(in srgb, #6b7280 12%, transparent); margin-bottom:0.75rem;">
+						<i data-lucide="x-circle" style="width:1.25rem; height:1.25rem; color:#6b7280;"></i>
+					</div>
+					<div style="font-size:2rem; font-weight:700; color:#6b7280; line-height:1;">{ strconv.Itoa(props.Stats.DisabledInstances) }</div>
+					<div style="font-size:0.75rem; color:var(--color-muted-fg);">Disabled</div>
+				</div>
+				<div style="background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.25rem;">
+					<div style="width:2.25rem; height:2.25rem; border-radius:0.625rem; display:flex; align-items:center; justify-content:center; background:color-mix(in srgb, #ef4444 12%, transparent); margin-bottom:0.75rem;">
+						<i data-lucide="alert-circle" style="width:1.25rem; height:1.25rem; color:#ef4444;"></i>
+					</div>
+					<div style="font-size:2rem; font-weight:700; color:#ef4444; line-height:1;">{ strconv.Itoa(props.Stats.FailedInstances) }</div>
+					<div style="font-size:0.75rem; color:var(--color-muted-fg);">Failed</div>
 				</div>
 			</div>
 
-			<!-- Quick Links -->
-			<div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(250px, 1fr)); gap:1rem;">
-				<a href="/dashboard/billing" style="display:flex; align-items:center; gap:1rem; padding:1.25rem; border-radius:1rem; border:1px solid var(--color-border); background:var(--color-bg); text-decoration:none; color:var(--color-fg); transition:all 0.15s ease;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.08)'" onmouseout="this.style.boxShadow='none'">
-					<div style="width:2.5rem; height:2.5rem; border-radius:0.625rem; display:flex; align-items:center; justify-content:center; background:var(--color-secondary);">
-						<span class="material-symbols-outlined" style="font-size:1.25rem; color:var(--color-muted-fg);">payments</span>
+			<!-- Pie Chart + Quick Actions -->
+			<div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.5rem;">
+				<!-- Availability Pie Chart -->
+				<div style="background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.5rem;">
+					<h2 style="font-family:var(--font-heading); font-size:1rem; font-weight:700; color:var(--color-fg); margin-bottom:1rem;">Instance Availability</h2>
+					<div style="display:flex; align-items:center; justify-content:center;">
+						<canvas id="availability-pie" width="220" height="220"></canvas>
 					</div>
-					<div>
-						<div style="font-size:0.9375rem; font-weight:600;">Billing & Payments</div>
-						<div style="font-size:0.75rem; color:var(--color-muted-fg);">View invoices, make payments</div>
+					<div style="display:flex; flex-wrap:wrap; gap:1rem; margin-top:1rem; justify-content:center;">
+						<div style="display:flex; align-items:center; gap:0.375rem;">
+							<span style="width:0.75rem; height:0.75rem; border-radius:50%; background:#22c55e; display:inline-block;"></span>
+							<span style="font-size:0.75rem; color:var(--color-muted-fg);">Active ({ strconv.Itoa(props.Stats.ActiveInstances) })</span>
+						</div>
+						<div style="display:flex; align-items:center; gap:0.375rem;">
+							<span style="width:0.75rem; height:0.75rem; border-radius:50%; background:#f59e0b; display:inline-block;"></span>
+							<span style="font-size:0.75rem; color:var(--color-muted-fg);">Paused ({ strconv.Itoa(props.Stats.PausedInstances) })</span>
+						</div>
+						<div style="display:flex; align-items:center; gap:0.375rem;">
+							<span style="width:0.75rem; height:0.75rem; border-radius:50%; background:#6b7280; display:inline-block;"></span>
+							<span style="font-size:0.75rem; color:var(--color-muted-fg);">Disabled ({ strconv.Itoa(props.Stats.DisabledInstances) })</span>
+						</div>
+						<div style="display:flex; align-items:center; gap:0.375rem;">
+							<span style="width:0.75rem; height:0.75rem; border-radius:50%; background:#ef4444; display:inline-block;"></span>
+							<span style="font-size:0.75rem; color:var(--color-muted-fg);">Failed ({ strconv.Itoa(props.Stats.FailedInstances) })</span>
+						</div>
 					</div>
-				</a>
-				<a href="/dashboard/details" style="display:flex; align-items:center; gap:1rem; padding:1.25rem; border-radius:1rem; border:1px solid var(--color-border); background:var(--color-bg); text-decoration:none; color:var(--color-fg); transition:all 0.15s ease;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.08)'" onmouseout="this.style.boxShadow='none'">
-					<div style="width:2.5rem; height:2.5rem; border-radius:0.625rem; display:flex; align-items:center; justify-content:center; background:var(--color-secondary);">
-						<span class="material-symbols-outlined" style="font-size:1.25rem; color:var(--color-muted-fg);">settings</span>
+				</div>
+
+				<!-- Quick Actions -->
+				<div style="background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.5rem;">
+					<h2 style="font-family:var(--font-heading); font-size:1rem; font-weight:700; color:var(--color-fg); margin-bottom:1rem;">Quick Actions</h2>
+					<div style="display:flex; flex-direction:column; gap:0.75rem;">
+						<a href="/dashboard/instances" style="display:flex; align-items:center; gap:1rem; padding:1rem; border-radius:0.75rem; border:1px solid var(--color-border); text-decoration:none; color:var(--color-fg); transition:all 0.15s ease;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.08)'" onmouseout="this.style.boxShadow='none'">
+							<div style="width:2.5rem; height:2.5rem; border-radius:0.625rem; display:flex; align-items:center; justify-content:center; background:color-mix(in srgb, #3b82f6 12%, transparent);">
+								<i data-lucide="server" style="width:1.25rem; height:1.25rem; color:#3b82f6;"></i>
+							</div>
+							<div>
+								<div style="font-size:0.9375rem; font-weight:600;">My Instances</div>
+								<div style="font-size:0.75rem; color:var(--color-muted-fg);">Manage your hotel instances</div>
+							</div>
+						</a>
+						<a href="/dashboard/instances/new" style="display:flex; align-items:center; gap:1rem; padding:1rem; border-radius:0.75rem; border:1px solid var(--color-border); text-decoration:none; color:var(--color-fg); transition:all 0.15s ease;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.08)'" onmouseout="this.style.boxShadow='none'">
+							<div style="width:2.5rem; height:2.5rem; border-radius:0.625rem; display:flex; align-items:center; justify-content:center; background:color-mix(in srgb, #22c55e 12%, transparent);">
+								<i data-lucide="plus-circle" style="width:1.25rem; height:1.25rem; color:#22c55e;"></i>
+							</div>
+							<div>
+								<div style="font-size:0.9375rem; font-weight:600;">New Instance</div>
+								<div style="font-size:0.75rem; color:var(--color-muted-fg);">Add a new hotel property</div>
+							</div>
+						</a>
+						<a href="/dashboard/billing" style="display:flex; align-items:center; gap:1rem; padding:1rem; border-radius:0.75rem; border:1px solid var(--color-border); text-decoration:none; color:var(--color-fg); transition:all 0.15s ease;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.08)'" onmouseout="this.style.boxShadow='none'">
+							<div style="width:2.5rem; height:2.5rem; border-radius:0.625rem; display:flex; align-items:center; justify-content:center; background:color-mix(in srgb, #8b5cf6 12%, transparent);">
+								<i data-lucide="wallet" style="width:1.25rem; height:1.25rem; color:#8b5cf6;"></i>
+							</div>
+							<div>
+								<div style="font-size:0.9375rem; font-weight:600;">Billing & Payments</div>
+								<div style="font-size:0.75rem; color:var(--color-muted-fg);">View invoices, make payments</div>
+							</div>
+						</a>
 					</div>
-					<div>
-						<div style="font-size:0.9375rem; font-weight:600;">Tenant Settings</div>
-						<div style="font-size:0.75rem; color:var(--color-muted-fg);">Manage your hotel details</div>
-					</div>
-				</a>
-				<a href="/dashboard/change-password" style="display:flex; align-items:center; gap:1rem; padding:1.25rem; border-radius:1rem; border:1px solid var(--color-border); background:var(--color-bg); text-decoration:none; color:var(--color-fg); transition:all 0.15s ease;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.08)'" onmouseout="this.style.boxShadow='none'">
-					<div style="width:2.5rem; height:2.5rem; border-radius:0.625rem; display:flex; align-items:center; justify-content:center; background:var(--color-secondary);">
-						<span class="material-symbols-outlined" style="font-size:1.25rem; color:var(--color-muted-fg);">lock</span>
-					</div>
-					<div>
-						<div style="font-size:0.9375rem; font-weight:600;">Security</div>
-						<div style="font-size:0.75rem; color:var(--color-muted-fg);">Change your password</div>
-					</div>
-				</a>
+				</div>
 			</div>
 		</div>
+		<script>
+			(function() {
+				var canvas = document.getElementById('availability-pie');
+				if (!canvas) return;
+				var ctx = canvas.getContext('2d');
+				var total = { fmtInt(props.Stats.TotalInstances) };
+				if (total === 0) {
+					ctx.fillStyle = '#e5e7eb';
+					ctx.beginPath();
+					ctx.arc(110, 110, 90, 0, 2 * Math.PI);
+					ctx.fill();
+					ctx.fillStyle = '#9ca3af';
+					ctx.font = '14px Inter, sans-serif';
+					ctx.textAlign = 'center';
+					ctx.fillText('No instances', 110, 115);
+					return;
+				}
+				var data = [
+					{ value: { fmtInt(props.Stats.ActiveInstances) }, color: '#22c55e' },
+					{ value: { fmtInt(props.Stats.PausedInstances) }, color: '#f59e0b' },
+					{ value: { fmtInt(props.Stats.DisabledInstances) }, color: '#6b7280' },
+					{ value: { fmtInt(props.Stats.FailedInstances) }, color: '#ef4444' }
+				];
+				var startAngle = -Math.PI / 2;
+				for (var i = 0; i < data.length; i++) {
+					if (data[i].value === 0) continue;
+					var sliceAngle = (data[i].value / total) * 2 * Math.PI;
+					ctx.beginPath();
+					ctx.moveTo(110, 110);
+					ctx.arc(110, 110, 90, startAngle, startAngle + sliceAngle);
+					ctx.closePath();
+					ctx.fillStyle = data[i].color;
+					ctx.fill();
+					startAngle += sliceAngle;
+				}
+				ctx.beginPath();
+				ctx.arc(110, 110, 50, 0, 2 * Math.PI);
+				ctx.fillStyle = '#fff';
+				ctx.fill();
+				ctx.fillStyle = '#1f2937';
+				ctx.font = 'bold 24px Inter, sans-serif';
+				ctx.textAlign = 'center';
+				ctx.textBaseline = 'middle';
+				ctx.fillText(total, 110, 105);
+				ctx.font = '12px Inter, sans-serif';
+				ctx.fillStyle = '#6b7280';
+				ctx.fillText('instances', 110, 125);
+			})();
+		</script>
+		<script>if(typeof lucide!=='undefined'){lucide.createIcons();}</script>
 	}
+}
+
+func fmtInt(v int) string {
+	return strconv.Itoa(v)
 }

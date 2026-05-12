@@ -1,0 +1,188 @@
+package admin
+
+import (
+	"fmt"
+
+	"github.com/dadyutenga/hms-control/internal/db/generated"
+)
+
+type AdminInstanceDetailProps struct {
+	Instance    generated.Instance
+	Deployments []generated.InstanceDeployment
+}
+
+templ AdminInstanceDetail(props AdminInstanceDetailProps) {
+	@AdminLayout(props.Instance.HotelName, "") {
+		<div style="max-width:1400px; margin:0 auto;">
+			<div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:1.5rem; flex-wrap:wrap;">
+				<a href="/admin/instances" style="color:var(--color-muted-fg); text-decoration:none; font-size:0.875rem;">&larr; Back to Instances</a>
+				<h1 style="font-family:var(--font-heading); font-size:1.5rem; font-weight:700; letter-spacing:-0.025em; color:var(--color-fg);">{ props.Instance.HotelName }</h1>
+				@adminInstanceStatusBadge(props.Instance.Status)
+				@BillingStatusBadge(props.Instance.BillingStatus)
+				if props.Instance.AdminDisabled {
+					<span style="display:inline-flex; align-items:center; padding:0.125rem 0.625rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:hsl(0, 70%, 95%); color:hsl(0, 70%, 40%);">admin disabled</span>
+				}
+			</div>
+
+			<!-- Info Grid -->
+			<div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
+				<!-- Instance Details -->
+				@detailCard("Instance Details") {
+					<dl style="display:flex; flex-direction:column; gap:0.75rem;">
+						@detailRow("Hotel Name", props.Instance.HotelName)
+						@detailRow("Slug", props.Instance.Slug)
+						@detailRow("Domain", props.Instance.Domain)
+						@detailRow("DB Name", props.Instance.DbName)
+						@detailRow("Created", props.Instance.CreatedAt.Format("02 Jan 2006 15:04"))
+						if props.Instance.ProvisionedAt != nil {
+							@detailRow("Provisioned", props.Instance.ProvisionedAt.Format("02 Jan 2006 15:04"))
+						}
+						if props.Instance.ArchivedAt != nil {
+							@detailRow("Archived", props.Instance.ArchivedAt.Format("02 Jan 2006 15:04"))
+						}
+					</dl>
+				}
+
+				<!-- Billing Info -->
+				@detailCard("Billing") {
+					<div style="margin-bottom:0.75rem;">
+						@BillingStatusBadge(props.Instance.BillingStatus)
+					</div>
+					<dl style="display:flex; flex-direction:column; gap:0.75rem;">
+						@detailRow("Package", props.Instance.PackageName)
+						@detailRow("Price", fmt.Sprintf("%,.0f TZS/mo", props.Instance.Price))
+						if props.Instance.LastPaymentAt != nil {
+							@detailRow("Last Payment", props.Instance.LastPaymentAt.Format("02 Jan 2006"))
+						} else {
+							@detailRow("Last Payment", "Never")
+						}
+						if props.Instance.NextDueAt != nil {
+							@detailRow("Next Due", props.Instance.NextDueAt.Format("02 Jan 2006"))
+						} else {
+							@detailRow("Next Due", "Not set")
+						}
+					</dl>
+
+					<!-- Update Price -->
+					<div style="margin-top:1rem; padding-top:1rem; border-top:1px solid var(--color-border);">
+						<h3 style="font-size:0.75rem; font-weight:600; color:var(--color-muted-fg); margin-bottom:0.5rem;">Update Price</h3>
+						<form method="POST" action={ templ.URL("/admin/instances/" + props.Instance.ID.String() + "/price") } style="display:flex; gap:0.5rem; align-items:flex-end;">
+							<div style="flex:1; display:flex; flex-direction:column; gap:0.25rem;">
+								<label style="font-size:0.6875rem; color:var(--color-muted-fg);">Price (TZS)</label>
+								<input type="number" name="price" value={ fmt.Sprintf("%.0f", props.Instance.Price) } min="0" step="1000"
+									style="border:1px solid var(--color-border); border-radius:0.5rem; padding:0.375rem 0.5rem; font-size:0.8125rem; background:var(--color-bg); color:var(--color-fg);"/>
+							</div>
+							<div style="flex:1; display:flex; flex-direction:column; gap:0.25rem;">
+								<label style="font-size:0.6875rem; color:var(--color-muted-fg);">Package</label>
+								<input type="text" name="package_name" value={ props.Instance.PackageName }
+									style="border:1px solid var(--color-border); border-radius:0.5rem; padding:0.375rem 0.5rem; font-size:0.8125rem; background:var(--color-bg); color:var(--color-fg);"/>
+							</div>
+							<button type="submit" style="padding:0.375rem 0.75rem; border-radius:0.5rem; border:none; font-size:0.75rem; font-weight:600; cursor:pointer; background:var(--color-brand-blue); color:#fff;">Update</button>
+						</form>
+					</div>
+				}
+			</div>
+
+			<!-- Admin Controls -->
+			<div style="background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.5rem; margin-bottom:1rem;">
+				<h2 style="font-family:var(--font-heading); font-size:1rem; font-weight:700; color:var(--color-fg); margin-bottom:1rem;">Admin Controls</h2>
+				<div style="display:flex; flex-wrap:wrap; gap:0.5rem;">
+					<!-- Enable (only if admin_disabled) -->
+					if props.Instance.AdminDisabled {
+						<button
+							hx-post={ "/admin/instances/" + props.Instance.ID.String() + "/enable" }
+							hx-confirm="Enable this instance?"
+							style="display:inline-flex; align-items:center; gap:0.25rem; padding:0.5rem 1.25rem; border-radius:9999px; border:none; font-size:0.75rem; font-weight:600; cursor:pointer; background:#22c55e; color:#fff; transition:opacity 0.15s ease;"
+							onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+							<span class="material-symbols-outlined" style="font-size:0.875rem;">check_circle</span> Enable
+						</button>
+					}
+					<!-- Disable (only if active or paused, and not already admin_disabled) -->
+					if (props.Instance.Status == "active" || props.Instance.Status == "paused") && !props.Instance.AdminDisabled {
+						<button
+							hx-post={ "/admin/instances/" + props.Instance.ID.String() + "/disable" }
+							hx-confirm="Disable this instance? Only an admin can re-enable it."
+							style="display:inline-flex; align-items:center; gap:0.25rem; padding:0.5rem 1.25rem; border-radius:9999px; border:1px solid var(--color-destructive); font-size:0.75rem; font-weight:600; cursor:pointer; background:var(--color-bg); color:var(--color-destructive); transition:all 0.15s ease;"
+							onmouseover="this.style.background='var(--color-secondary)'" onmouseout="this.style.background='var(--color-bg)'">
+							<span class="material-symbols-outlined" style="font-size:0.875rem;">block</span> Disable
+						</button>
+					}
+					<!-- Start/Stop -->
+					if props.Instance.Status == "active" {
+						<button
+							hx-post={ "/admin/instances/" + props.Instance.ID.String() + "/stop" }
+							hx-confirm="Stop this instance?"
+							style="display:inline-flex; align-items:center; gap:0.25rem; padding:0.5rem 1.25rem; border-radius:9999px; border:1px solid #f59e0b; font-size:0.75rem; font-weight:600; cursor:pointer; background:var(--color-bg); color:#f59e0b; transition:all 0.15s ease;"
+							onmouseover="this.style.background='#fef3c7'" onmouseout="this.style.background='var(--color-bg)'">
+							<span class="material-symbols-outlined" style="font-size:0.875rem;">pause</span> Pause
+						</button>
+					}
+					if props.Instance.Status == "paused" {
+						<button
+							hx-post={ "/admin/instances/" + props.Instance.ID.String() + "/start" }
+							hx-confirm="Start this instance?"
+							style="display:inline-flex; align-items:center; gap:0.25rem; padding:0.5rem 1.25rem; border-radius:9999px; border:none; font-size:0.75rem; font-weight:600; cursor:pointer; background:var(--color-brand-blue); color:#fff; transition:opacity 0.15s ease;"
+							onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+							<span class="material-symbols-outlined" style="font-size:0.875rem;">play_arrow</span> Start
+						</button>
+					}
+					<!-- Archive (not for archived/deleted) -->
+					if props.Instance.Status != "archived" && props.Instance.Status != "deleted" {
+						<button
+							hx-post={ "/admin/instances/" + props.Instance.ID.String() + "/archive" }
+							hx-confirm="Archive this instance?"
+							style="display:inline-flex; align-items:center; gap:0.25rem; padding:0.5rem 1.25rem; border-radius:9999px; border:1px solid var(--color-border); font-size:0.75rem; font-weight:600; cursor:pointer; background:var(--color-bg); color:var(--color-muted-fg); transition:all 0.15s ease;"
+							onmouseover="this.style.background='var(--color-secondary)'" onmouseout="this.style.background='var(--color-bg)'">
+							<span class="material-symbols-outlined" style="font-size:0.875rem;">archive</span> Archive
+						</button>
+					}
+					<!-- Delete (admin only) -->
+					if props.Instance.Status != "deleted" {
+						<button
+							hx-post={ "/admin/instances/" + props.Instance.ID.String() + "/delete" }
+							hx-confirm="Permanently delete this instance? This cannot be undone."
+							style="display:inline-flex; align-items:center; gap:0.25rem; padding:0.5rem 1.25rem; border-radius:9999px; border:1px solid var(--color-destructive); font-size:0.75rem; font-weight:600; cursor:pointer; background:var(--color-bg); color:var(--color-destructive); transition:all 0.15s ease;"
+							onmouseover="this.style.background='var(--color-secondary)'" onmouseout="this.style.background='var(--color-bg)'">
+							<span class="material-symbols-outlined" style="font-size:0.875rem;">delete</span> Delete
+						</button>
+					}
+				</div>
+			</div>
+
+			<!-- Deployments -->
+			<div style="background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.5rem;">
+				<h2 style="font-family:var(--font-heading); font-size:1rem; font-weight:700; color:var(--color-fg); margin-bottom:1rem;">Deployments</h2>
+				if len(props.Deployments) == 0 {
+					<p style="color:var(--color-muted-fg); font-size:0.875rem;">No deployments recorded.</p>
+				} else {
+					<table style="width:100%; font-size:0.875rem; border-collapse:collapse;">
+						<thead>
+							<tr style="border-bottom:1px solid var(--color-border); color:var(--color-muted-fg); text-align:left;">
+								<th style="padding:0.5rem 0; font-weight:500;">Action</th>
+								<th style="padding:0.5rem 0; font-weight:500;">Status</th>
+								<th style="padding:0.5rem 0; font-weight:500;">Created</th>
+								<th style="padding:0.5rem 0; font-weight:500;">Completed</th>
+							</tr>
+						</thead>
+						<tbody>
+							for _, d := range props.Deployments {
+								<tr style="border-bottom:1px solid var(--color-border);">
+									<td style="padding:0.625rem 0; color:var(--color-fg);">{ d.Action }</td>
+									<td style="padding:0.625rem 0;">
+										@adminInstanceStatusBadge(d.Status)
+									</td>
+									<td style="padding:0.625rem 0; color:var(--color-muted-fg);">{ d.CreatedAt.Format("02 Jan 2006 15:04") }</td>
+									<td style="padding:0.625rem 0; color:var(--color-muted-fg);">
+										if d.CompletedAt != nil {
+											{ d.CompletedAt.Format("02 Jan 2006 15:04") }
+										}
+									</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				}
+			</div>
+		</div>
+	}
+}

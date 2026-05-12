@@ -12,6 +12,14 @@ type DashboardStats struct {
 	RecentActions      []AuditLog
 }
 
+type ClientDashboardStats struct {
+	TotalInstances  int
+	ActiveInstances int
+	PausedInstances int
+	DisabledInstances int
+	FailedInstances  int
+}
+
 type TenantRow struct {
 	ID            string
 	CompanyName   string
