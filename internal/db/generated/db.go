@@ -364,7 +364,7 @@ func scanTenant(scanner interface{ Scan(dest ...any) error }) (Tenant, error) {
 	if billingStatus.Valid {
 		t.BillingStatus = billingStatus.String
 	} else {
-		t.BillingStatus = BillingStatusPaid
+		t.BillingStatus = BillingStatusUnpaid
 	}
 	if lastPaymentAt.Valid {
 		t.LastPaymentAt = &lastPaymentAt.Time

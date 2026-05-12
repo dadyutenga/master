@@ -9,6 +9,8 @@ import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
 import (
+	"strings"
+
 	"github.com/dadyutenga/hms-control/internal/db/generated"
 )
 
@@ -57,7 +59,7 @@ func Dashboard(props DashboardProps) templ.Component {
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(props.User.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/dashboard.templ`, Line: 16, Col: 131}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/dashboard.templ`, Line: 18, Col: 131}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -70,7 +72,7 @@ func Dashboard(props DashboardProps) templ.Component {
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(props.Tenant.CompanyName)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/dashboard.templ`, Line: 27, Col: 100}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/dashboard.templ`, Line: 29, Col: 100}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -80,57 +82,62 @@ func Dashboard(props DashboardProps) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			if props.Tenant.Status == generated.TenantStatusActive {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<a href=\"")
+			if strings.HasPrefix(props.Tenant.Domain, "pending-") {
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div style=\"font-size:1rem; font-weight:600; color:var(--color-muted-fg);\">Not set</div><a href=\"/dashboard/details\" style=\"font-size:0.75rem; color:var(--color-brand-blue); text-decoration:none;\">Set your domain</a>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			} else if props.Tenant.Status == generated.TenantStatusActive {
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<a href=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var5 templ.SafeURL
 				templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinURLErrs(templ.URL("https://" + props.Tenant.Domain))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/dashboard.templ`, Line: 35, Col: 59}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/dashboard.templ`, Line: 40, Col: 59}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\" target=\"_blank\" style=\"font-size:1rem; font-weight:600; color:var(--color-brand-blue); text-decoration:none;\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" target=\"_blank\" style=\"font-size:1rem; font-weight:600; color:var(--color-brand-blue); text-decoration:none;\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var6 string
 				templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(props.Tenant.Domain)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/dashboard.templ`, Line: 35, Col: 193}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/dashboard.templ`, Line: 40, Col: 193}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</a>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</a>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<div style=\"font-size:1rem; font-weight:600; color:var(--color-fg);\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<div style=\"font-size:1rem; font-weight:600; color:var(--color-fg);\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var7 string
 				templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(props.Tenant.Domain)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/dashboard.templ`, Line: 37, Col: 96}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/dashboard.templ`, Line: 42, Col: 96}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</div><div style=\"background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.25rem;\"><div style=\"width:2.25rem; height:2.25rem; border-radius:0.625rem; display:flex; align-items:center; justify-content:center; background:color-mix(in srgb, #8b5cf6 12%, transparent); margin-bottom:0.75rem;\"><span class=\"material-symbols-outlined\" style=\"font-size:1.25rem; color:#8b5cf6;\">credit_card</span></div><div style=\"font-size:0.75rem; color:var(--color-muted-fg); margin-bottom:0.25rem;\">Billing</div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</div><div style=\"background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.25rem;\"><div style=\"width:2.25rem; height:2.25rem; border-radius:0.625rem; display:flex; align-items:center; justify-content:center; background:color-mix(in srgb, #8b5cf6 12%, transparent); margin-bottom:0.75rem;\"><span class=\"material-symbols-outlined\" style=\"font-size:1.25rem; color:#8b5cf6;\">credit_card</span></div><div style=\"font-size:0.75rem; color:var(--color-muted-fg); margin-bottom:0.25rem;\">Billing</div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -138,7 +145,7 @@ func Dashboard(props DashboardProps) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</div></div><!-- Quick Links --><div style=\"display:grid; grid-template-columns:repeat(auto-fill, minmax(250px, 1fr)); gap:1rem;\"><a href=\"/dashboard/billing\" style=\"display:flex; align-items:center; gap:1rem; padding:1.25rem; border-radius:1rem; border:1px solid var(--color-border); background:var(--color-bg); text-decoration:none; color:var(--color-fg); transition:all 0.15s ease;\" onmouseover=\"this.style.boxShadow='0 4px 12px rgba(0,0,0,0.08)'\" onmouseout=\"this.style.boxShadow='none'\"><div style=\"width:2.5rem; height:2.5rem; border-radius:0.625rem; display:flex; align-items:center; justify-content:center; background:var(--color-secondary);\"><span class=\"material-symbols-outlined\" style=\"font-size:1.25rem; color:var(--color-muted-fg);\">payments</span></div><div><div style=\"font-size:0.9375rem; font-weight:600;\">Billing & Payments</div><div style=\"font-size:0.75rem; color:var(--color-muted-fg);\">View invoices, make payments</div></div></a> <a href=\"/dashboard/details\" style=\"display:flex; align-items:center; gap:1rem; padding:1.25rem; border-radius:1rem; border:1px solid var(--color-border); background:var(--color-bg); text-decoration:none; color:var(--color-fg); transition:all 0.15s ease;\" onmouseover=\"this.style.boxShadow='0 4px 12px rgba(0,0,0,0.08)'\" onmouseout=\"this.style.boxShadow='none'\"><div style=\"width:2.5rem; height:2.5rem; border-radius:0.625rem; display:flex; align-items:center; justify-content:center; background:var(--color-secondary);\"><span class=\"material-symbols-outlined\" style=\"font-size:1.25rem; color:var(--color-muted-fg);\">settings</span></div><div><div style=\"font-size:0.9375rem; font-weight:600;\">Tenant Settings</div><div style=\"font-size:0.75rem; color:var(--color-muted-fg);\">Manage your hotel details</div></div></a> <a href=\"/dashboard/change-password\" style=\"display:flex; align-items:center; gap:1rem; padding:1.25rem; border-radius:1rem; border:1px solid var(--color-border); background:var(--color-bg); text-decoration:none; color:var(--color-fg); transition:all 0.15s ease;\" onmouseover=\"this.style.boxShadow='0 4px 12px rgba(0,0,0,0.08)'\" onmouseout=\"this.style.boxShadow='none'\"><div style=\"width:2.5rem; height:2.5rem; border-radius:0.625rem; display:flex; align-items:center; justify-content:center; background:var(--color-secondary);\"><span class=\"material-symbols-outlined\" style=\"font-size:1.25rem; color:var(--color-muted-fg);\">lock</span></div><div><div style=\"font-size:0.9375rem; font-weight:600;\">Security</div><div style=\"font-size:0.75rem; color:var(--color-muted-fg);\">Change your password</div></div></a></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</div></div><!-- Quick Links --><div style=\"display:grid; grid-template-columns:repeat(auto-fill, minmax(250px, 1fr)); gap:1rem;\"><a href=\"/dashboard/billing\" style=\"display:flex; align-items:center; gap:1rem; padding:1.25rem; border-radius:1rem; border:1px solid var(--color-border); background:var(--color-bg); text-decoration:none; color:var(--color-fg); transition:all 0.15s ease;\" onmouseover=\"this.style.boxShadow='0 4px 12px rgba(0,0,0,0.08)'\" onmouseout=\"this.style.boxShadow='none'\"><div style=\"width:2.5rem; height:2.5rem; border-radius:0.625rem; display:flex; align-items:center; justify-content:center; background:var(--color-secondary);\"><span class=\"material-symbols-outlined\" style=\"font-size:1.25rem; color:var(--color-muted-fg);\">payments</span></div><div><div style=\"font-size:0.9375rem; font-weight:600;\">Billing & Payments</div><div style=\"font-size:0.75rem; color:var(--color-muted-fg);\">View invoices, make payments</div></div></a> <a href=\"/dashboard/details\" style=\"display:flex; align-items:center; gap:1rem; padding:1.25rem; border-radius:1rem; border:1px solid var(--color-border); background:var(--color-bg); text-decoration:none; color:var(--color-fg); transition:all 0.15s ease;\" onmouseover=\"this.style.boxShadow='0 4px 12px rgba(0,0,0,0.08)'\" onmouseout=\"this.style.boxShadow='none'\"><div style=\"width:2.5rem; height:2.5rem; border-radius:0.625rem; display:flex; align-items:center; justify-content:center; background:var(--color-secondary);\"><span class=\"material-symbols-outlined\" style=\"font-size:1.25rem; color:var(--color-muted-fg);\">settings</span></div><div><div style=\"font-size:0.9375rem; font-weight:600;\">Tenant Settings</div><div style=\"font-size:0.75rem; color:var(--color-muted-fg);\">Manage your hotel details</div></div></a> <a href=\"/dashboard/change-password\" style=\"display:flex; align-items:center; gap:1rem; padding:1.25rem; border-radius:1rem; border:1px solid var(--color-border); background:var(--color-bg); text-decoration:none; color:var(--color-fg); transition:all 0.15s ease;\" onmouseover=\"this.style.boxShadow='0 4px 12px rgba(0,0,0,0.08)'\" onmouseout=\"this.style.boxShadow='none'\"><div style=\"width:2.5rem; height:2.5rem; border-radius:0.625rem; display:flex; align-items:center; justify-content:center; background:var(--color-secondary);\"><span class=\"material-symbols-outlined\" style=\"font-size:1.25rem; color:var(--color-muted-fg);\">lock</span></div><div><div style=\"font-size:0.9375rem; font-weight:600;\">Security</div><div style=\"font-size:0.75rem; color:var(--color-muted-fg);\">Change your password</div></div></a></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

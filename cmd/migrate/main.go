@@ -96,6 +96,14 @@ func runMigrationsUp(db *sql.DB) {
 		}
 	}
 	fmt.Println("All migrations applied successfully.")
+
+	// Reset billing status: tenants with no actual payments should be 'unpaid'
+	db.Exec(`UPDATE tenants SET billing_status = 'unpaid' WHERE billing_status = 'paid' AND id NOT IN (SELECT DISTINCT tenant_id FROM billing_transactions WHERE transaction_type = 'payment' AND status = 'completed')`)
+	fmt.Println("Billing status reset for tenants with no payments.")
+
+	// Reset auto-generated domains to pending format
+	db.Exec(`UPDATE tenants SET domain = 'pending-' || substr(id, 1, 8) WHERE domain LIKE '%.hms.co.tz'`)
+	fmt.Println("Auto-generated domains reset to pending.")
 }
 
 func runMigrationsDown(db *sql.DB) {

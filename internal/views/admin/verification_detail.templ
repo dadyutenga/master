@@ -124,7 +124,7 @@ templ VerificationDetail(tenant generated.Tenant, user generated.User, documents
 						if tenant.Country != nil {
 							@detailRow("Country", *tenant.Country)
 						}
-						@detailRow("Domain", tenant.Domain)
+						@detailRow("Domain", DomainDisplay(tenant.Domain))
 						if tenant.RequestedSubdomain != nil && *tenant.RequestedSubdomain != "" {
 							@detailRow("Subdomain", *tenant.RequestedSubdomain)
 						}

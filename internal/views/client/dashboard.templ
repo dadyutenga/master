@@ -1,6 +1,8 @@
 package client
 
 import (
+	"strings"
+
 	"github.com/dadyutenga/hms-control/internal/db/generated"
 )
 
@@ -31,7 +33,10 @@ templ Dashboard(props DashboardProps) {
 						<span class="material-symbols-outlined" style="font-size:1.25rem; color:#22c55e;">language</span>
 					</div>
 					<div style="font-size:0.75rem; color:var(--color-muted-fg); margin-bottom:0.25rem;">Domain</div>
-					if props.Tenant.Status == generated.TenantStatusActive {
+					if strings.HasPrefix(props.Tenant.Domain, "pending-") {
+						<div style="font-size:1rem; font-weight:600; color:var(--color-muted-fg);">Not set</div>
+						<a href="/dashboard/details" style="font-size:0.75rem; color:var(--color-brand-blue); text-decoration:none;">Set your domain</a>
+					} else if props.Tenant.Status == generated.TenantStatusActive {
 						<a href={ templ.URL("https://" + props.Tenant.Domain) } target="_blank" style="font-size:1rem; font-weight:600; color:var(--color-brand-blue); text-decoration:none;">{ props.Tenant.Domain }</a>
 					} else {
 						<div style="font-size:1rem; font-weight:600; color:var(--color-fg);">{ props.Tenant.Domain }</div>

@@ -95,7 +95,7 @@ templ TenantDetail(tenant generated.Tenant, user generated.User, deployments []g
 				@detailCard("System Info") {
 					<dl style="display:flex; flex-direction:column; gap:0.75rem;">
 						@detailRow("Slug", tenant.Slug)
-						@detailRow("Domain", tenant.Domain)
+						@detailRow("Domain", DomainDisplay(tenant.Domain))
 						@detailRow("Status", string(tenant.Status))
 						@detailRow("DB Name", tenant.DbName)
 						@detailRow("Created", tenant.CreatedAt.Format("02 Jan 2006 15:04"))

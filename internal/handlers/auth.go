@@ -19,6 +19,7 @@ import (
 	"github.com/dadyutenga/hms-control/internal/views/home"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -195,11 +196,13 @@ func (h *Handler) RegisterStep3(c *fiber.Ctx) error {
 	}
 
 	slug := generateSlug(q, c.Context(), hotelName)
-	domain := slug + "." + h.cfg.BaseDomain
 	dbPass, err := randomHex(16)
 	if err != nil {
 		return render(c, auth.RegisterStep3(auth.Step3Props{Error: "Registration failed."}))
 	}
+
+	tenantID := uuid.New()
+	domain := "pending-" + tenantID.String()[:8]
 
 	tenant, err := q.CreateTenant(c.Context(), generated.CreateTenantParams{
 		UserID: user.ID, CompanyName: hotelName, Slug: slug, Domain: domain,

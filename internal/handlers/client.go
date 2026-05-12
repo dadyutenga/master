@@ -42,16 +42,22 @@ func (h *Handler) ClientDashboard(c *fiber.Ctx) error {
 		}))
 	}
 
-	if tenant.BillingStatus != generated.BillingStatusPaid {
-		return render(c, client.BillingBlocked(client.BillingBlockedProps{
-			Tenant:  tenant,
-			User:    user,
-			Contact: contact,
-		}))
+	// Pause container if tenant is active but unpaid
+	if tenant.Status == generated.TenantStatusActive && tenant.BillingStatus != generated.BillingStatusPaid {
+		h.pauseTenantContainer(tenant.ID)
 	}
 
 	return render(c, client.Dashboard(client.DashboardProps{
 		Tenant: tenant,
 		User:   user,
 	}))
+}
+
+func (h *Handler) pauseTenantContainer(tenantID interface{}) {
+	// Best-effort pause - don't fail if container doesn't exist
+	id, ok := tenantID.(interface{ String() string })
+	if !ok {
+		return
+	}
+	h.db.Exec(`UPDATE deployments SET status = 'paused', updated_at = CURRENT_TIMESTAMP WHERE tenant_id = ? AND status = 'active'`, id.String())
 }

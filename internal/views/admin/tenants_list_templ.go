@@ -268,7 +268,7 @@ func TenantTable(tenants []generated.ListTenantsRow) templ.Component {
 			templ_7745c5c3_Var8 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "<div id=\"tenant-table\"><table class=\"w-full text-sm\" style=\"font-family: var(--font-body);\"><thead><tr class=\"border-b\" style=\"border-color: var(--color-border); color: var(--color-muted-fg);\"><th class=\"text-left py-3\">Company</th><th class=\"text-left py-3\">Domain</th><th class=\"text-left py-3\">Status</th><th class=\"text-left py-3\">Billing</th><th class=\"text-left py-3\">Registered</th><th class=\"text-left py-3\">Actions</th></tr></thead> <tbody>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "<div id=\"tenant-table\"><table class=\"w-full text-sm\" style=\"font-family: var(--font-body);\"><thead><tr class=\"border-b\" style=\"border-color: var(--color-border); color: var(--color-muted-fg);\"><th class=\"text-left py-3\">Company</th><th class=\"text-left py-3\">Domain</th><th class=\"text-left py-3\">Status</th><th class=\"text-left py-3\">Registered</th><th class=\"text-left py-3\">Actions</th></tr></thead> <tbody>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -280,7 +280,7 @@ func TenantTable(tenants []generated.ListTenantsRow) templ.Component {
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(t.CompanyName)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenants_list.templ`, Line: 164, Col: 79}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenants_list.templ`, Line: 163, Col: 79}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
@@ -293,52 +293,67 @@ func TenantTable(tenants []generated.ListTenantsRow) templ.Component {
 			var templ_7745c5c3_Var10 string
 			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(t.UserEmail)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenants_list.templ`, Line: 165, Col: 79}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenants_list.templ`, Line: 164, Col: 79}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "</div></td><td class=\"py-3\"><a href=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "</div></td><td class=\"py-3\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var11 templ.SafeURL
-			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinURLErrs(templ.URL("https://" + t.Domain))
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenants_list.templ`, Line: 168, Col: 49}
+			if IsPendingDomain(t.Domain) {
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "<span style=\"color:var(--color-muted-fg); font-size:0.875rem;\">Not set</span>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			} else {
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "<a href=\"")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var11 templ.SafeURL
+				templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinURLErrs(templ.URL("https://" + t.Domain))
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenants_list.templ`, Line: 170, Col: 49}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 35, "\" class=\"hover:underline\" target=\"_blank\" style=\"color: var(--color-brand-blue);\">")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var12 string
+				templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(t.Domain)
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenants_list.templ`, Line: 172, Col: 18}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "</a>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "\" class=\"hover:underline\" target=\"_blank\" style=\"color: var(--color-brand-blue);\">")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			var templ_7745c5c3_Var12 string
-			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(t.Domain)
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenants_list.templ`, Line: 170, Col: 18}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "</a></td><td class=\"py-3\" id=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "</td><td class=\"py-3\" id=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var13 string
 			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.ResolveAttributeValue("status-" + t.ID.String())
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenants_list.templ`, Line: 173, Col: 53}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenants_list.templ`, Line: 176, Col: 53}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var13)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 35, "\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -346,15 +361,7 @@ func TenantTable(tenants []generated.ListTenantsRow) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "</td><td class=\"py-3\">")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = BillingStatusBadge(t.BillingStatus).Render(ctx, templ_7745c5c3_Buffer)
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "</td><td class=\"py-3\" style=\"color: var(--color-muted-fg);\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, "</td><td class=\"py-3\" style=\"color: var(--color-muted-fg);\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -367,7 +374,7 @@ func TenantTable(tenants []generated.ListTenantsRow) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "</td><td class=\"py-3\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "</td><td class=\"py-3\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -375,12 +382,12 @@ func TenantTable(tenants []generated.ListTenantsRow) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, "</td></tr>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "</td></tr>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "</tbody></table></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "</tbody></table></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -409,12 +416,12 @@ func TenantActions(t generated.ListTenantsRow) templ.Component {
 			templ_7745c5c3_Var15 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "<div class=\"flex gap-2\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "<div class=\"flex gap-2\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if t.Status == generated.TenantStatusPendingApproval {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "<button hx-post=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "<button hx-post=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -427,7 +434,7 @@ func TenantActions(t generated.ListTenantsRow) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "\" hx-target=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "\" hx-target=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -440,7 +447,7 @@ func TenantActions(t generated.ListTenantsRow) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "\" hx-swap=\"innerHTML\" class=\"px-3 py-1 rounded text-xs font-medium hover:opacity-90\" style=\"background: var(--color-brand-blue); color: var(--color-primary-fg);\">Approve</button> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 46, "\" hx-swap=\"innerHTML\" class=\"px-3 py-1 rounded text-xs font-medium hover:opacity-90\" style=\"background: var(--color-brand-blue); color: var(--color-primary-fg);\">Approve</button> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -450,7 +457,7 @@ func TenantActions(t generated.ListTenantsRow) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "<button onclick=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, "<button onclick=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -459,12 +466,12 @@ func TenantActions(t generated.ListTenantsRow) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 46, "\" class=\"px-3 py-1 rounded text-xs font-medium hover:opacity-90\" style=\"background: var(--color-destructive); color: var(--color-primary-fg);\">Suspend</button> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, "\" class=\"px-3 py-1 rounded text-xs font-medium hover:opacity-90\" style=\"background: var(--color-destructive); color: var(--color-primary-fg);\">Suspend</button> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, "<a href=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 49, "<a href=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -477,7 +484,7 @@ func TenantActions(t generated.ListTenantsRow) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, "\" class=\"px-3 py-1 rounded text-xs font-medium hover:[background-color:var(--color-muted)]\" style=\"background: var(--color-secondary); color: var(--color-fg);\">Details</a> ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, "\" class=\"px-3 py-1 rounded text-xs font-medium hover:[background-color:var(--color-muted)]\" style=\"background: var(--color-secondary); color: var(--color-fg);\">Details</a> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -485,7 +492,7 @@ func TenantActions(t generated.ListTenantsRow) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 49, "<button onclick=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 51, "<button onclick=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -494,7 +501,7 @@ func TenantActions(t generated.ListTenantsRow) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, "\" class=\"px-3 py-1 rounded text-xs font-medium hover:[background-color:var(--color-muted)]\" style=\"background: var(--color-secondary); color: var(--color-fg);\">Change Password</button></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 52, "\" class=\"px-3 py-1 rounded text-xs font-medium hover:[background-color:var(--color-muted)]\" style=\"background: var(--color-secondary); color: var(--color-fg);\">Change Password</button></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -525,37 +532,37 @@ func StatusBadge(status string) templ.Component {
 		ctx = templ.ClearChildren(ctx)
 		switch status {
 		case "pending_verification":
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 51, "<span class=\"px-2 py-1 rounded text-xs\" style=\"background: hsl(35, 90%, 95%); color: hsl(35, 90%, 35%);\">unverified</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, "<span class=\"px-2 py-1 rounded text-xs\" style=\"background: hsl(35, 90%, 95%); color: hsl(35, 90%, 35%);\">unverified</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		case "pending_approval":
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 52, "<span class=\"px-2 py-1 rounded text-xs\" style=\"background: hsl(270, 50%, 95%); color: hsl(270, 50%, 40%);\">pending</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 54, "<span class=\"px-2 py-1 rounded text-xs\" style=\"background: hsl(270, 50%, 95%); color: hsl(270, 50%, 40%);\">pending</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		case "provisioning":
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, "<span class=\"px-2 py-1 rounded text-xs animate-pulse\" style=\"background: hsl(200, 80%, 95%); color: hsl(200, 80%, 40%);\">provisioning</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 55, "<span class=\"px-2 py-1 rounded text-xs animate-pulse\" style=\"background: hsl(200, 80%, 95%); color: hsl(200, 80%, 40%);\">provisioning</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		case "active":
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 54, "<span class=\"px-2 py-1 rounded text-xs\" style=\"background: hsl(140, 60%, 95%); color: hsl(140, 60%, 35%);\">active</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 56, "<span class=\"px-2 py-1 rounded text-xs\" style=\"background: hsl(140, 60%, 95%); color: hsl(140, 60%, 35%);\">active</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		case "suspended":
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 55, "<span class=\"px-2 py-1 rounded text-xs\" style=\"background: hsl(0, 70%, 95%); color: hsl(0, 70%, 40%);\">suspended</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 57, "<span class=\"px-2 py-1 rounded text-xs\" style=\"background: hsl(0, 70%, 95%); color: hsl(0, 70%, 40%);\">suspended</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		case "failed":
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 56, "<span class=\"px-2 py-1 rounded text-xs\" style=\"background: hsl(0, 70%, 95%); color: hsl(0, 70%, 40%);\">failed</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 58, "<span class=\"px-2 py-1 rounded text-xs\" style=\"background: hsl(0, 70%, 95%); color: hsl(0, 70%, 40%);\">failed</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		default:
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 57, "<span class=\"px-2 py-1 rounded text-xs\" style=\"background: var(--color-secondary); color: var(--color-muted-fg);\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 59, "<span class=\"px-2 py-1 rounded text-xs\" style=\"background: var(--color-secondary); color: var(--color-muted-fg);\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -568,7 +575,7 @@ func StatusBadge(status string) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 58, "</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 60, "</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -598,7 +605,7 @@ func tenantSuspendModal() templ.Component {
 			templ_7745c5c3_Var23 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 59, "<div id=\"suspend-modal\" style=\"display:none; position:fixed; inset:0; z-index:200; background:rgba(0,0,0,0.5); align-items:center; justify-content:center;\" onclick=\"if(event.target===this)closeSuspendModal()\"><div style=\"background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:2rem; max-width:420px; width:90%; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); animation:modalIn 0.15s ease-out;\"><div style=\"text-align:center;\"><span class=\"material-symbols-outlined\" style=\"font-size:3rem; display:block; margin-bottom:0.75rem; color:var(--color-destructive);\">block</span><h3 style=\"font-family:var(--font-heading); font-size:1.125rem; font-weight:700; color:var(--color-fg); margin-bottom:0.5rem;\">Suspend Tenant</h3><p style=\"font-size:0.875rem; color:var(--color-muted-fg); line-height:1.5;\">Enter your admin password to confirm suspension of <strong id=\"suspend-company-name\" style=\"color:var(--color-fg);\"></strong>.</p></div><div style=\"margin-top:1.25rem;\"><input type=\"password\" id=\"suspend-password\" placeholder=\"Admin password\" style=\"width:100%; border:1px solid var(--color-border); border-radius:0.5rem; padding:0.625rem 0.75rem; font-size:0.875rem; background:var(--color-bg); color:var(--color-fg); box-sizing:border-box;\" onkeydown=\"if(event.key==='Enter')confirmSuspend()\"><p id=\"suspend-error\" style=\"display:none; font-size:0.75rem; color:var(--color-destructive); margin-top:0.375rem;\"></p></div><div style=\"display:flex; gap:0.75rem; margin-top:1.25rem;\"><button onclick=\"closeSuspendModal()\" style=\"flex:1; padding:0.625rem 1rem; border-radius:0.5rem; border:1px solid var(--color-border); font-size:0.875rem; font-weight:600; cursor:pointer; background:var(--color-bg); color:var(--color-fg);\">Cancel</button> <button onclick=\"confirmSuspend()\" style=\"flex:1; padding:0.625rem 1rem; border-radius:0.5rem; border:none; font-size:0.875rem; font-weight:600; cursor:pointer; background:var(--color-destructive); color:#fff;\">Suspend</button></div></div></div><style>\n\t\t@keyframes modalIn {\n\t\t\tfrom { opacity:0; transform:scale(0.95) translateY(0.5rem); }\n\t\t\tto { opacity:1; transform:scale(1) translateY(0); }\n\t\t}\n\t</style>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 61, "<div id=\"suspend-modal\" style=\"display:none; position:fixed; inset:0; z-index:200; background:rgba(0,0,0,0.5); align-items:center; justify-content:center;\" onclick=\"if(event.target===this)closeSuspendModal()\"><div style=\"background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:2rem; max-width:420px; width:90%; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); animation:modalIn 0.15s ease-out;\"><div style=\"text-align:center;\"><span class=\"material-symbols-outlined\" style=\"font-size:3rem; display:block; margin-bottom:0.75rem; color:var(--color-destructive);\">block</span><h3 style=\"font-family:var(--font-heading); font-size:1.125rem; font-weight:700; color:var(--color-fg); margin-bottom:0.5rem;\">Suspend Tenant</h3><p style=\"font-size:0.875rem; color:var(--color-muted-fg); line-height:1.5;\">Enter your admin password to confirm suspension of <strong id=\"suspend-company-name\" style=\"color:var(--color-fg);\"></strong>.</p></div><div style=\"margin-top:1.25rem;\"><input type=\"password\" id=\"suspend-password\" placeholder=\"Admin password\" style=\"width:100%; border:1px solid var(--color-border); border-radius:0.5rem; padding:0.625rem 0.75rem; font-size:0.875rem; background:var(--color-bg); color:var(--color-fg); box-sizing:border-box;\" onkeydown=\"if(event.key==='Enter')confirmSuspend()\"><p id=\"suspend-error\" style=\"display:none; font-size:0.75rem; color:var(--color-destructive); margin-top:0.375rem;\"></p></div><div style=\"display:flex; gap:0.75rem; margin-top:1.25rem;\"><button onclick=\"closeSuspendModal()\" style=\"flex:1; padding:0.625rem 1rem; border-radius:0.5rem; border:1px solid var(--color-border); font-size:0.875rem; font-weight:600; cursor:pointer; background:var(--color-bg); color:var(--color-fg);\">Cancel</button> <button onclick=\"confirmSuspend()\" style=\"flex:1; padding:0.625rem 1rem; border-radius:0.5rem; border:none; font-size:0.875rem; font-weight:600; cursor:pointer; background:var(--color-destructive); color:#fff;\">Suspend</button></div></div></div><style>\n\t\t@keyframes modalIn {\n\t\t\tfrom { opacity:0; transform:scale(0.95) translateY(0.5rem); }\n\t\t\tto { opacity:1; transform:scale(1) translateY(0); }\n\t\t}\n\t</style>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -627,7 +634,7 @@ func tenantPasswordModal() templ.Component {
 			templ_7745c5c3_Var24 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 60, "<div id=\"password-modal\" style=\"display:none; position:fixed; inset:0; z-index:200; background:rgba(0,0,0,0.5); align-items:center; justify-content:center;\" onclick=\"if(event.target===this)closePasswordModal()\"><div style=\"background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:2rem; max-width:420px; width:90%; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); animation:modalIn 0.15s ease-out;\"><div style=\"text-align:center;\"><span class=\"material-symbols-outlined\" style=\"font-size:3rem; display:block; margin-bottom:0.75rem; color:var(--color-brand-blue);\">lock_reset</span><h3 style=\"font-family:var(--font-heading); font-size:1.125rem; font-weight:700; color:var(--color-fg); margin-bottom:0.5rem;\">Change Password</h3><p style=\"font-size:0.875rem; color:var(--color-muted-fg); line-height:1.5;\">Set a new password for <strong id=\"pw-company-name\" style=\"color:var(--color-fg);\"></strong>.</p></div><div style=\"margin-top:1.25rem; display:flex; flex-direction:column; gap:0.75rem;\"><input type=\"password\" id=\"pw-new\" placeholder=\"New password (min 8 chars)\" style=\"width:100%; border:1px solid var(--color-border); border-radius:0.5rem; padding:0.625rem 0.75rem; font-size:0.875rem; background:var(--color-bg); color:var(--color-fg); box-sizing:border-box;\"> <input type=\"password\" id=\"pw-confirm\" placeholder=\"Confirm new password\" style=\"width:100%; border:1px solid var(--color-border); border-radius:0.5rem; padding:0.625rem 0.75rem; font-size:0.875rem; background:var(--color-bg); color:var(--color-fg); box-sizing:border-box;\" onkeydown=\"if(event.key==='Enter')confirmPasswordChange()\"><p id=\"pw-error\" style=\"display:none; font-size:0.75rem; color:var(--color-destructive);\"></p><p id=\"pw-success\" style=\"display:none; font-size:0.75rem; color:hsl(140, 60%, 35%);\">Password updated successfully.</p></div><div style=\"display:flex; gap:0.75rem; margin-top:1.25rem;\"><button onclick=\"closePasswordModal()\" style=\"flex:1; padding:0.625rem 1rem; border-radius:0.5rem; border:1px solid var(--color-border); font-size:0.875rem; font-weight:600; cursor:pointer; background:var(--color-bg); color:var(--color-fg);\">Cancel</button> <button onclick=\"confirmPasswordChange()\" style=\"flex:1; padding:0.625rem 1rem; border-radius:0.5rem; border:none; font-size:0.875rem; font-weight:600; cursor:pointer; background:var(--color-brand-blue); color:#fff;\">Update Password</button></div></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 62, "<div id=\"password-modal\" style=\"display:none; position:fixed; inset:0; z-index:200; background:rgba(0,0,0,0.5); align-items:center; justify-content:center;\" onclick=\"if(event.target===this)closePasswordModal()\"><div style=\"background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:2rem; max-width:420px; width:90%; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); animation:modalIn 0.15s ease-out;\"><div style=\"text-align:center;\"><span class=\"material-symbols-outlined\" style=\"font-size:3rem; display:block; margin-bottom:0.75rem; color:var(--color-brand-blue);\">lock_reset</span><h3 style=\"font-family:var(--font-heading); font-size:1.125rem; font-weight:700; color:var(--color-fg); margin-bottom:0.5rem;\">Change Password</h3><p style=\"font-size:0.875rem; color:var(--color-muted-fg); line-height:1.5;\">Set a new password for <strong id=\"pw-company-name\" style=\"color:var(--color-fg);\"></strong>.</p></div><div style=\"margin-top:1.25rem; display:flex; flex-direction:column; gap:0.75rem;\"><input type=\"password\" id=\"pw-new\" placeholder=\"New password (min 8 chars)\" style=\"width:100%; border:1px solid var(--color-border); border-radius:0.5rem; padding:0.625rem 0.75rem; font-size:0.875rem; background:var(--color-bg); color:var(--color-fg); box-sizing:border-box;\"> <input type=\"password\" id=\"pw-confirm\" placeholder=\"Confirm new password\" style=\"width:100%; border:1px solid var(--color-border); border-radius:0.5rem; padding:0.625rem 0.75rem; font-size:0.875rem; background:var(--color-bg); color:var(--color-fg); box-sizing:border-box;\" onkeydown=\"if(event.key==='Enter')confirmPasswordChange()\"><p id=\"pw-error\" style=\"display:none; font-size:0.75rem; color:var(--color-destructive);\"></p><p id=\"pw-success\" style=\"display:none; font-size:0.75rem; color:hsl(140, 60%, 35%);\">Password updated successfully.</p></div><div style=\"display:flex; gap:0.75rem; margin-top:1.25rem;\"><button onclick=\"closePasswordModal()\" style=\"flex:1; padding:0.625rem 1rem; border-radius:0.5rem; border:1px solid var(--color-border); font-size:0.875rem; font-weight:600; cursor:pointer; background:var(--color-bg); color:var(--color-fg);\">Cancel</button> <button onclick=\"confirmPasswordChange()\" style=\"flex:1; padding:0.625rem 1rem; border-radius:0.5rem; border:none; font-size:0.875rem; font-weight:600; cursor:pointer; background:var(--color-brand-blue); color:#fff;\">Update Password</button></div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

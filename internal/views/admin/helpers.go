@@ -2,6 +2,7 @@ package admin
 
 import (
 	"fmt"
+	"strings"
 	"time"
 )
 
@@ -44,4 +45,15 @@ func FormatAmount(amount float64) string {
 		return "0 TZS"
 	}
 	return fmt.Sprintf("%,.0f TZS", amount)
+}
+
+func DomainDisplay(domain string) string {
+	if strings.HasPrefix(domain, "pending-") {
+		return "Not set"
+	}
+	return domain
+}
+
+func IsPendingDomain(domain string) bool {
+	return strings.HasPrefix(domain, "pending-")
 }

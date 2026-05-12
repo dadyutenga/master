@@ -240,7 +240,7 @@ func VerificationTable(tenants []generated.ListTenantsRow) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "<table class=\"w-full text-sm\" style=\"font-family: var(--font-body);\"><thead><tr class=\"border-b\" style=\"border-color: var(--color-border); color: var(--color-muted-fg);\"><th class=\"text-left py-3\">Company</th><th class=\"text-left py-3\">Domain</th><th class=\"text-left py-3\">Status</th><th class=\"text-left py-3\">Billing</th><th class=\"text-left py-3\">Registered</th><th class=\"text-left py-3\">Actions</th></tr></thead> <tbody>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "<table class=\"w-full text-sm\" style=\"font-family: var(--font-body);\"><thead><tr class=\"border-b\" style=\"border-color: var(--color-border); color: var(--color-muted-fg);\"><th class=\"text-left py-3\">Company</th><th class=\"text-left py-3\">Domain</th><th class=\"text-left py-3\">Status</th><th class=\"text-left py-3\">Registered</th><th class=\"text-left py-3\">Actions</th></tr></thead> <tbody>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -291,7 +291,7 @@ func VerificationRow(t generated.ListTenantsRow) templ.Component {
 		var templ_7745c5c3_Var10 string
 		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.ResolveAttributeValue("vrow-" + t.ID.String())
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/verification_list.templ`, Line: 165, Col: 33}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/verification_list.templ`, Line: 164, Col: 33}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var10)
 		if templ_7745c5c3_Err != nil {
@@ -304,7 +304,7 @@ func VerificationRow(t generated.ListTenantsRow) templ.Component {
 		var templ_7745c5c3_Var11 string
 		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(t.CompanyName)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/verification_list.templ`, Line: 167, Col: 75}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/verification_list.templ`, Line: 166, Col: 75}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 		if templ_7745c5c3_Err != nil {
@@ -317,39 +317,54 @@ func VerificationRow(t generated.ListTenantsRow) templ.Component {
 		var templ_7745c5c3_Var12 string
 		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(t.UserEmail)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/verification_list.templ`, Line: 168, Col: 75}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/verification_list.templ`, Line: 167, Col: 75}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "</div></td><td class=\"py-3\"><a href=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "</div></td><td class=\"py-3\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var13 templ.SafeURL
-		templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinURLErrs(templ.URL("https://" + t.Domain))
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/verification_list.templ`, Line: 171, Col: 45}
+		if IsPendingDomain(t.Domain) {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "<span style=\"color:var(--color-muted-fg); font-size:0.875rem;\">Not set</span>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		} else {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "<a href=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var13 templ.SafeURL
+			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinURLErrs(templ.URL("https://" + t.Domain))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/verification_list.templ`, Line: 173, Col: 46}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "\" class=\"hover:underline\" target=\"_blank\" style=\"color: var(--color-brand-blue);\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var14 string
+			templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(t.Domain)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/verification_list.templ`, Line: 175, Col: 15}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "</a>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "\" class=\"hover:underline\" target=\"_blank\" style=\"color: var(--color-brand-blue);\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		var templ_7745c5c3_Var14 string
-		templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(t.Domain)
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/verification_list.templ`, Line: 173, Col: 14}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "</a></td><td class=\"py-3\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 35, "</td><td class=\"py-3\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -357,15 +372,7 @@ func VerificationRow(t generated.ListTenantsRow) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "</td><td class=\"py-3\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = BillingStatusBadge(t.BillingStatus).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "</td><td class=\"py-3\" style=\"color: var(--color-muted-fg);\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "</td><td class=\"py-3\" style=\"color: var(--color-muted-fg);\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -378,7 +385,7 @@ func VerificationRow(t generated.ListTenantsRow) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 35, "</td><td class=\"py-3\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "</td><td class=\"py-3\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -386,7 +393,7 @@ func VerificationRow(t generated.ListTenantsRow) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "</td></tr>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "</td></tr>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -415,12 +422,12 @@ func VerificationActions(t generated.ListTenantsRow) templ.Component {
 			templ_7745c5c3_Var16 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "<div class=\"flex gap-2\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, "<div class=\"flex gap-2\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if t.Status == generated.TenantStatusPendingVerification {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "<button onclick=\"verifyTenant(this)\" data-url=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "<button onclick=\"verifyTenant(this)\" data-url=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -433,7 +440,7 @@ func VerificationActions(t generated.ListTenantsRow) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, "\" data-target=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "\" data-target=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -446,13 +453,13 @@ func VerificationActions(t generated.ListTenantsRow) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "\" class=\"px-3 py-1 rounded text-xs font-medium hover:opacity-90\" style=\"background: hsl(270, 50%, 50%); color: #fff;\">Verify</button> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "\" class=\"px-3 py-1 rounded text-xs font-medium hover:opacity-90\" style=\"background: hsl(270, 50%, 50%); color: #fff;\">Verify</button> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
 		if t.Status == generated.TenantStatusPendingApproval {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "<button onclick=\"approveTenant(this)\" data-url=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "<button onclick=\"approveTenant(this)\" data-url=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -465,7 +472,7 @@ func VerificationActions(t generated.ListTenantsRow) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "\" data-target=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "\" data-target=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -478,13 +485,13 @@ func VerificationActions(t generated.ListTenantsRow) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "\" class=\"px-3 py-1 rounded text-xs font-medium hover:opacity-90\" style=\"background: var(--color-brand-blue); color: var(--color-primary-fg);\">Approve</button> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "\" class=\"px-3 py-1 rounded text-xs font-medium hover:opacity-90\" style=\"background: var(--color-brand-blue); color: var(--color-primary-fg);\">Approve</button> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
 		if t.Status == generated.TenantStatusFailed {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "<button onclick=\"retryTenant(this)\" data-url=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 46, "<button onclick=\"retryTenant(this)\" data-url=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -497,7 +504,7 @@ func VerificationActions(t generated.ListTenantsRow) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "\" data-target=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, "\" data-target=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -510,12 +517,12 @@ func VerificationActions(t generated.ListTenantsRow) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 46, "\" class=\"px-3 py-1 rounded text-xs font-medium hover:opacity-90\" style=\"background: hsl(25, 80%, 50%); color: #fff;\">Activate</button> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, "\" class=\"px-3 py-1 rounded text-xs font-medium hover:opacity-90\" style=\"background: hsl(25, 80%, 50%); color: #fff;\">Activate</button> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, "<a href=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 49, "<a href=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -528,7 +535,7 @@ func VerificationActions(t generated.ListTenantsRow) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, "\" class=\"px-3 py-1 rounded text-xs font-medium hover:opacity-90\" style=\"background: var(--color-secondary); color: var(--color-fg); display:inline-flex; align-items:center; gap:0.25rem;\"><span class=\"material-symbols-outlined\" style=\"font-size:0.875rem;\">visibility</span> Review</a></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, "\" class=\"px-3 py-1 rounded text-xs font-medium hover:opacity-90\" style=\"background: var(--color-secondary); color: var(--color-fg); display:inline-flex; align-items:center; gap:0.25rem;\"><span class=\"material-symbols-outlined\" style=\"font-size:0.875rem;\">visibility</span> Review</a></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -557,7 +564,7 @@ func confirmModal() templ.Component {
 			templ_7745c5c3_Var24 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 49, "<div id=\"confirm-modal\" style=\"display:none; position:fixed; inset:0; z-index:200; background:rgba(0,0,0,0.5); align-items:center; justify-content:center;\" onclick=\"if(event.target===this)closeConfirmModal()\"><div style=\"background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:2rem; max-width:420px; width:90%; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); animation:modalIn 0.15s ease-out;\"><div style=\"text-align:center;\"><span id=\"confirm-modal-icon\" class=\"material-symbols-outlined\" style=\"font-size:3rem; display:block; margin-bottom:0.75rem;\">help</span><h3 id=\"confirm-modal-title\" style=\"font-family:var(--font-heading); font-size:1.125rem; font-weight:700; color:var(--color-fg); margin-bottom:0.5rem;\">Are you sure?</h3><p id=\"confirm-modal-message\" style=\"font-size:0.875rem; color:var(--color-muted-fg); line-height:1.5;\"></p></div><div style=\"display:flex; gap:0.75rem; margin-top:1.5rem;\"><button onclick=\"closeConfirmModal()\" style=\"flex:1; padding:0.625rem 1rem; border-radius:0.5rem; border:1px solid var(--color-border); font-size:0.875rem; font-weight:600; cursor:pointer; background:var(--color-bg); color:var(--color-fg); transition:background 0.15s ease;\" onmouseover=\"this.style.background='var(--color-secondary)'\" onmouseout=\"this.style.background='var(--color-bg)'\">Cancel</button> <button id=\"confirm-modal-confirm\" onclick=\"confirmModalAction()\" style=\"flex:1; padding:0.625rem 1rem; border-radius:0.5rem; border:none; font-size:0.875rem; font-weight:600; cursor:pointer; transition:opacity 0.15s ease;\" onmouseover=\"this.style.opacity='0.9'\" onmouseout=\"this.style.opacity='1'\">Confirm</button></div></div></div><style>\n\t\t@keyframes modalIn {\n\t\t\tfrom { opacity:0; transform:scale(0.95) translateY(0.5rem); }\n\t\t\tto { opacity:1; transform:scale(1) translateY(0); }\n\t\t}\n\t</style>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 51, "<div id=\"confirm-modal\" style=\"display:none; position:fixed; inset:0; z-index:200; background:rgba(0,0,0,0.5); align-items:center; justify-content:center;\" onclick=\"if(event.target===this)closeConfirmModal()\"><div style=\"background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:2rem; max-width:420px; width:90%; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); animation:modalIn 0.15s ease-out;\"><div style=\"text-align:center;\"><span id=\"confirm-modal-icon\" class=\"material-symbols-outlined\" style=\"font-size:3rem; display:block; margin-bottom:0.75rem;\">help</span><h3 id=\"confirm-modal-title\" style=\"font-family:var(--font-heading); font-size:1.125rem; font-weight:700; color:var(--color-fg); margin-bottom:0.5rem;\">Are you sure?</h3><p id=\"confirm-modal-message\" style=\"font-size:0.875rem; color:var(--color-muted-fg); line-height:1.5;\"></p></div><div style=\"display:flex; gap:0.75rem; margin-top:1.5rem;\"><button onclick=\"closeConfirmModal()\" style=\"flex:1; padding:0.625rem 1rem; border-radius:0.5rem; border:1px solid var(--color-border); font-size:0.875rem; font-weight:600; cursor:pointer; background:var(--color-bg); color:var(--color-fg); transition:background 0.15s ease;\" onmouseover=\"this.style.background='var(--color-secondary)'\" onmouseout=\"this.style.background='var(--color-bg)'\">Cancel</button> <button id=\"confirm-modal-confirm\" onclick=\"confirmModalAction()\" style=\"flex:1; padding:0.625rem 1rem; border-radius:0.5rem; border:none; font-size:0.875rem; font-weight:600; cursor:pointer; transition:opacity 0.15s ease;\" onmouseover=\"this.style.opacity='0.9'\" onmouseout=\"this.style.opacity='1'\">Confirm</button></div></div></div><style>\n\t\t@keyframes modalIn {\n\t\t\tfrom { opacity:0; transform:scale(0.95) translateY(0.5rem); }\n\t\t\tto { opacity:1; transform:scale(1) translateY(0); }\n\t\t}\n\t</style>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

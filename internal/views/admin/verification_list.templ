@@ -146,7 +146,6 @@ templ VerificationTable(tenants []generated.ListTenantsRow) {
 						<th class="text-left py-3">Company</th>
 						<th class="text-left py-3">Domain</th>
 						<th class="text-left py-3">Status</th>
-						<th class="text-left py-3">Billing</th>
 						<th class="text-left py-3">Registered</th>
 						<th class="text-left py-3">Actions</th>
 					</tr>
@@ -168,16 +167,17 @@ templ VerificationRow(t generated.ListTenantsRow) {
 			<div class="text-xs" style="color: var(--color-muted-fg);">{ t.UserEmail }</div>
 		</td>
 		<td class="py-3">
-			<a href={ templ.URL("https://" + t.Domain) }
-			   class="hover:underline" target="_blank" style="color: var(--color-brand-blue);">
-				{ t.Domain }
-			</a>
+			if IsPendingDomain(t.Domain) {
+				<span style="color:var(--color-muted-fg); font-size:0.875rem;">Not set</span>
+			} else {
+				<a href={ templ.URL("https://" + t.Domain) }
+				   class="hover:underline" target="_blank" style="color: var(--color-brand-blue);">
+					{ t.Domain }
+				</a>
+			}
 		</td>
 		<td class="py-3">
 			@StatusBadge(string(t.Status))
-		</td>
-		<td class="py-3">
-			@BillingStatusBadge(t.BillingStatus)
 		</td>
 		<td class="py-3" style="color: var(--color-muted-fg);">
 			{ t.CreatedAt.Format("02 Jan 2006") }
