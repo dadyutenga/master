@@ -17,9 +17,20 @@ const (
 	TenantStatusSuspended           = "suspended"
 	TenantStatusFailed              = "failed"
 
+	BillingStatusUnpaid    = "unpaid"
 	BillingStatusPaid      = "paid"
 	BillingStatusOverdue   = "overdue"
 	BillingStatusSuspended = "suspended"
+
+	TxnTypeCharge     = "charge"
+	TxnTypePayment    = "payment"
+	TxnTypeRefund     = "refund"
+	TxnTypeAdjustment = "adjustment"
+
+	TxnStatusPending   = "pending"
+	TxnStatusCompleted = "completed"
+	TxnStatusFailed    = "failed"
+	TxnStatusRefunded  = "refunded"
 
 	DeploymentStatusProvisioning = "provisioning"
 	DeploymentStatusActive       = "active"
@@ -682,5 +693,65 @@ func (q *Queries) CreateSuperadminIfNotExists(ctx context.Context, arg CreateUse
 		 VALUES (?, ?, ?, ?, ?, 'admin', 1)`,
 		arg.Name, arg.Email, arg.Company, arg.Phone, arg.Password,
 	)
+	return err
+}
+
+func (q *Queries) CreateBillingTransaction(ctx context.Context, tenantID string, amount float64, txnType, description string, adminID *int64) (BillingTransaction, error) {
+	result, err := q.db.ExecContext(ctx,
+		`INSERT INTO billing_transactions (tenant_id, amount, transaction_type, description, admin_id)
+		 VALUES (?, ?, ?, ?, ?)`,
+		tenantID, amount, txnType, description, adminID,
+	)
+	if err != nil {
+		return BillingTransaction{}, err
+	}
+	id, _ := result.LastInsertId()
+	return BillingTransaction{
+		ID: id, TenantID: tenantID, Amount: amount, Currency: "TZS",
+		TransactionType: txnType, Description: description, Status: TxnStatusCompleted,
+		AdminID: adminID, CreatedAt: time.Now(),
+	}, nil
+}
+
+func (q *Queries) GetBillingTransactionsByTenantID(ctx context.Context, tenantID string) ([]BillingTransaction, error) {
+	rows, err := q.db.QueryContext(ctx,
+		`SELECT id, tenant_id, amount, currency, description, transaction_type, status, admin_id, created_at
+		 FROM billing_transactions WHERE tenant_id = ? ORDER BY created_at DESC`, tenantID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var txns []BillingTransaction
+	for rows.Next() {
+		var t BillingTransaction
+		var adminID sql.NullInt64
+		if err := rows.Scan(&t.ID, &t.TenantID, &t.Amount, &t.Currency, &t.Description, &t.TransactionType, &t.Status, &adminID, &t.CreatedAt); err != nil {
+			return nil, err
+		}
+		if adminID.Valid {
+			t.AdminID = &adminID.Int64
+		}
+		txns = append(txns, t)
+	}
+	return txns, rows.Err()
+}
+
+func (q *Queries) GetBillingTransactionByID(ctx context.Context, id int64) (BillingTransaction, error) {
+	var t BillingTransaction
+	var adminID sql.NullInt64
+	err := q.db.QueryRowContext(ctx,
+		`SELECT id, tenant_id, amount, currency, description, transaction_type, status, admin_id, created_at
+		 FROM billing_transactions WHERE id = ?`, id,
+	).Scan(&t.ID, &t.TenantID, &t.Amount, &t.Currency, &t.Description, &t.TransactionType, &t.Status, &adminID, &t.CreatedAt)
+	if adminID.Valid {
+		t.AdminID = &adminID.Int64
+	}
+	return t, err
+}
+
+func (q *Queries) MarkTenantPaid(ctx context.Context, tenantID string) error {
+	_, err := q.db.ExecContext(ctx,
+		`UPDATE tenants SET billing_status = 'paid', last_payment_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP WHERE id = ?`,
+		tenantID)
 	return err
 }

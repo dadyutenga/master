@@ -114,25 +114,24 @@ templ TenantDetail(tenant generated.Tenant, user generated.User, deployments []g
 					<div style="margin-bottom:0.75rem;">
 						@BillingStatusBadge(tenant.BillingStatus)
 					</div>
-					<form method="POST" action={ templ.URL("/admin/tenants/" + tenant.ID.String() + "/billing") } style="display:flex; flex-direction:column; gap:0.75rem;">
-						<div style="display:flex; flex-direction:column; gap:0.25rem;">
-							<label style="font-size:0.75rem; font-weight:600; color:var(--color-muted-fg);">Billing status</label>
-							<select name="billing_status" style="border:1px solid var(--color-border); border-radius:0.5rem; padding:0.5rem 0.75rem; background:var(--color-bg); font-size:0.875rem; color:var(--color-fg);">
-								<option value="paid" selected={ tenant.BillingStatus == "paid" }>Paid</option>
-								<option value="overdue" selected={ tenant.BillingStatus == "overdue" }>Overdue</option>
-								<option value="suspended" selected={ tenant.BillingStatus == "suspended" }>Suspended</option>
-							</select>
-						</div>
-						<div style="display:flex; flex-direction:column; gap:0.25rem;">
-							<label style="font-size:0.75rem; font-weight:600; color:var(--color-muted-fg);">Last payment</label>
-							<input type="date" name="last_payment_at" value={ FormatDate(tenant.LastPaymentAt) } style="border:1px solid var(--color-border); border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.875rem;"/>
-						</div>
-						<div style="display:flex; flex-direction:column; gap:0.25rem;">
-							<label style="font-size:0.75rem; font-weight:600; color:var(--color-muted-fg);">Next due</label>
-							<input type="date" name="next_due_at" value={ FormatDate(tenant.NextDueAt) } style="border:1px solid var(--color-border); border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.875rem;"/>
-						</div>
-						<button type="submit" class="btn btn-primary" style="height:2.5rem; font-size:0.75rem;">Update billing</button>
-					</form>
+					<dl style="display:flex; flex-direction:column; gap:0.75rem; margin-bottom:1rem;">
+						if tenant.LastPaymentAt != nil {
+							@detailRow("Last Payment", tenant.LastPaymentAt.Format("02 Jan 2006"))
+						} else {
+							@detailRow("Last Payment", "Never")
+						}
+						if tenant.NextDueAt != nil {
+							@detailRow("Next Due", tenant.NextDueAt.Format("02 Jan 2006"))
+						} else {
+							@detailRow("Next Due", "Not set")
+						}
+					</dl>
+					<a href={ templ.URL("/admin/tenants/" + tenant.ID.String() + "/billing") }
+					   style="display:inline-flex; align-items:center; gap:0.375rem; padding:0.5rem 1rem; border-radius:0.5rem; font-size:0.8125rem; font-weight:600; text-decoration:none; background:var(--color-brand-blue); color:#fff; transition:opacity 0.15s ease;"
+					   onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+						<span class="material-symbols-outlined" style="font-size:1rem;">payments</span>
+						Manage Billing
+					</a>
 				}
 			</div>
 
@@ -314,6 +313,8 @@ templ BillingStatusBadge(status string) {
 	switch status {
 		case "paid":
 			<span style="display:inline-flex; align-items:center; padding:0.125rem 0.625rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:hsl(140, 60%, 95%); color:hsl(140, 60%, 35%);">paid</span>
+		case "unpaid":
+			<span style="display:inline-flex; align-items:center; padding:0.125rem 0.625rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:hsl(35, 90%, 95%); color:hsl(35, 90%, 35%);">unpaid</span>
 		case "overdue":
 			<span style="display:inline-flex; align-items:center; padding:0.125rem 0.625rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:hsl(35, 90%, 95%); color:hsl(35, 90%, 35%);">overdue</span>
 		case "suspended":

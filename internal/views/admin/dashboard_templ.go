@@ -51,27 +51,27 @@ func DashboardPage(stats models.DashboardStats) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = statCard(strconv.Itoa(stats.TotalTenants), "Total Tenants", "👥", "#3b82f6").Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = statCard(strconv.Itoa(stats.TotalTenants), "Total Tenants", "apartment", "#3b82f6").Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = statCard(strconv.Itoa(stats.ActiveTenants), "Active", "✅", "#22c55e").Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = statCard(strconv.Itoa(stats.ActiveTenants), "Active", "check_circle", "#22c55e").Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = statCard(strconv.Itoa(stats.PendingTenants), "Pending", "⏳", "#8b5cf6").Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = statCard(strconv.Itoa(stats.PendingTenants), "Pending", "schedule", "#8b5cf6").Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = statCard(strconv.Itoa(stats.SuspendedTenants), "Suspended", "🚫", "#ef4444").Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = statCard(strconv.Itoa(stats.SuspendedTenants), "Suspended", "block", "#ef4444").Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = statCard(strconv.Itoa(stats.RunningDeployments), "Running Deploys", "🚀", "#06b6d4").Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = statCard(strconv.Itoa(stats.RunningDeployments), "Running Deploys", "rocket_launch", "#06b6d4").Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = statCard(strconv.Itoa(stats.FailedDeployments), "Failed Deploys", "💥", "#f97316").Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = statCard(strconv.Itoa(stats.FailedDeployments), "Failed Deploys", "error", "#f97316").Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -247,27 +247,27 @@ func statCard(value string, label string, icon string, color string) templ.Compo
 			templ_7745c5c3_Var12 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<div style=\"background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.25rem; display:flex; flex-direction:column; gap:0.25rem;\"><div style=\"font-size:1.5rem;\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<div style=\"background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.25rem; display:flex; flex-direction:column; gap:0.25rem;\"><div style=\"width:2.25rem; height:2.25rem; border-radius:0.625rem; display:flex; align-items:center; justify-content:center; background:color-mix(in srgb, { color } 12%, transparent);\"><span class=\"material-symbols-outlined\" style=\"font-size:1.25rem; color:{ color };\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var13 string
 		templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(icon)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/dashboard.templ`, Line: 90, Col: 39}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/dashboard.templ`, Line: 91, Col: 93}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "</div><div style=\"font-size:2rem; font-weight:700; color:{ color }; line-height:1;\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "</span></div><div style=\"font-size:2rem; font-weight:700; color:{ color }; line-height:1;\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var14 string
 		templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(value)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/dashboard.templ`, Line: 91, Col: 87}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/dashboard.templ`, Line: 93, Col: 87}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 		if templ_7745c5c3_Err != nil {
@@ -280,7 +280,7 @@ func statCard(value string, label string, icon string, color string) templ.Compo
 		var templ_7745c5c3_Var15 string
 		templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(label)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/dashboard.templ`, Line: 92, Col: 70}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/dashboard.templ`, Line: 94, Col: 70}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 		if templ_7745c5c3_Err != nil {
@@ -357,7 +357,7 @@ func ActionBadgeSpan(action string) templ.Component {
 		var templ_7745c5c3_Var19 string
 		templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(action)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/dashboard.templ`, Line: 114, Col: 61}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/dashboard.templ`, Line: 116, Col: 61}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
 		if templ_7745c5c3_Err != nil {

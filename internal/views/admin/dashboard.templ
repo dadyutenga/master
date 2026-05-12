@@ -13,12 +13,12 @@ templ DashboardPage(stats models.DashboardStats) {
 
 			<!-- Stat cards row -->
 			<div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(180px, 1fr)); gap:1rem; margin-bottom:1.5rem;">
-				@statCard(strconv.Itoa(stats.TotalTenants), "Total Tenants", "👥", "#3b82f6")
-				@statCard(strconv.Itoa(stats.ActiveTenants), "Active", "✅", "#22c55e")
-				@statCard(strconv.Itoa(stats.PendingTenants), "Pending", "⏳", "#8b5cf6")
-				@statCard(strconv.Itoa(stats.SuspendedTenants), "Suspended", "🚫", "#ef4444")
-				@statCard(strconv.Itoa(stats.RunningDeployments), "Running Deploys", "🚀", "#06b6d4")
-				@statCard(strconv.Itoa(stats.FailedDeployments), "Failed Deploys", "💥", "#f97316")
+				@statCard(strconv.Itoa(stats.TotalTenants), "Total Tenants", "apartment", "#3b82f6")
+				@statCard(strconv.Itoa(stats.ActiveTenants), "Active", "check_circle", "#22c55e")
+				@statCard(strconv.Itoa(stats.PendingTenants), "Pending", "schedule", "#8b5cf6")
+				@statCard(strconv.Itoa(stats.SuspendedTenants), "Suspended", "block", "#ef4444")
+				@statCard(strconv.Itoa(stats.RunningDeployments), "Running Deploys", "rocket_launch", "#06b6d4")
+				@statCard(strconv.Itoa(stats.FailedDeployments), "Failed Deploys", "error", "#f97316")
 			</div>
 
 			<!-- Quick links -->
@@ -87,7 +87,9 @@ templ DashboardPage(stats models.DashboardStats) {
 
 templ statCard(value string, label string, icon string, color string) {
 	<div style="background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.25rem; display:flex; flex-direction:column; gap:0.25rem;">
-		<div style="font-size:1.5rem;">{ icon }</div>
+		<div style="width:2.25rem; height:2.25rem; border-radius:0.625rem; display:flex; align-items:center; justify-content:center; background:color-mix(in srgb, { color } 12%, transparent);">
+			<span class="material-symbols-outlined" style="font-size:1.25rem; color:{ color };">{ icon }</span>
+		</div>
 		<div style="font-size:2rem; font-weight:700; color:{ color }; line-height:1;">{ value }</div>
 		<div style="font-size:0.75rem; color:var(--color-muted-fg);">{ label }</div>
 	</div>

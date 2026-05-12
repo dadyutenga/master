@@ -64,7 +64,7 @@ func runMigrationsUp(db *sql.DB) {
 		"ALTER TABLE tenants ADD COLUMN admin_name TEXT",
 		"ALTER TABLE tenants ADD COLUMN admin_email TEXT",
 		"ALTER TABLE tenants ADD COLUMN admin_phone TEXT",
-		"ALTER TABLE tenants ADD COLUMN billing_status TEXT NOT NULL DEFAULT 'paid'",
+		"ALTER TABLE tenants ADD COLUMN billing_status TEXT NOT NULL DEFAULT 'unpaid'",
 		"ALTER TABLE tenants ADD COLUMN last_payment_at DATETIME",
 		"ALTER TABLE tenants ADD COLUMN next_due_at DATETIME",
 	}
@@ -86,6 +86,7 @@ func runMigrationsUp(db *sql.DB) {
 		migrationAuditLog,
 		migrationSettings,
 		migrationDockerTemplates,
+		migrationBillingTransactions,
 	}
 	for i, m := range remaining {
 		fmt.Printf("Running migration %d...\n", i+len(migrations)+1)
@@ -185,7 +186,7 @@ CREATE TABLE IF NOT EXISTS tenants (
     admin_name      TEXT,
     admin_email     TEXT,
     admin_phone     TEXT,
-    billing_status  TEXT NOT NULL DEFAULT 'paid' CHECK(billing_status IN ('paid','overdue','suspended')),
+    billing_status  TEXT NOT NULL DEFAULT 'unpaid' CHECK(billing_status IN ('unpaid','paid','overdue','suspended')),
     last_payment_at DATETIME,
     next_due_at     DATETIME,
     created_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -286,4 +287,20 @@ CREATE TABLE IF NOT EXISTS docker_templates (
     updated_at    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 CREATE INDEX IF NOT EXISTS idx_docker_templates_name ON docker_templates(name);
+`
+
+const migrationBillingTransactions = `
+CREATE TABLE IF NOT EXISTS billing_transactions (
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    tenant_id       TEXT NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+    amount          REAL NOT NULL,
+    currency        TEXT NOT NULL DEFAULT 'TZS',
+    description     TEXT NOT NULL DEFAULT '',
+    transaction_type TEXT NOT NULL CHECK(transaction_type IN ('charge','payment','refund','adjustment')),
+    status          TEXT NOT NULL DEFAULT 'completed' CHECK(status IN ('pending','completed','failed','refunded')),
+    admin_id        INTEGER REFERENCES users(id),
+    created_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_billing_txn_tenant_id ON billing_transactions(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_billing_txn_created_at ON billing_transactions(created_at DESC);
 `

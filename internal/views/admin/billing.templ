@@ -1,0 +1,190 @@
+package admin
+
+import (
+	"github.com/dadyutenga/hms-control/internal/db/generated"
+)
+
+templ BillingPage(tenant generated.Tenant, user generated.User, txns []generated.BillingTransaction) {
+	@AdminLayout("Billing", "") {
+		<div style="max-width:1200px; margin:0 auto;">
+			<div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:1.5rem; flex-wrap:wrap;">
+				<a href={ templ.URL("/admin/tenants/" + tenant.ID.String()) } style="color:var(--color-muted-fg); text-decoration:none; font-size:0.875rem;">&larr; Back to Tenant</a>
+				<h1 style="font-family:var(--font-heading); font-size:1.5rem; font-weight:700; color:var(--color-fg);">Billing &mdash; { tenant.CompanyName }</h1>
+				@BillingStatusBadge(tenant.BillingStatus)
+			</div>
+
+			<!-- Billing Overview + Actions -->
+			<div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.5rem;">
+				<!-- Billing Summary -->
+				@detailCard("Billing Summary") {
+					<dl style="display:flex; flex-direction:column; gap:0.75rem;">
+						@detailRow("Status", tenant.BillingStatus)
+						@detailRow("Company", tenant.CompanyName)
+						@detailRow("Owner", user.Email)
+						if tenant.LastPaymentAt != nil {
+							@detailRow("Last Payment", tenant.LastPaymentAt.Format("02 Jan 2006"))
+						} else {
+							@detailRow("Last Payment", "Never")
+						}
+						if tenant.NextDueAt != nil {
+							@detailRow("Next Due", tenant.NextDueAt.Format("02 Jan 2006"))
+						} else {
+							@detailRow("Next Due", "Not set")
+						}
+					</dl>
+				}
+				<!-- Update Status -->
+				@detailCard("Update Billing Status") {
+					<form method="POST" action={ templ.URL("/admin/tenants/" + tenant.ID.String() + "/billing/status") } style="display:flex; flex-direction:column; gap:0.75rem;">
+						<div style="display:flex; flex-direction:column; gap:0.25rem;">
+							<label style="font-size:0.75rem; font-weight:600; color:var(--color-muted-fg);">Status</label>
+							<select name="billing_status" style="border:1px solid var(--color-border); border-radius:0.5rem; padding:0.5rem 0.75rem; background:var(--color-bg); font-size:0.875rem; color:var(--color-fg);">
+								<option value="unpaid" selected={ tenant.BillingStatus == "unpaid" }>Unpaid</option>
+								<option value="paid" selected={ tenant.BillingStatus == "paid" }>Paid</option>
+								<option value="overdue" selected={ tenant.BillingStatus == "overdue" }>Overdue</option>
+								<option value="suspended" selected={ tenant.BillingStatus == "suspended" }>Suspended</option>
+							</select>
+						</div>
+						<div style="display:flex; flex-direction:column; gap:0.25rem;">
+							<label style="font-size:0.75rem; font-weight:600; color:var(--color-muted-fg);">Last payment</label>
+							<input type="date" name="last_payment_at" value={ FormatDate(tenant.LastPaymentAt) } style="border:1px solid var(--color-border); border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.875rem;"/>
+						</div>
+						<div style="display:flex; flex-direction:column; gap:0.25rem;">
+							<label style="font-size:0.75rem; font-weight:600; color:var(--color-muted-fg);">Next due</label>
+							<input type="date" name="next_due_at" value={ FormatDate(tenant.NextDueAt) } style="border:1px solid var(--color-border); border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.875rem;"/>
+						</div>
+						<button type="submit" style="padding:0.5rem 1rem; border-radius:0.5rem; border:none; font-size:0.8125rem; font-weight:600; cursor:pointer; background:var(--color-brand-blue); color:#fff; align-self:flex-start;">Update Status</button>
+					</form>
+				}
+			</div>
+
+			<!-- Charge / Payment Actions -->
+			<div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.5rem;">
+				<!-- Charge Tenant -->
+				@detailCard("Charge Tenant") {
+					<form method="POST" action={ templ.URL("/admin/tenants/" + tenant.ID.String() + "/billing/charge") } style="display:flex; flex-direction:column; gap:0.75rem;">
+						<div style="display:flex; flex-direction:column; gap:0.25rem;">
+							<label style="font-size:0.75rem; font-weight:600; color:var(--color-muted-fg);">Amount (TZS)</label>
+							<input type="number" name="amount" min="1" step="1" required placeholder="e.g. 50000" style="border:1px solid var(--color-border); border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.875rem; background:var(--color-bg); color:var(--color-fg);"/>
+						</div>
+						<div style="display:flex; flex-direction:column; gap:0.25rem;">
+							<label style="font-size:0.75rem; font-weight:600; color:var(--color-muted-fg);">Description</label>
+							<input type="text" name="description" placeholder="e.g. Monthly subscription" style="border:1px solid var(--color-border); border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.875rem; background:var(--color-bg); color:var(--color-fg);"/>
+						</div>
+						<button type="submit" style="padding:0.5rem 1rem; border-radius:0.5rem; border:none; font-size:0.8125rem; font-weight:600; cursor:pointer; background:var(--color-destructive); color:#fff; align-self:flex-start;">
+							<span style="display:inline-flex; align-items:center; gap:0.25rem;">Create Charge</span>
+						</button>
+					</form>
+				}
+				<!-- Record Payment -->
+				@detailCard("Record Payment") {
+					<form method="POST" action={ templ.URL("/admin/tenants/" + tenant.ID.String() + "/billing/payment") } style="display:flex; flex-direction:column; gap:0.75rem;">
+						<div style="display:flex; flex-direction:column; gap:0.25rem;">
+							<label style="font-size:0.75rem; font-weight:600; color:var(--color-muted-fg);">Amount (TZS)</label>
+							<input type="number" name="amount" min="1" step="1" required placeholder="e.g. 50000" style="border:1px solid var(--color-border); border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.875rem; background:var(--color-bg); color:var(--color-fg);"/>
+						</div>
+						<div style="display:flex; flex-direction:column; gap:0.25rem;">
+							<label style="font-size:0.75rem; font-weight:600; color:var(--color-muted-fg);">Description</label>
+							<input type="text" name="description" placeholder="e.g. Bank transfer received" style="border:1px solid var(--color-border); border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.875rem; background:var(--color-bg); color:var(--color-fg);"/>
+						</div>
+						<button type="submit" style="padding:0.5rem 1rem; border-radius:0.5rem; border:none; font-size:0.8125rem; font-weight:600; cursor:pointer; background:hsl(140, 60%, 35%); color:#fff; align-self:flex-start;">
+							<span style="display:inline-flex; align-items:center; gap:0.25rem;">Record Payment</span>
+						</button>
+					</form>
+				}
+			</div>
+
+			<!-- Transaction History -->
+			<div style="background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.5rem;">
+				<h2 style="font-family:var(--font-heading); font-size:1rem; font-weight:700; color:var(--color-fg); margin-bottom:1rem;">Transaction History</h2>
+				if len(txns) == 0 {
+					<p style="color:var(--color-muted-fg); font-size:0.875rem;">No transactions recorded yet.</p>
+				} else {
+					<table style="width:100%; font-size:0.875rem; border-collapse:collapse;">
+						<thead>
+							<tr style="border-bottom:1px solid var(--color-border); color:var(--color-muted-fg); text-align:left;">
+								<th style="padding:0.5rem 0; font-weight:500;">Date</th>
+								<th style="padding:0.5rem 0; font-weight:500;">Type</th>
+								<th style="padding:0.5rem 0; font-weight:500;">Description</th>
+								<th style="padding:0.5rem 0; font-weight:500; text-align:right;">Amount</th>
+								<th style="padding:0.5rem 0; font-weight:500;">Status</th>
+							</tr>
+						</thead>
+						<tbody>
+							for _, t := range txns {
+								<tr style="border-bottom:1px solid var(--color-border);">
+									<td style="padding:0.625rem 0; color:var(--color-muted-fg);">{ t.CreatedAt.Format("02 Jan 2006 15:04") }</td>
+									<td style="padding:0.625rem 0;">@TxnTypeBadge(t.TransactionType)</td>
+									<td style="padding:0.625rem 0; color:var(--color-fg);">{ t.Description }</td>
+									<td style="padding:0.625rem 0; text-align:right; font-weight:600; color:var(--color-fg);">{ FormatAmount(t.Amount) }</td>
+									<td style="padding:0.625rem 0;">@TxnStatusBadge(t.Status)</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+					@billingSummary(txns)
+				}
+			</div>
+		</div>
+	}
+}
+
+templ TxnTypeBadge(t string) {
+	switch t {
+		case "charge":
+			<span style="display:inline-flex; align-items:center; padding:0.125rem 0.5rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:hsl(0, 70%, 95%); color:hsl(0, 70%, 40%);">charge</span>
+		case "payment":
+			<span style="display:inline-flex; align-items:center; padding:0.125rem 0.5rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:hsl(140, 60%, 95%); color:hsl(140, 60%, 35%);">payment</span>
+		case "refund":
+			<span style="display:inline-flex; align-items:center; padding:0.125rem 0.5rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:hsl(200, 80%, 95%); color:hsl(200, 80%, 40%);">refund</span>
+		default:
+			<span style="display:inline-flex; align-items:center; padding:0.125rem 0.5rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:var(--color-secondary); color:var(--color-muted-fg);">{ t }</span>
+	}
+}
+
+templ TxnStatusBadge(s string) {
+	switch s {
+		case "completed":
+			<span style="display:inline-flex; align-items:center; padding:0.125rem 0.5rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:hsl(140, 60%, 95%); color:hsl(140, 60%, 35%);">completed</span>
+		case "pending":
+			<span style="display:inline-flex; align-items:center; padding:0.125rem 0.5rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:hsl(35, 90%, 95%); color:hsl(35, 90%, 35%);">pending</span>
+		case "failed":
+			<span style="display:inline-flex; align-items:center; padding:0.125rem 0.5rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:hsl(0, 70%, 95%); color:hsl(0, 70%, 40%);">failed</span>
+		default:
+			<span style="display:inline-flex; align-items:center; padding:0.125rem 0.5rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:var(--color-secondary); color:var(--color-muted-fg);">{ s }</span>
+	}
+}
+
+templ billingSummary(txns []generated.BillingTransaction) {
+	<div style="display:flex; justify-content:flex-end; gap:2rem; margin-top:1rem; padding-top:1rem; border-top:1px solid var(--color-border);">
+		{{
+			var totalCharges, totalPayments float64
+			for _, t := range txns {
+				if t.TransactionType == "charge" {
+					totalCharges += t.Amount
+				} else if t.TransactionType == "payment" {
+					totalPayments += t.Amount
+				}
+			}
+			balance := totalCharges - totalPayments
+		}}
+		<div style="text-align:right;">
+			<div style="font-size:0.75rem; color:var(--color-muted-fg);">Total Charges</div>
+			<div style="font-size:1rem; font-weight:700; color:var(--color-destructive);">{ FormatAmount(totalCharges) }</div>
+		</div>
+		<div style="text-align:right;">
+			<div style="font-size:0.75rem; color:var(--color-muted-fg);">Total Payments</div>
+			<div style="font-size:1rem; font-weight:700; color:hsl(140, 60%, 35%);">{ FormatAmount(totalPayments) }</div>
+		</div>
+		<div style="text-align:right;">
+			<div style="font-size:0.75rem; color:var(--color-muted-fg);">Balance</div>
+			if balance > 0 {
+				<div style="font-size:1rem; font-weight:700; color:var(--color-destructive);">{ FormatAmount(balance) }</div>
+			} else if balance < 0 {
+				<div style="font-size:1rem; font-weight:700; color:hsl(140, 60%, 35%);">{ FormatAmount(balance) }</div>
+			} else {
+				<div style="font-size:1rem; font-weight:700; color:var(--color-fg);">{ FormatAmount(balance) }</div>
+			}
+		</div>
+	</div>
+}

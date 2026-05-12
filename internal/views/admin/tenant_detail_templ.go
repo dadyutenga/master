@@ -323,85 +323,46 @@ func TenantDetail(tenant generated.Tenant, user generated.User, deployments []ge
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</div><form method=\"POST\" action=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</div><dl style=\"display:flex; flex-direction:column; gap:0.75rem; margin-bottom:1rem;\">")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				if tenant.LastPaymentAt != nil {
+					templ_7745c5c3_Err = detailRow("Last Payment", tenant.LastPaymentAt.Format("02 Jan 2006")).Render(ctx, templ_7745c5c3_Buffer)
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+				} else {
+					templ_7745c5c3_Err = detailRow("Last Payment", "Never").Render(ctx, templ_7745c5c3_Buffer)
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+				}
+				if tenant.NextDueAt != nil {
+					templ_7745c5c3_Err = detailRow("Next Due", tenant.NextDueAt.Format("02 Jan 2006")).Render(ctx, templ_7745c5c3_Buffer)
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+				} else {
+					templ_7745c5c3_Err = detailRow("Next Due", "Not set").Render(ctx, templ_7745c5c3_Buffer)
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "</dl><a href=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var10 templ.SafeURL
 				templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinURLErrs(templ.URL("/admin/tenants/" + tenant.ID.String() + "/billing"))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenant_detail.templ`, Line: 117, Col: 96}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenant_detail.templ`, Line: 129, Col: 77}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "\" style=\"display:flex; flex-direction:column; gap:0.75rem;\"><div style=\"display:flex; flex-direction:column; gap:0.25rem;\"><label style=\"font-size:0.75rem; font-weight:600; color:var(--color-muted-fg);\">Billing status</label> <select name=\"billing_status\" style=\"border:1px solid var(--color-border); border-radius:0.5rem; padding:0.5rem 0.75rem; background:var(--color-bg); font-size:0.875rem; color:var(--color-fg);\"><option value=\"paid\" selected=\"")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				var templ_7745c5c3_Var11 string
-				templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.ResolveAttributeValue(tenant.BillingStatus == "paid")
-				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenant_detail.templ`, Line: 121, Col: 70}
-				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var11)
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "\">Paid</option> <option value=\"overdue\" selected=\"")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				var templ_7745c5c3_Var12 string
-				templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.ResolveAttributeValue(tenant.BillingStatus == "overdue")
-				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenant_detail.templ`, Line: 122, Col: 76}
-				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var12)
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "\">Overdue</option> <option value=\"suspended\" selected=\"")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				var templ_7745c5c3_Var13 string
-				templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.ResolveAttributeValue(tenant.BillingStatus == "suspended")
-				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenant_detail.templ`, Line: 123, Col: 80}
-				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var13)
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "\">Suspended</option></select></div><div style=\"display:flex; flex-direction:column; gap:0.25rem;\"><label style=\"font-size:0.75rem; font-weight:600; color:var(--color-muted-fg);\">Last payment</label> <input type=\"date\" name=\"last_payment_at\" value=\"")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				var templ_7745c5c3_Var14 string
-				templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.ResolveAttributeValue(FormatDate(tenant.LastPaymentAt))
-				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenant_detail.templ`, Line: 128, Col: 89}
-				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var14)
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "\" style=\"border:1px solid var(--color-border); border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.875rem;\"></div><div style=\"display:flex; flex-direction:column; gap:0.25rem;\"><label style=\"font-size:0.75rem; font-weight:600; color:var(--color-muted-fg);\">Next due</label> <input type=\"date\" name=\"next_due_at\" value=\"")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				var templ_7745c5c3_Var15 string
-				templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.ResolveAttributeValue(FormatDate(tenant.NextDueAt))
-				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenant_detail.templ`, Line: 132, Col: 81}
-				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var15)
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "\" style=\"border:1px solid var(--color-border); border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.875rem;\"></div><button type=\"submit\" class=\"btn btn-primary\" style=\"height:2.5rem; font-size:0.75rem;\">Update billing</button></form>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "\" style=\"display:inline-flex; align-items:center; gap:0.375rem; padding:0.5rem 1rem; border-radius:0.5rem; font-size:0.8125rem; font-weight:600; text-decoration:none; background:var(--color-brand-blue); color:#fff; transition:opacity 0.15s ease;\" onmouseover=\"this.style.opacity='0.9'\" onmouseout=\"this.style.opacity='1'\"><span class=\"material-symbols-outlined\" style=\"font-size:1rem;\">payments</span> Manage Billing</a>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -411,229 +372,229 @@ func TenantDetail(tenant generated.Tenant, user generated.User, deployments []ge
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "</div><!-- Documents Section -->")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</div><!-- Documents Section -->")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if len(documents) > 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "<div style=\"background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.5rem; margin-bottom:1rem;\"><h2 style=\"font-family:var(--font-heading); font-size:1rem; font-weight:700; color:var(--color-fg); margin-bottom:1rem;\">Uploaded Documents</h2><div style=\"display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:1rem;\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "<div style=\"background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.5rem; margin-bottom:1rem;\"><h2 style=\"font-family:var(--font-heading); font-size:1rem; font-weight:700; color:var(--color-fg); margin-bottom:1rem;\">Uploaded Documents</h2><div style=\"display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:1rem;\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				for _, d := range documents {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "<div style=\"background:var(--color-card); border:1px solid var(--color-border); border-radius:0.75rem; overflow:hidden;\"><div style=\"aspect-ratio:4/3; background:var(--color-secondary); display:flex; align-items:center; justify-content:center; overflow:hidden;\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "<div style=\"background:var(--color-card); border:1px solid var(--color-border); border-radius:0.75rem; overflow:hidden;\"><div style=\"aspect-ratio:4/3; background:var(--color-secondary); display:flex; align-items:center; justify-content:center; overflow:hidden;\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					if strings.HasPrefix(d.MimeType, "image/") {
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "<img src=\"")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "<img src=\"")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						var templ_7745c5c3_Var16 string
-						templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.ResolveAttributeValue(templ.URL("/" + d.Filename))
+						var templ_7745c5c3_Var11 string
+						templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.ResolveAttributeValue(templ.URL("/" + d.Filename))
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenant_detail.templ`, Line: 148, Col: 48}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenant_detail.templ`, Line: 147, Col: 48}
 						}
-						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var16)
-						if templ_7745c5c3_Err != nil {
-							return templ_7745c5c3_Err
-						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "\" alt=\"")
+						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var11)
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						var templ_7745c5c3_Var17 string
-						templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.ResolveAttributeValue(d.OriginalName)
-						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenant_detail.templ`, Line: 148, Col: 71}
-						}
-						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var17)
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "\" alt=\"")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "\" style=\"width:100%; height:100%; object-fit:cover;\" loading=\"lazy\">")
+						var templ_7745c5c3_Var12 string
+						templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.ResolveAttributeValue(d.OriginalName)
+						if templ_7745c5c3_Err != nil {
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenant_detail.templ`, Line: 147, Col: 71}
+						}
+						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var12)
+						if templ_7745c5c3_Err != nil {
+							return templ_7745c5c3_Err
+						}
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "\" style=\"width:100%; height:100%; object-fit:cover;\" loading=\"lazy\">")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 					} else {
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "<div style=\"display:flex; flex-direction:column; align-items:center; gap:0.5rem; color:var(--color-muted-fg);\"><span class=\"material-symbols-outlined\" style=\"font-size:2.5rem;\">description</span> <span style=\"font-size:0.75rem;\">")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "<div style=\"display:flex; flex-direction:column; align-items:center; gap:0.5rem; color:var(--color-muted-fg);\"><span class=\"material-symbols-outlined\" style=\"font-size:2.5rem;\">description</span> <span style=\"font-size:0.75rem;\">")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						var templ_7745c5c3_Var18 string
-						templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(d.MimeType)
+						var templ_7745c5c3_Var13 string
+						templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(d.MimeType)
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenant_detail.templ`, Line: 152, Col: 56}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenant_detail.templ`, Line: 151, Col: 56}
 						}
-						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
-						if templ_7745c5c3_Err != nil {
-							return templ_7745c5c3_Err
-						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "</span></div>")
+						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "</span></div>")
+						if templ_7745c5c3_Err != nil {
+							return templ_7745c5c3_Err
+						}
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "</div><div style=\"padding:0.75rem 1rem;\"><div style=\"font-size:0.8125rem; font-weight:600; color:var(--color-fg); margin-bottom:0.25rem; word-break:break-all;\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "</div><div style=\"padding:0.75rem 1rem;\"><div style=\"font-size:0.8125rem; font-weight:600; color:var(--color-fg); margin-bottom:0.25rem; word-break:break-all;\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					var templ_7745c5c3_Var19 string
-					templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(d.OriginalName)
+					var templ_7745c5c3_Var14 string
+					templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(d.OriginalName)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenant_detail.templ`, Line: 157, Col: 144}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenant_detail.templ`, Line: 156, Col: 144}
 					}
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
-					if templ_7745c5c3_Err != nil {
-						return templ_7745c5c3_Err
-					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "</div><div style=\"display:flex; justify-content:space-between; align-items:center; gap:0.5rem;\"><span style=\"display:inline-flex; align-items:center; padding:0.125rem 0.5rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:var(--color-secondary); color:var(--color-fg);\">")
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					var templ_7745c5c3_Var20 string
-					templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(DocTypeLabel(d.DocType))
-					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenant_detail.templ`, Line: 159, Col: 232}
-					}
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "</div><div style=\"display:flex; justify-content:space-between; align-items:center; gap:0.5rem;\"><span style=\"display:inline-flex; align-items:center; padding:0.125rem 0.5rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:var(--color-secondary); color:var(--color-fg);\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "</span> <span style=\"font-size:0.6875rem; color:var(--color-muted-fg);\">")
+					var templ_7745c5c3_Var15 string
+					templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(DocTypeLabel(d.DocType))
+					if templ_7745c5c3_Err != nil {
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenant_detail.templ`, Line: 158, Col: 232}
+					}
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					var templ_7745c5c3_Var21 string
-					templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(FormatFileSize(d.SizeBytes))
-					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenant_detail.templ`, Line: 160, Col: 103}
-					}
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "</span> <span style=\"font-size:0.6875rem; color:var(--color-muted-fg);\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "</span></div></div></div>")
+					var templ_7745c5c3_Var16 string
+					templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(FormatFileSize(d.SizeBytes))
+					if templ_7745c5c3_Err != nil {
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenant_detail.templ`, Line: 159, Col: 103}
+					}
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "</span></div></div></div>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 35, "</div></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "</div></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "<!-- Deployment Actions --><div style=\"background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.5rem; margin-bottom:1rem;\"><h2 style=\"font-family:var(--font-heading); font-size:1rem; font-weight:700; color:var(--color-fg); margin-bottom:1rem;\">Deployment Actions</h2><div style=\"display:flex; flex-wrap:wrap; gap:0.5rem;\"><button hx-post=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "<!-- Deployment Actions --><div style=\"background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.5rem; margin-bottom:1rem;\"><h2 style=\"font-family:var(--font-heading); font-size:1rem; font-weight:700; color:var(--color-fg); margin-bottom:1rem;\">Deployment Actions</h2><div style=\"display:flex; flex-wrap:wrap; gap:0.5rem;\"><button hx-post=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var22 string
-			templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.ResolveAttributeValue("/admin/tenants/" + tenant.ID.String() + "/deployments/start")
+			var templ_7745c5c3_Var17 string
+			templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.ResolveAttributeValue("/admin/tenants/" + tenant.ID.String() + "/deployments/start")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenant_detail.templ`, Line: 174, Col: 77}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenant_detail.templ`, Line: 173, Col: 77}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var22)
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "\" hx-confirm=\"Start the tenant container?\" style=\"display:inline-flex; align-items:center; gap:0.25rem; padding:0.5rem 1.25rem; border-radius:9999px; border:none; font-size:0.75rem; font-weight:600; cursor:pointer; background:var(--color-brand-blue); color:#fff; transition:opacity 0.15s ease;\" onmouseover=\"this.style.opacity='0.9'\" onmouseout=\"this.style.opacity='1'\"><span class=\"material-symbols-outlined\" style=\"font-size:0.875rem;\">play_arrow</span> Start</button> <button hx-post=\"")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var17)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var23 string
-			templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.ResolveAttributeValue("/admin/tenants/" + tenant.ID.String() + "/deployments/stop")
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenant_detail.templ`, Line: 181, Col: 76}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var23)
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "\" hx-confirm=\"Start the tenant container?\" style=\"display:inline-flex; align-items:center; gap:0.25rem; padding:0.5rem 1.25rem; border-radius:9999px; border:none; font-size:0.75rem; font-weight:600; cursor:pointer; background:var(--color-brand-blue); color:#fff; transition:opacity 0.15s ease;\" onmouseover=\"this.style.opacity='0.9'\" onmouseout=\"this.style.opacity='1'\"><span class=\"material-symbols-outlined\" style=\"font-size:0.875rem;\">play_arrow</span> Start</button> <button hx-post=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "\" hx-confirm=\"Stop the tenant container?\" style=\"display:inline-flex; align-items:center; gap:0.25rem; padding:0.5rem 1.25rem; border-radius:9999px; border:1px solid var(--color-destructive); font-size:0.75rem; font-weight:600; cursor:pointer; background:var(--color-bg); color:var(--color-destructive); transition:all 0.15s ease;\" onmouseover=\"this.style.background='var(--color-secondary)'\" onmouseout=\"this.style.background='var(--color-bg)'\"><span class=\"material-symbols-outlined\" style=\"font-size:0.875rem;\">stop</span> Stop</button> ")
+			var templ_7745c5c3_Var18 string
+			templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.ResolveAttributeValue("/admin/tenants/" + tenant.ID.String() + "/deployments/stop")
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenant_detail.templ`, Line: 180, Col: 76}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var18)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "\" hx-confirm=\"Stop the tenant container?\" style=\"display:inline-flex; align-items:center; gap:0.25rem; padding:0.5rem 1.25rem; border-radius:9999px; border:1px solid var(--color-destructive); font-size:0.75rem; font-weight:600; cursor:pointer; background:var(--color-bg); color:var(--color-destructive); transition:all 0.15s ease;\" onmouseover=\"this.style.background='var(--color-secondary)'\" onmouseout=\"this.style.background='var(--color-bg)'\"><span class=\"material-symbols-outlined\" style=\"font-size:0.875rem;\">stop</span> Stop</button> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if tenant.Status == generated.TenantStatusFailed {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, "<button hx-post=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 35, "<button hx-post=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				var templ_7745c5c3_Var24 string
-				templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.ResolveAttributeValue("/admin/tenants/" + tenant.ID.String() + "/retry")
+				var templ_7745c5c3_Var19 string
+				templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.ResolveAttributeValue("/admin/tenants/" + tenant.ID.String() + "/retry")
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenant_detail.templ`, Line: 189, Col: 66}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenant_detail.templ`, Line: 188, Col: 66}
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var24)
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var19)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "\" hx-confirm=\"Retry provisioning this tenant?\" style=\"display:inline-flex; align-items:center; gap:0.25rem; padding:0.5rem 1.25rem; border-radius:9999px; border:none; font-size:0.75rem; font-weight:600; cursor:pointer; background:hsl(25, 80%, 50%); color:#fff; transition:opacity 0.15s ease;\" onmouseover=\"this.style.opacity='0.9'\" onmouseout=\"this.style.opacity='1'\"><span class=\"material-symbols-outlined\" style=\"font-size:0.875rem;\">refresh</span> Retry</button> ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "\" hx-confirm=\"Retry provisioning this tenant?\" style=\"display:inline-flex; align-items:center; gap:0.25rem; padding:0.5rem 1.25rem; border-radius:9999px; border:none; font-size:0.75rem; font-weight:600; cursor:pointer; background:hsl(25, 80%, 50%); color:#fff; transition:opacity 0.15s ease;\" onmouseover=\"this.style.opacity='0.9'\" onmouseout=\"this.style.opacity='1'\"><span class=\"material-symbols-outlined\" style=\"font-size:0.875rem;\">refresh</span> Retry</button> ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
 			if tenant.Status == generated.TenantStatusActive {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "<button hx-post=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "<button hx-post=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				var templ_7745c5c3_Var25 string
-				templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.ResolveAttributeValue("/admin/tenants/" + tenant.ID.String() + "/suspend")
+				var templ_7745c5c3_Var20 string
+				templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.ResolveAttributeValue("/admin/tenants/" + tenant.ID.String() + "/suspend")
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenant_detail.templ`, Line: 198, Col: 68}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenant_detail.templ`, Line: 197, Col: 68}
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var25)
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var20)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "\" hx-confirm=\"Suspend this tenant?\" style=\"display:inline-flex; align-items:center; gap:0.25rem; padding:0.5rem 1.25rem; border-radius:9999px; border:1px solid var(--color-destructive); font-size:0.75rem; font-weight:600; cursor:pointer; background:var(--color-bg); color:var(--color-destructive); transition:all 0.15s ease;\" onmouseover=\"this.style.background='var(--color-secondary)'\" onmouseout=\"this.style.background='var(--color-bg)'\"><span class=\"material-symbols-outlined\" style=\"font-size:0.875rem;\">block</span> Suspend</button> ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "\" hx-confirm=\"Suspend this tenant?\" style=\"display:inline-flex; align-items:center; gap:0.25rem; padding:0.5rem 1.25rem; border-radius:9999px; border:1px solid var(--color-destructive); font-size:0.75rem; font-weight:600; cursor:pointer; background:var(--color-bg); color:var(--color-destructive); transition:all 0.15s ease;\" onmouseover=\"this.style.background='var(--color-secondary)'\" onmouseout=\"this.style.background='var(--color-bg)'\"><span class=\"material-symbols-outlined\" style=\"font-size:0.875rem;\">block</span> Suspend</button> ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "<button hx-post=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, "<button hx-post=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var26 string
-			templ_7745c5c3_Var26, templ_7745c5c3_Err = templ.ResolveAttributeValue("/admin/tenants/" + tenant.ID.String() + "/impersonate")
+			var templ_7745c5c3_Var21 string
+			templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.ResolveAttributeValue("/admin/tenants/" + tenant.ID.String() + "/impersonate")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenant_detail.templ`, Line: 206, Col: 71}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenant_detail.templ`, Line: 205, Col: 71}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var26)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var21)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "\" hx-confirm=\"Impersonate this tenant?\" style=\"display:inline-flex; align-items:center; gap:0.25rem; padding:0.5rem 1.25rem; border-radius:9999px; border:1px solid var(--color-border); font-size:0.75rem; font-weight:600; cursor:pointer; background:var(--color-bg); color:var(--color-fg); transition:all 0.15s ease;\" onmouseover=\"this.style.background='var(--color-secondary)'\" onmouseout=\"this.style.background='var(--color-bg)'\"><span class=\"material-symbols-outlined\" style=\"font-size:0.875rem;\">switch_account</span> Impersonate</button></div></div><!-- Deployments Table --><div style=\"background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.5rem; margin-bottom:1rem;\"><h2 style=\"font-family:var(--font-heading); font-size:1rem; font-weight:700; color:var(--color-fg); margin-bottom:1rem;\">Deployments</h2>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "\" hx-confirm=\"Impersonate this tenant?\" style=\"display:inline-flex; align-items:center; gap:0.25rem; padding:0.5rem 1.25rem; border-radius:9999px; border:1px solid var(--color-border); font-size:0.75rem; font-weight:600; cursor:pointer; background:var(--color-bg); color:var(--color-fg); transition:all 0.15s ease;\" onmouseover=\"this.style.background='var(--color-secondary)'\" onmouseout=\"this.style.background='var(--color-bg)'\"><span class=\"material-symbols-outlined\" style=\"font-size:0.875rem;\">switch_account</span> Impersonate</button></div></div><!-- Deployments Table --><div style=\"background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.5rem; margin-bottom:1rem;\"><h2 style=\"font-family:var(--font-heading); font-size:1rem; font-weight:700; color:var(--color-fg); margin-bottom:1rem;\">Deployments</h2>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if len(deployments) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "<p style=\"color:var(--color-muted-fg); font-size:0.875rem;\">No deployments recorded yet.</p>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "<p style=\"color:var(--color-muted-fg); font-size:0.875rem;\">No deployments recorded yet.</p>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 46, "<table style=\"width:100%; font-size:0.875rem; border-collapse:collapse;\"><thead><tr style=\"border-bottom:1px solid var(--color-border); color:var(--color-muted-fg); text-align:left;\"><th style=\"padding:0.5rem 0; font-weight:500;\">Action</th><th style=\"padding:0.5rem 0; font-weight:500;\">Status</th><th style=\"padding:0.5rem 0; font-weight:500;\">Created</th><th style=\"padding:0.5rem 0; font-weight:500;\">Completed</th><th style=\"padding:0.5rem 0; font-weight:500;\">Details</th></tr></thead> <tbody>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "<table style=\"width:100%; font-size:0.875rem; border-collapse:collapse;\"><thead><tr style=\"border-bottom:1px solid var(--color-border); color:var(--color-muted-fg); text-align:left;\"><th style=\"padding:0.5rem 0; font-weight:500;\">Action</th><th style=\"padding:0.5rem 0; font-weight:500;\">Status</th><th style=\"padding:0.5rem 0; font-weight:500;\">Created</th><th style=\"padding:0.5rem 0; font-weight:500;\">Completed</th><th style=\"padding:0.5rem 0; font-weight:500;\">Details</th></tr></thead> <tbody>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				for _, d := range deployments {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, "<tr style=\"border-bottom:1px solid var(--color-border);\"><td style=\"padding:0.625rem 0; color:var(--color-fg);\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "<tr style=\"border-bottom:1px solid var(--color-border);\"><td style=\"padding:0.625rem 0; color:var(--color-fg);\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					var templ_7745c5c3_Var27 string
-					templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.JoinStringErrs(d.Action)
+					var templ_7745c5c3_Var22 string
+					templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(d.Action)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenant_detail.templ`, Line: 234, Col: 74}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenant_detail.templ`, Line: 233, Col: 74}
 					}
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var27))
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, "</td><td style=\"padding:0.625rem 0;\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "</td><td style=\"padding:0.625rem 0;\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -641,81 +602,81 @@ func TenantDetail(tenant generated.Tenant, user generated.User, deployments []ge
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 49, "</td><td style=\"padding:0.625rem 0; color:var(--color-muted-fg);\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "</td><td style=\"padding:0.625rem 0; color:var(--color-muted-fg);\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					var templ_7745c5c3_Var28 string
-					templ_7745c5c3_Var28, templ_7745c5c3_Err = templ.JoinStringErrs(d.CreatedAt.Format("02 Jan 2006 15:04"))
+					var templ_7745c5c3_Var23 string
+					templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs(d.CreatedAt.Format("02 Jan 2006 15:04"))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenant_detail.templ`, Line: 236, Col: 111}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenant_detail.templ`, Line: 235, Col: 111}
 					}
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var28))
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var23))
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, "</td><td style=\"padding:0.625rem 0; color:var(--color-muted-fg);\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 46, "</td><td style=\"padding:0.625rem 0; color:var(--color-muted-fg);\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					if d.CompletedAt != nil {
-						var templ_7745c5c3_Var29 string
-						templ_7745c5c3_Var29, templ_7745c5c3_Err = templ.JoinStringErrs(d.CompletedAt.Format("02 Jan 2006 15:04"))
+						var templ_7745c5c3_Var24 string
+						templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.JoinStringErrs(d.CompletedAt.Format("02 Jan 2006 15:04"))
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenant_detail.templ`, Line: 239, Col: 54}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenant_detail.templ`, Line: 238, Col: 54}
 						}
-						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var29))
+						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var24))
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 51, "</td><td style=\"padding:0.625rem 0;\"><a href=\"")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, "</td><td style=\"padding:0.625rem 0;\"><a href=\"")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					var templ_7745c5c3_Var30 templ.SafeURL
-					templ_7745c5c3_Var30, templ_7745c5c3_Err = templ.JoinURLErrs(templ.URL("/admin/tenants/" + tenant.ID.String() + "/deployments/" + d.ID.String()))
+					var templ_7745c5c3_Var25 templ.SafeURL
+					templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.JoinURLErrs(templ.URL("/admin/tenants/" + tenant.ID.String() + "/deployments/" + d.ID.String()))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenant_detail.templ`, Line: 243, Col: 103}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenant_detail.templ`, Line: 242, Col: 103}
 					}
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var30))
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var25))
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 52, "\" style=\"display:inline-flex; align-items:center; padding:0.25rem 0.75rem; border-radius:9999px; font-size:0.75rem; font-weight:500; text-decoration:none; background:var(--color-secondary); color:var(--color-fg); transition:all 0.15s ease;\" onmouseover=\"this.style.background='var(--color-muted)'\" onmouseout=\"this.style.background='var(--color-secondary)'\">View</a></td></tr>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, "\" style=\"display:inline-flex; align-items:center; padding:0.25rem 0.75rem; border-radius:9999px; font-size:0.75rem; font-weight:500; text-decoration:none; background:var(--color-secondary); color:var(--color-fg); transition:all 0.15s ease;\" onmouseover=\"this.style.background='var(--color-muted)'\" onmouseout=\"this.style.background='var(--color-secondary)'\">View</a></td></tr>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, "</tbody></table>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 49, "</tbody></table>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 54, "</div><!-- Provision Log -->")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, "</div><!-- Provision Log -->")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if tenant.ProvisionLog != nil {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 55, "<div style=\"background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.5rem;\"><h2 style=\"font-family:var(--font-heading); font-size:1rem; font-weight:700; color:var(--color-fg); margin-bottom:1rem;\">Provision Log</h2><pre style=\"border-radius:0.75rem; padding:1rem; font-size:0.75rem; overflow-x:auto; white-space:pre-wrap; background:#1e1e1e; color:#d4d4d4; font-family:monospace;\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 51, "<div style=\"background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.5rem;\"><h2 style=\"font-family:var(--font-heading); font-size:1rem; font-weight:700; color:var(--color-fg); margin-bottom:1rem;\">Provision Log</h2><pre style=\"border-radius:0.75rem; padding:1rem; font-size:0.75rem; overflow-x:auto; white-space:pre-wrap; background:#1e1e1e; color:#d4d4d4; font-family:monospace;\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				var templ_7745c5c3_Var31 string
-				templ_7745c5c3_Var31, templ_7745c5c3_Err = templ.JoinStringErrs(*tenant.ProvisionLog)
+				var templ_7745c5c3_Var26 string
+				templ_7745c5c3_Var26, templ_7745c5c3_Err = templ.JoinStringErrs(*tenant.ProvisionLog)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenant_detail.templ`, Line: 260, Col: 193}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenant_detail.templ`, Line: 259, Col: 193}
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var31))
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var26))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 56, "</pre></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 52, "</pre></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 57, "</div><script>\n\t\t\t(function() {\n\t\t\t\tvar badge = document.getElementById('health-badge');\n\t\t\t\tvar latency = document.getElementById('health-latency');\n\t\t\t\tvar tid = '{ tenant.ID.String() }';\n\n\t\t\t\tfunction check() {\n\t\t\t\t\tfetch('/admin/tenants/' + tid + '/health')\n\t\t\t\t\t\t.then(function(r) { return r.json(); })\n\t\t\t\t\t\t.then(function(d) {\n\t\t\t\t\t\t\tbadge.textContent = d.status;\n\t\t\t\t\t\t\tbadge.style.background = d.status === 'UP' ? 'hsl(140, 60%, 95%)' : 'hsl(0, 70%, 95%)';\n\t\t\t\t\t\t\tbadge.style.color = d.status === 'UP' ? 'hsl(140, 60%, 35%)' : 'hsl(0, 70%, 40%)';\n\t\t\t\t\t\t\tif (d.latency_ms) latency.textContent = d.latency_ms + 'ms';\n\t\t\t\t\t\t\tif (d.error) latency.textContent = d.error;\n\t\t\t\t\t\t})\n\t\t\t\t\t\t.catch(function() {\n\t\t\t\t\t\t\tbadge.textContent = 'ERR';\n\t\t\t\t\t\t\tbadge.style.background = 'hsl(0, 70%, 95%)';\n\t\t\t\t\t\t\tbadge.style.color = 'hsl(0, 70%, 40%)';\n\t\t\t\t\t\t});\n\t\t\t\t}\n\n\t\t\t\tcheck();\n\t\t\t\tsetInterval(check, 30000);\n\t\t\t})();\n\t\t</script>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, "</div><script>\n\t\t\t(function() {\n\t\t\t\tvar badge = document.getElementById('health-badge');\n\t\t\t\tvar latency = document.getElementById('health-latency');\n\t\t\t\tvar tid = '{ tenant.ID.String() }';\n\n\t\t\t\tfunction check() {\n\t\t\t\t\tfetch('/admin/tenants/' + tid + '/health')\n\t\t\t\t\t\t.then(function(r) { return r.json(); })\n\t\t\t\t\t\t.then(function(d) {\n\t\t\t\t\t\t\tbadge.textContent = d.status;\n\t\t\t\t\t\t\tbadge.style.background = d.status === 'UP' ? 'hsl(140, 60%, 95%)' : 'hsl(0, 70%, 95%)';\n\t\t\t\t\t\t\tbadge.style.color = d.status === 'UP' ? 'hsl(140, 60%, 35%)' : 'hsl(0, 70%, 40%)';\n\t\t\t\t\t\t\tif (d.latency_ms) latency.textContent = d.latency_ms + 'ms';\n\t\t\t\t\t\t\tif (d.error) latency.textContent = d.error;\n\t\t\t\t\t\t})\n\t\t\t\t\t\t.catch(function() {\n\t\t\t\t\t\t\tbadge.textContent = 'ERR';\n\t\t\t\t\t\t\tbadge.style.background = 'hsl(0, 70%, 95%)';\n\t\t\t\t\t\t\tbadge.style.color = 'hsl(0, 70%, 40%)';\n\t\t\t\t\t\t});\n\t\t\t\t}\n\n\t\t\t\tcheck();\n\t\t\t\tsetInterval(check, 30000);\n\t\t\t})();\n\t\t</script>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -745,33 +706,33 @@ func detailCard(title string) templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var32 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var32 == nil {
-			templ_7745c5c3_Var32 = templ.NopComponent
+		templ_7745c5c3_Var27 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var27 == nil {
+			templ_7745c5c3_Var27 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 58, "<div style=\"background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; overflow:hidden;\"><div style=\"padding:1.25rem 1.5rem; border-bottom:1px solid var(--color-border);\"><h2 style=\"font-family:var(--font-heading); font-size:0.875rem; font-weight:700; color:var(--color-fg);\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 54, "<div style=\"background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; overflow:hidden;\"><div style=\"padding:1.25rem 1.5rem; border-bottom:1px solid var(--color-border);\"><h2 style=\"font-family:var(--font-heading); font-size:0.875rem; font-weight:700; color:var(--color-fg);\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var33 string
-		templ_7745c5c3_Var33, templ_7745c5c3_Err = templ.JoinStringErrs(title)
+		var templ_7745c5c3_Var28 string
+		templ_7745c5c3_Var28, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenant_detail.templ`, Line: 298, Col: 115}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenant_detail.templ`, Line: 297, Col: 115}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var33))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 59, "</h2></div><div style=\"padding:1.25rem 1.5rem;\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var28))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templ_7745c5c3_Var32.Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 55, "</h2></div><div style=\"padding:1.25rem 1.5rem;\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 60, "</div></div>")
+		templ_7745c5c3_Err = templ_7745c5c3_Var27.Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 56, "</div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -795,38 +756,38 @@ func detailRow(label, value string) templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var34 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var34 == nil {
-			templ_7745c5c3_Var34 = templ.NopComponent
+		templ_7745c5c3_Var29 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var29 == nil {
+			templ_7745c5c3_Var29 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 61, "<div style=\"display:flex; justify-content:space-between; align-items:center; gap:1rem;\"><dt style=\"font-size:0.8125rem; color:var(--color-muted-fg);\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 57, "<div style=\"display:flex; justify-content:space-between; align-items:center; gap:1rem;\"><dt style=\"font-size:0.8125rem; color:var(--color-muted-fg);\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var35 string
-		templ_7745c5c3_Var35, templ_7745c5c3_Err = templ.JoinStringErrs(label)
+		var templ_7745c5c3_Var30 string
+		templ_7745c5c3_Var30, templ_7745c5c3_Err = templ.JoinStringErrs(label)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenant_detail.templ`, Line: 308, Col: 71}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenant_detail.templ`, Line: 307, Col: 71}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var35))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 62, "</dt><dd style=\"font-size:0.875rem; color:var(--color-fg); font-weight:500; text-align:right;\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var30))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var36 string
-		templ_7745c5c3_Var36, templ_7745c5c3_Err = templ.JoinStringErrs(value)
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenant_detail.templ`, Line: 309, Col: 99}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var36))
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 58, "</dt><dd style=\"font-size:0.875rem; color:var(--color-fg); font-weight:500; text-align:right;\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 63, "</dd></div>")
+		var templ_7745c5c3_Var31 string
+		templ_7745c5c3_Var31, templ_7745c5c3_Err = templ.JoinStringErrs(value)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenant_detail.templ`, Line: 308, Col: 99}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var31))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 59, "</dd></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -850,42 +811,47 @@ func BillingStatusBadge(status string) templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var37 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var37 == nil {
-			templ_7745c5c3_Var37 = templ.NopComponent
+		templ_7745c5c3_Var32 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var32 == nil {
+			templ_7745c5c3_Var32 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
 		switch status {
 		case "paid":
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 64, "<span style=\"display:inline-flex; align-items:center; padding:0.125rem 0.625rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:hsl(140, 60%, 95%); color:hsl(140, 60%, 35%);\">paid</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 60, "<span style=\"display:inline-flex; align-items:center; padding:0.125rem 0.625rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:hsl(140, 60%, 95%); color:hsl(140, 60%, 35%);\">paid</span>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		case "unpaid":
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 61, "<span style=\"display:inline-flex; align-items:center; padding:0.125rem 0.625rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:hsl(35, 90%, 95%); color:hsl(35, 90%, 35%);\">unpaid</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		case "overdue":
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 65, "<span style=\"display:inline-flex; align-items:center; padding:0.125rem 0.625rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:hsl(35, 90%, 95%); color:hsl(35, 90%, 35%);\">overdue</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 62, "<span style=\"display:inline-flex; align-items:center; padding:0.125rem 0.625rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:hsl(35, 90%, 95%); color:hsl(35, 90%, 35%);\">overdue</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		case "suspended":
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 66, "<span style=\"display:inline-flex; align-items:center; padding:0.125rem 0.625rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:hsl(0, 70%, 95%); color:hsl(0, 70%, 40%);\">suspended</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 63, "<span style=\"display:inline-flex; align-items:center; padding:0.125rem 0.625rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:hsl(0, 70%, 95%); color:hsl(0, 70%, 40%);\">suspended</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		default:
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 67, "<span style=\"display:inline-flex; align-items:center; padding:0.125rem 0.625rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:var(--color-secondary); color:var(--color-muted-fg);\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 64, "<span style=\"display:inline-flex; align-items:center; padding:0.125rem 0.625rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:var(--color-secondary); color:var(--color-muted-fg);\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var38 string
-			templ_7745c5c3_Var38, templ_7745c5c3_Err = templ.JoinStringErrs(status)
+			var templ_7745c5c3_Var33 string
+			templ_7745c5c3_Var33, templ_7745c5c3_Err = templ.JoinStringErrs(status)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenant_detail.templ`, Line: 322, Col: 216}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenant_detail.templ`, Line: 323, Col: 216}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var38))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var33))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 68, "</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 65, "</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -910,47 +876,47 @@ func DeploymentStatusBadge(status string) templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var39 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var39 == nil {
-			templ_7745c5c3_Var39 = templ.NopComponent
+		templ_7745c5c3_Var34 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var34 == nil {
+			templ_7745c5c3_Var34 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
 		switch status {
 		case "provisioning":
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 69, "<span style=\"display:inline-flex; align-items:center; padding:0.125rem 0.625rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:hsl(200, 80%, 95%); color:hsl(200, 80%, 40%);\">provisioning</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 66, "<span style=\"display:inline-flex; align-items:center; padding:0.125rem 0.625rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:hsl(200, 80%, 95%); color:hsl(200, 80%, 40%);\">provisioning</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		case "active":
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 70, "<span style=\"display:inline-flex; align-items:center; padding:0.125rem 0.625rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:hsl(140, 60%, 95%); color:hsl(140, 60%, 35%);\">active</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 67, "<span style=\"display:inline-flex; align-items:center; padding:0.125rem 0.625rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:hsl(140, 60%, 95%); color:hsl(140, 60%, 35%);\">active</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		case "failed":
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 71, "<span style=\"display:inline-flex; align-items:center; padding:0.125rem 0.625rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:hsl(0, 70%, 95%); color:hsl(0, 70%, 40%);\">failed</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 68, "<span style=\"display:inline-flex; align-items:center; padding:0.125rem 0.625rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:hsl(0, 70%, 95%); color:hsl(0, 70%, 40%);\">failed</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		case "stopped":
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 72, "<span style=\"display:inline-flex; align-items:center; padding:0.125rem 0.625rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:hsl(35, 90%, 95%); color:hsl(35, 90%, 35%);\">stopped</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 69, "<span style=\"display:inline-flex; align-items:center; padding:0.125rem 0.625rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:hsl(35, 90%, 95%); color:hsl(35, 90%, 35%);\">stopped</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		default:
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 73, "<span style=\"display:inline-flex; align-items:center; padding:0.125rem 0.625rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:var(--color-secondary); color:var(--color-muted-fg);\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 70, "<span style=\"display:inline-flex; align-items:center; padding:0.125rem 0.625rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:var(--color-secondary); color:var(--color-muted-fg);\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var40 string
-			templ_7745c5c3_Var40, templ_7745c5c3_Err = templ.JoinStringErrs(status)
+			var templ_7745c5c3_Var35 string
+			templ_7745c5c3_Var35, templ_7745c5c3_Err = templ.JoinStringErrs(status)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenant_detail.templ`, Line: 337, Col: 216}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/tenant_detail.templ`, Line: 338, Col: 216}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var40))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var35))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 74, "</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 71, "</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

@@ -123,6 +123,18 @@ type GetVerifyTokenRow struct {
 	Uid       int64     `json:"uid"`
 }
 
+type BillingTransaction struct {
+	ID              int64      `json:"id"`
+	TenantID        string     `json:"tenant_id"`
+	Amount          float64    `json:"amount"`
+	Currency        string     `json:"currency"`
+	Description     string     `json:"description"`
+	TransactionType string     `json:"transaction_type"`
+	Status          string     `json:"status"`
+	AdminID         *int64     `json:"admin_id"`
+	CreatedAt       time.Time  `json:"created_at"`
+}
+
 type Queries struct {
 	db *sql.DB
 }
