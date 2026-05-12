@@ -1,0 +1,153 @@
+package client
+
+import "github.com/dadyutenga/hms-control/internal/views/layout"
+
+templ ClientLayout(title string, userName string) {
+	@layout.Base(title) {
+		<style>
+			.client-shell { display:flex; min-height:100vh; }
+			.client-sidebar {
+				width: 260px;
+				background: #1f2937;
+				color: #f9fafb;
+				position: fixed;
+				top: 0; left: 0; bottom: 0;
+				overflow-y: auto;
+				padding: 1.5rem;
+				z-index: 60;
+				transition: transform 0.25s ease;
+			}
+			.client-sidebar.collapsed { transform: translateX(-100%); }
+			.client-sidebar-link {
+				display: flex; align-items: center; gap: 0.625rem;
+				padding: 0.625rem 0.75rem;
+				border-radius: 0.5rem;
+				font-size: 0.875rem;
+				text-decoration: none;
+				color: #d1d5db;
+				transition: all 0.15s ease;
+				margin-bottom: 0.125rem;
+			}
+			.client-sidebar-link:hover,
+			.client-sidebar-link.active {
+				background: #374151;
+				color: #f9fafb;
+			}
+			.client-sidebar-link .material-symbols-outlined { font-size: 1.125rem; }
+			.client-main { flex: 1; margin-left: 260px; transition: margin-left 0.25s ease; }
+			.client-main.expanded { margin-left: 0; }
+			.client-topbar {
+				position: sticky; top: 0; z-index: 50;
+				background: var(--color-bg);
+				border-bottom: 1px solid var(--color-border);
+				height: 4rem;
+				display: flex; align-items: center; justify-content: space-between;
+				padding: 0 1.5rem;
+			}
+			.client-toggle {
+				background: transparent; border: none; cursor: pointer;
+				color: var(--color-fg); padding: 0.25rem; border-radius: 0.5rem;
+				display: flex; align-items: center; justify-content: center;
+			}
+			.client-toggle:hover { background: var(--color-secondary); }
+			@media (max-width: 1023px) {
+				.client-sidebar { transform: translateX(-100%); }
+				.client-sidebar.open { transform: translateX(0); }
+				.client-main { margin-left: 0; }
+			}
+		</style>
+
+		<div class="client-shell" id="client-shell">
+			<!-- Sidebar -->
+			<aside class="client-sidebar" id="client-sidebar">
+				<div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:2rem;">
+					<a href="/dashboard" style="font-family:var(--font-heading); font-weight:800; font-size:1.125rem; color:#f9fafb; text-decoration:none;">HMS</a>
+					<button class="client-toggle" onclick="toggleClientSidebar()" style="display:none;" id="client-sidebar-close">
+						<span class="material-symbols-outlined" style="font-size:1.25rem; color:#f9fafb;">close</span>
+					</button>
+				</div>
+				<nav>
+					@clientSidebarLink("/dashboard", "dashboard", "Dashboard", false)
+					@clientSidebarLink("/dashboard/billing", "payments", "Billing", false)
+					@clientSidebarLink("/dashboard/details", "apartment", "Tenant Details", false)
+					@clientSidebarLink("/dashboard/change-password", "lock", "Change Password", false)
+				</nav>
+				<div style="position:absolute; bottom:1.5rem; left:1.5rem; right:1.5rem;">
+					<form method="POST" action="/logout">
+						<button type="submit" style="width:100%; display:flex; align-items:center; gap:0.625rem; padding:0.625rem 0.75rem; border-radius:0.5rem; font-size:0.875rem; background:transparent; border:none; color:#d1d5db; cursor:pointer; transition:all 0.15s ease;" onmouseover="this.style.background='#374151';this.style.color='#f9fafb'" onmouseout="this.style.background='transparent';this.style.color='#d1d5db'">
+							<span class="material-symbols-outlined" style="font-size:1.125rem;">logout</span>
+							Logout
+						</button>
+					</form>
+				</div>
+			</aside>
+
+			<!-- Overlay for mobile -->
+			<div id="client-sidebar-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:55;" onclick="toggleClientSidebar()"></div>
+
+			<!-- Main content -->
+			<div class="client-main" id="client-main">
+				<header class="client-topbar">
+					<div style="display:flex; align-items:center; gap:0.75rem;">
+						<button class="client-toggle" onclick="toggleClientSidebar()" id="client-sidebar-toggle">
+							<span class="material-symbols-outlined" style="font-size:1.25rem;">menu</span>
+						</button>
+						<span style="font-family:var(--font-heading); font-weight:700; font-size:1rem; color:var(--color-fg);">{ title }</span>
+					</div>
+					<div style="display:flex; align-items:center; gap:0.5rem; font-size:0.875rem; color:var(--color-fg);">
+						<span class="material-symbols-outlined" style="font-size:1.25rem; color:var(--color-muted-fg);">account_circle</span>
+						if userName != "" {
+							{ userName }
+						}
+					</div>
+				</header>
+				<main style="padding:1.5rem;">
+					{ children... }
+				</main>
+			</div>
+		</div>
+
+		<script>
+			(function() {
+				var sidebar = document.getElementById('client-sidebar');
+				var main = document.getElementById('client-main');
+				var overlay = document.getElementById('client-sidebar-overlay');
+				var closeBtn = document.getElementById('client-sidebar-close');
+				var isMobile = window.innerWidth < 1024;
+
+				if (!isMobile) {
+					closeBtn.style.display = 'none';
+				} else {
+					closeBtn.style.display = 'flex';
+				}
+
+				window.toggleClientSidebar = function() {
+					isMobile = window.innerWidth < 1024;
+					if (isMobile) {
+						sidebar.classList.toggle('open');
+						overlay.style.display = sidebar.classList.contains('open') ? 'block' : 'none';
+					} else {
+						sidebar.classList.toggle('collapsed');
+						main.classList.toggle('expanded');
+					}
+				};
+
+				window.addEventListener('resize', function() {
+					isMobile = window.innerWidth < 1024;
+					closeBtn.style.display = isMobile ? 'flex' : 'none';
+					if (!isMobile) {
+						sidebar.classList.remove('open');
+						overlay.style.display = 'none';
+					}
+				});
+			})();
+		</script>
+	}
+}
+
+templ clientSidebarLink(href string, icon string, label string, isActive bool) {
+	<a href={ templ.URL(href) } class={"client-sidebar-link", templ.KV("active", isActive)}>
+		<span class="material-symbols-outlined">{ icon }</span>
+		{ label }
+	</a>
+}

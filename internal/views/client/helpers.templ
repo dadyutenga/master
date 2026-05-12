@@ -1,0 +1,16 @@
+package client
+
+templ BillingStatusBadge(status string) {
+	switch status {
+		case "paid":
+			<span style="display:inline-flex; align-items:center; padding:0.2rem 0.625rem; border-radius:9999px; font-size:0.6875rem; font-weight:500; background:hsl(140, 60%, 95%); color:hsl(140, 60%, 35%);">paid</span>
+		case "unpaid":
+			<span style="display:inline-flex; align-items:center; padding:0.2rem 0.625rem; border-radius:9999px; font-size:0.6875rem; font-weight:500; background:hsl(35, 90%, 95%); color:hsl(35, 90%, 35%);">unpaid</span>
+		case "overdue":
+			<span style="display:inline-flex; align-items:center; padding:0.2rem 0.625rem; border-radius:9999px; font-size:0.6875rem; font-weight:500; background:hsl(35, 90%, 95%); color:hsl(35, 90%, 35%);">overdue</span>
+		case "suspended":
+			<span style="display:inline-flex; align-items:center; padding:0.2rem 0.625rem; border-radius:9999px; font-size:0.6875rem; font-weight:500; background:hsl(0, 70%, 95%); color:hsl(0, 70%, 40%);">suspended</span>
+		default:
+			<span style="display:inline-flex; align-items:center; padding:0.2rem 0.625rem; border-radius:9999px; font-size:0.6875rem; font-weight:500; background:var(--color-secondary); color:var(--color-muted-fg);">{ status }</span>
+	}
+}

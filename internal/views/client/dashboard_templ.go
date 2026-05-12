@@ -10,7 +10,6 @@ import templruntime "github.com/a-h/templ/runtime"
 
 import (
 	"github.com/dadyutenga/hms-control/internal/db/generated"
-	"github.com/dadyutenga/hms-control/internal/views/layout"
 )
 
 type DashboardProps struct {
@@ -51,145 +50,101 @@ func Dashboard(props DashboardProps) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!-- Fixed Header --> <header style=\"position: fixed; top: 0; left: 0; right: 0; z-index: 50; background: var(--color-bg); border-bottom: 1px solid var(--color-border); height: 4rem;\"><div class=\"w-full px-6\" style=\"display: flex; align-items: center; justify-content: space-between; height: 4rem; overflow: hidden;\"><!-- Logo at START --><a href=\"/dashboard\" style=\"font-family: var(--font-heading); font-weight: 800; font-size: 1.125rem; text-decoration: none; color: var(--color-fg); white-space: nowrap; flex-shrink: 0;\">Hotel Management System</a><!-- User dropdown at END --><details style=\"position: relative;\"><summary style=\"list-style: none; display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.875rem; color: var(--color-fg); white-space: nowrap;\"><span class=\"material-symbols-outlined\" style=\"font-size: 1.1rem; color: var(--color-muted-fg);\">account_circle</span> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div style=\"max-width:1200px; margin:0 auto;\"><div style=\"margin-bottom:1.5rem;\"><h1 style=\"font-family:var(--font-heading); font-size:1.5rem; font-weight:700; color:var(--color-fg);\">Hello, ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(props.User.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/dashboard.templ`, Line: 24, Col: 23}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/dashboard.templ`, Line: 16, Col: 131}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, " <span class=\"material-symbols-outlined\" style=\"font-size: 1rem; color: var(--color-muted-fg);\">expand_more</span></summary><div style=\"position: absolute; top: 2.5rem; right: 0; min-width: 180px; background: var(--color-bg); border: 1px solid var(--color-border); border-radius: 0.75rem; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); padding: 0.5rem;\"><a href=\"/dashboard/details\" style=\"display: block; padding: 0.5rem 0.75rem; font-size: 0.875rem; text-decoration: none; color: var(--color-fg); border-radius: 0.5rem;\" onmouseover=\"this.style.background='var(--color-secondary)'\" onmouseout=\"this.style.background='transparent'\">Tenant details</a> <a href=\"/dashboard/change-password\" style=\"display: block; padding: 0.5rem 0.75rem; font-size: 0.875rem; text-decoration: none; color: var(--color-fg); border-radius: 0.5rem;\" onmouseover=\"this.style.background='var(--color-secondary)'\" onmouseout=\"this.style.background='transparent'\">Change password</a><form method=\"POST\" action=\"/logout\"><button type=\"submit\" style=\"width: 100%; text-align: left; padding: 0.5rem 0.75rem; font-size: 0.875rem; background: transparent; border: none; color: var(--color-fg); cursor: pointer; border-radius: 0.5rem;\" onmouseover=\"this.style.background='var(--color-secondary)'\" onmouseout=\"this.style.background='transparent'\">Logout</button></form></div></details></div></header><!-- Main Content with top offset for fixed header --> <main style=\"padding-top: 5rem;\"><!-- Greeting at START (left-aligned, full width) --><div style=\"max-width: 1400px; margin: 0 auto; padding: 1.5rem 1.5rem 0.5rem;\"><h1 style=\"font-size: 1.5rem; font-weight: 700; color: var(--color-fg); font-family: var(--font-heading);\">Hello, ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</h1><p style=\"font-size:0.875rem; color:var(--color-muted-fg); margin-top:0.25rem;\">Welcome to your hotel dashboard</p></div><!-- Quick Stats --><div style=\"display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:1rem; margin-bottom:1.5rem;\"><div style=\"background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.25rem;\"><div style=\"width:2.25rem; height:2.25rem; border-radius:0.625rem; display:flex; align-items:center; justify-content:center; background:color-mix(in srgb, #3b82f6 12%, transparent); margin-bottom:0.75rem;\"><span class=\"material-symbols-outlined\" style=\"font-size:1.25rem; color:#3b82f6;\">apartment</span></div><div style=\"font-size:0.75rem; color:var(--color-muted-fg); margin-bottom:0.25rem;\">Company</div><div style=\"font-size:1rem; font-weight:600; color:var(--color-fg);\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var4 string
-			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(props.User.Name)
+			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(props.Tenant.CompanyName)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/dashboard.templ`, Line: 42, Col: 135}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/dashboard.templ`, Line: 27, Col: 100}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</h1></div><!-- Dashboard cards centered --><div class=\"max-w-4xl mx-auto p-6\"><div class=\"rounded-xl border p-6 mb-6\" style=\"background: var(--color-card); border-color: var(--color-border);\"><h2 class=\"text-lg font-semibold mb-4\" style=\"color: var(--color-fg); font-family: var(--font-heading);\">Your Hotel Management System</h2><dl class=\"space-y-3 text-sm\"><div class=\"flex justify-between\"><dt style=\"color: var(--color-muted-fg);\">Company</dt><dd style=\"color: var(--color-fg);\">")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			var templ_7745c5c3_Var5 string
-			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(props.Tenant.CompanyName)
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/dashboard.templ`, Line: 52, Col: 69}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</dd></div><div class=\"flex justify-between\"><dt style=\"color: var(--color-muted-fg);\">Domain</dt><dd>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</div></div><div style=\"background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.25rem;\"><div style=\"width:2.25rem; height:2.25rem; border-radius:0.625rem; display:flex; align-items:center; justify-content:center; background:color-mix(in srgb, #22c55e 12%, transparent); margin-bottom:0.75rem;\"><span class=\"material-symbols-outlined\" style=\"font-size:1.25rem; color:#22c55e;\">language</span></div><div style=\"font-size:0.75rem; color:var(--color-muted-fg); margin-bottom:0.25rem;\">Domain</div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if props.Tenant.Status == generated.TenantStatusActive {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<a href=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<a href=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				var templ_7745c5c3_Var6 templ.SafeURL
-				templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinURLErrs(templ.URL("https://" + props.Tenant.Domain))
+				var templ_7745c5c3_Var5 templ.SafeURL
+				templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinURLErrs(templ.URL("https://" + props.Tenant.Domain))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/dashboard.templ`, Line: 58, Col: 62}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/dashboard.templ`, Line: 35, Col: 59}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\" target=\"_blank\" style=\"font-size:1rem; font-weight:600; color:var(--color-brand-blue); text-decoration:none;\">")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var6 string
+				templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(props.Tenant.Domain)
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/dashboard.templ`, Line: 35, Col: 193}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" class=\"hover:underline\" style=\"color: var(--color-brand-blue);\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</a>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			} else {
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<div style=\"font-size:1rem; font-weight:600; color:var(--color-fg);\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var7 string
 				templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(props.Tenant.Domain)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/dashboard.templ`, Line: 58, Col: 150}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/dashboard.templ`, Line: 37, Col: 96}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</a>")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<span style=\"color: var(--color-muted-fg);\">")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				var templ_7745c5c3_Var8 string
-				templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(props.Tenant.Domain)
-				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/dashboard.templ`, Line: 60, Col: 74}
-				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</span>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</dd></div><div class=\"flex justify-between\"><dt style=\"color: var(--color-muted-fg);\">Status</dt><dd>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</div><div style=\"background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.25rem;\"><div style=\"width:2.25rem; height:2.25rem; border-radius:0.625rem; display:flex; align-items:center; justify-content:center; background:color-mix(in srgb, #8b5cf6 12%, transparent); margin-bottom:0.75rem;\"><span class=\"material-symbols-outlined\" style=\"font-size:1.25rem; color:#8b5cf6;\">credit_card</span></div><div style=\"font-size:0.75rem; color:var(--color-muted-fg); margin-bottom:0.25rem;\">Billing</div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			switch string(props.Tenant.Status) {
-			case "active":
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<span class=\"px-2 py-1 rounded text-xs\" style=\"background: hsl(140, 60%, 95%); color: hsl(140, 60%, 35%);\">active</span>")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-			case "provisioning":
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<span class=\"px-2 py-1 rounded text-xs animate-pulse\" style=\"background: hsl(200, 80%, 95%); color: hsl(200, 80%, 40%);\">provisioning</span>")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-			case "pending_approval":
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<span class=\"px-2 py-1 rounded text-xs\" style=\"background: hsl(270, 50%, 95%); color: hsl(270, 50%, 40%);\">pending approval</span>")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-			default:
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<span class=\"px-2 py-1 rounded text-xs\" style=\"background: var(--color-secondary); color: var(--color-muted-fg);\">")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				var templ_7745c5c3_Var9 string
-				templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(string(props.Tenant.Status))
-				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/dashboard.templ`, Line: 75, Col: 153}
-				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "</span>")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
+			templ_7745c5c3_Err = BillingStatusBadge(props.Tenant.BillingStatus).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</dd></div></dl></div></div></main>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</div></div><!-- Quick Links --><div style=\"display:grid; grid-template-columns:repeat(auto-fill, minmax(250px, 1fr)); gap:1rem;\"><a href=\"/dashboard/billing\" style=\"display:flex; align-items:center; gap:1rem; padding:1.25rem; border-radius:1rem; border:1px solid var(--color-border); background:var(--color-bg); text-decoration:none; color:var(--color-fg); transition:all 0.15s ease;\" onmouseover=\"this.style.boxShadow='0 4px 12px rgba(0,0,0,0.08)'\" onmouseout=\"this.style.boxShadow='none'\"><div style=\"width:2.5rem; height:2.5rem; border-radius:0.625rem; display:flex; align-items:center; justify-content:center; background:var(--color-secondary);\"><span class=\"material-symbols-outlined\" style=\"font-size:1.25rem; color:var(--color-muted-fg);\">payments</span></div><div><div style=\"font-size:0.9375rem; font-weight:600;\">Billing & Payments</div><div style=\"font-size:0.75rem; color:var(--color-muted-fg);\">View invoices, make payments</div></div></a> <a href=\"/dashboard/details\" style=\"display:flex; align-items:center; gap:1rem; padding:1.25rem; border-radius:1rem; border:1px solid var(--color-border); background:var(--color-bg); text-decoration:none; color:var(--color-fg); transition:all 0.15s ease;\" onmouseover=\"this.style.boxShadow='0 4px 12px rgba(0,0,0,0.08)'\" onmouseout=\"this.style.boxShadow='none'\"><div style=\"width:2.5rem; height:2.5rem; border-radius:0.625rem; display:flex; align-items:center; justify-content:center; background:var(--color-secondary);\"><span class=\"material-symbols-outlined\" style=\"font-size:1.25rem; color:var(--color-muted-fg);\">settings</span></div><div><div style=\"font-size:0.9375rem; font-weight:600;\">Tenant Settings</div><div style=\"font-size:0.75rem; color:var(--color-muted-fg);\">Manage your hotel details</div></div></a> <a href=\"/dashboard/change-password\" style=\"display:flex; align-items:center; gap:1rem; padding:1.25rem; border-radius:1rem; border:1px solid var(--color-border); background:var(--color-bg); text-decoration:none; color:var(--color-fg); transition:all 0.15s ease;\" onmouseover=\"this.style.boxShadow='0 4px 12px rgba(0,0,0,0.08)'\" onmouseout=\"this.style.boxShadow='none'\"><div style=\"width:2.5rem; height:2.5rem; border-radius:0.625rem; display:flex; align-items:center; justify-content:center; background:var(--color-secondary);\"><span class=\"material-symbols-outlined\" style=\"font-size:1.25rem; color:var(--color-muted-fg);\">lock</span></div><div><div style=\"font-size:0.9375rem; font-weight:600;\">Security</div><div style=\"font-size:0.75rem; color:var(--color-muted-fg);\">Change your password</div></div></a></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			return nil
 		})
-		templ_7745c5c3_Err = layout.Base("Dashboard").Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = ClientLayout("Dashboard", props.User.Name).Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

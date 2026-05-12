@@ -10,7 +10,6 @@ import templruntime "github.com/a-h/templ/runtime"
 
 import (
 	"github.com/dadyutenga/hms-control/internal/db/generated"
-	"github.com/dadyutenga/hms-control/internal/views/layout"
 )
 
 type TenantDetailsProps struct {
@@ -53,107 +52,94 @@ func TenantDetails(props TenantDetailsProps) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<header style=\"position:sticky; top:0; z-index:50; background: var(--color-bg); border-bottom:1px solid var(--color-border);\"><div class=\"w-full px-6\" style=\"display:flex; align-items:center; justify-content:space-between; height:4rem;\"><a href=\"/dashboard\" style=\"font-family: var(--font-heading); font-weight: 800; font-size: 1.125rem; text-decoration:none; color: var(--color-fg);\">Hotel Management System</a> <details style=\"position:relative;\"><summary style=\"list-style:none; display:flex; align-items:center; gap:0.5rem; cursor:pointer; font-size:0.875rem; color: var(--color-fg);\"><span class=\"material-symbols-outlined\" style=\"font-size:1.1rem; color: var(--color-muted-fg);\">account_circle</span> ")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			var templ_7745c5c3_Var3 string
-			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(props.User.Name)
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/tenant_details.templ`, Line: 23, Col: 23}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, " <span class=\"material-symbols-outlined\" style=\"font-size:1rem; color: var(--color-muted-fg);\">expand_more</span></summary><div style=\"position:absolute; top:2rem; left:0; min-width:180px; background: var(--color-bg); border:1px solid var(--color-border); border-radius:0.75rem; box-shadow:0 10px 15px -3px rgba(0,0,0,0.1); padding:0.5rem;\"><a href=\"/dashboard/details\" style=\"display:block; padding:0.5rem 0.75rem; font-size:0.875rem; text-decoration:none; color: var(--color-fg);\">Tenant details</a> <a href=\"/dashboard/change-password\" style=\"display:block; padding:0.5rem 0.75rem; font-size:0.875rem; text-decoration:none; color: var(--color-fg);\">Change password</a><form method=\"POST\" action=\"/logout\"><button type=\"submit\" style=\"width:100%; text-align:left; padding:0.5rem 0.75rem; font-size:0.875rem; background:transparent; border:none; color: var(--color-fg); cursor:pointer;\">Logout</button></form></div></details></div></header><div class=\"max-w-3xl mx-auto p-6\" style=\"padding-top:2rem;\"><h1 class=\"text-2xl font-bold mb-6\" style=\"color: var(--color-fg); font-family: var(--font-heading);\">Tenant details</h1>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div style=\"max-width:600px; margin:0 auto;\"><h1 style=\"font-family:var(--font-heading); font-size:1.5rem; font-weight:700; color:var(--color-fg); margin-bottom:1.5rem;\">Tenant Details</h1>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if props.Success {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"mb-4 p-3 rounded text-sm\" style=\"background-color: color-mix(in srgb, var(--color-brand-blue) 8%, var(--color-bg)); border: 1px solid color-mix(in srgb, var(--color-brand-blue) 25%, var(--color-border)); color: var(--color-brand-blue);\">Tenant details updated successfully.</div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div style=\"margin-bottom:1rem; padding:0.75rem 1rem; border-radius:0.5rem; font-size:0.875rem; background:color-mix(in srgb, var(--color-brand-blue) 8%, var(--color-bg)); border:1px solid color-mix(in srgb, var(--color-brand-blue) 25%, var(--color-border)); color:var(--color-brand-blue);\">Tenant details updated successfully.</div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
 			if props.Error != "" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div class=\"mb-4 p-3 rounded text-sm\" style=\"background-color: color-mix(in srgb, var(--color-destructive) 8%, var(--color-bg)); border: 1px solid color-mix(in srgb, var(--color-destructive) 25%, var(--color-border)); color: var(--color-destructive);\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div style=\"margin-bottom:1rem; padding:0.75rem 1rem; border-radius:0.5rem; font-size:0.875rem; background:color-mix(in srgb, var(--color-destructive) 8%, var(--color-bg)); border:1px solid color-mix(in srgb, var(--color-destructive) 25%, var(--color-border)); color:var(--color-destructive);\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				var templ_7745c5c3_Var4 string
-				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(props.Error)
+				var templ_7745c5c3_Var3 string
+				templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(props.Error)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/tenant_details.templ`, Line: 47, Col: 18}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/tenant_details.templ`, Line: 26, Col: 18}
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<div class=\"rounded-xl border p-6\" style=\"background: var(--color-card); border-color: var(--color-border);\"><form method=\"POST\" action=\"/dashboard/details\" style=\"display:flex; flex-direction:column; gap:1rem;\"><div style=\"display:flex; flex-direction:column; gap:0.5rem;\"><label for=\"requested_subdomain\" style=\"font-size:0.875rem; font-weight:600; color: var(--color-fg);\">Requested subdomain</label> <input type=\"text\" name=\"requested_subdomain\" required value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<div style=\"background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.5rem;\"><form method=\"POST\" action=\"/dashboard/details\" style=\"display:flex; flex-direction:column; gap:1rem;\"><div style=\"display:flex; flex-direction:column; gap:0.375rem;\"><label style=\"font-size:0.8125rem; font-weight:600; color:var(--color-fg);\">Requested subdomain</label> <input type=\"text\" name=\"requested_subdomain\" required value=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var4 string
+			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.ResolveAttributeValue(RequestedSubdomainValue(props.Tenant))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/tenant_details.templ`, Line: 34, Col: 106}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var4)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" style=\"border:1px solid var(--color-border); border-radius:0.5rem; padding:0.625rem 0.75rem; font-size:0.875rem; background:var(--color-bg); color:var(--color-fg);\"> <span style=\"font-size:0.75rem; color:var(--color-muted-fg);\">Lowercase letters, numbers, and hyphens only.</span></div><div style=\"display:flex; flex-direction:column; gap:0.375rem;\"><label style=\"font-size:0.8125rem; font-weight:600; color:var(--color-fg);\">Admin full name</label> <input type=\"text\" name=\"admin_name\" required value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var5 string
-			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.ResolveAttributeValue(RequestedSubdomainValue(props.Tenant))
+			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.ResolveAttributeValue(OptionalStringValue(props.Tenant.AdminName))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/tenant_details.templ`, Line: 55, Col: 106}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/tenant_details.templ`, Line: 39, Col: 103}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var5)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\" style=\"border: 1px solid var(--color-border); border-radius: 0.5rem; padding: 0.75rem;\"> <span style=\"font-size:0.75rem; color: var(--color-muted-fg);\">Lowercase letters, numbers, and hyphens only.</span></div><div style=\"display:flex; flex-direction:column; gap:0.5rem;\"><label for=\"admin_name\" style=\"font-size:0.875rem; font-weight:600; color: var(--color-fg);\">Admin full name</label> <input type=\"text\" name=\"admin_name\" required value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\" style=\"border:1px solid var(--color-border); border-radius:0.5rem; padding:0.625rem 0.75rem; font-size:0.875rem; background:var(--color-bg); color:var(--color-fg);\"></div><div style=\"display:flex; flex-direction:column; gap:0.375rem;\"><label style=\"font-size:0.8125rem; font-weight:600; color:var(--color-fg);\">Admin email</label> <input type=\"email\" name=\"admin_email\" required value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var6 string
-			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.ResolveAttributeValue(OptionalStringValue(props.Tenant.AdminName))
+			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.ResolveAttributeValue(OptionalStringValue(props.Tenant.AdminEmail))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/tenant_details.templ`, Line: 60, Col: 103}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/tenant_details.templ`, Line: 43, Col: 106}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var6)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\" style=\"border: 1px solid var(--color-border); border-radius: 0.5rem; padding: 0.75rem;\"></div><div style=\"display:flex; flex-direction:column; gap:0.5rem;\"><label for=\"admin_email\" style=\"font-size:0.875rem; font-weight:600; color: var(--color-fg);\">Admin email</label> <input type=\"email\" name=\"admin_email\" required value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\" style=\"border:1px solid var(--color-border); border-radius:0.5rem; padding:0.625rem 0.75rem; font-size:0.875rem; background:var(--color-bg); color:var(--color-fg);\"></div><div style=\"display:flex; flex-direction:column; gap:0.375rem;\"><label style=\"font-size:0.8125rem; font-weight:600; color:var(--color-fg);\">Admin phone (optional)</label> <input type=\"text\" name=\"admin_phone\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var7 string
-			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.ResolveAttributeValue(OptionalStringValue(props.Tenant.AdminEmail))
+			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.ResolveAttributeValue(OptionalStringValue(props.Tenant.AdminPhone))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/tenant_details.templ`, Line: 64, Col: 106}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/tenant_details.templ`, Line: 47, Col: 96}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var7)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\" style=\"border: 1px solid var(--color-border); border-radius: 0.5rem; padding: 0.75rem;\"></div><div style=\"display:flex; flex-direction:column; gap:0.5rem;\"><label for=\"admin_phone\" style=\"font-size:0.875rem; font-weight:600; color: var(--color-fg);\">Admin phone (optional)</label> <input type=\"text\" name=\"admin_phone\" value=\"")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			var templ_7745c5c3_Var8 string
-			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.ResolveAttributeValue(OptionalStringValue(props.Tenant.AdminPhone))
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/tenant_details.templ`, Line: 68, Col: 96}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var8)
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "\" style=\"border: 1px solid var(--color-border); border-radius: 0.5rem; padding: 0.75rem;\"></div><button type=\"submit\" class=\"btn btn-primary\" style=\"align-self:flex-start;\">Save details</button></form></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\" style=\"border:1px solid var(--color-border); border-radius:0.5rem; padding:0.625rem 0.75rem; font-size:0.875rem; background:var(--color-bg); color:var(--color-fg);\"></div><button type=\"submit\" style=\"padding:0.625rem 1.5rem; border-radius:0.5rem; border:none; font-size:0.875rem; font-weight:600; cursor:pointer; background:var(--color-fg); color:var(--color-primary-fg); align-self:flex-start; transition:opacity 0.15s ease;\" onmouseover=\"this.style.opacity='0.9'\" onmouseout=\"this.style.opacity='1'\">Save Details</button></form></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			return nil
 		})
-		templ_7745c5c3_Err = layout.Base("Tenant Details").Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = ClientLayout("Tenant Details", props.User.Name).Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

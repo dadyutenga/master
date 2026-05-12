@@ -65,6 +65,9 @@ func main() {
 
 	client := app.Group("/dashboard", middleware.Auth(store, database))
 	client.Get("/", h.ClientDashboard)
+	client.Get("/billing", h.ClientBillingPage)
+	client.Post("/billing/payment", h.ClientSubmitPayment)
+	client.Post("/billing/receipt", h.ClientUploadReceipt)
 
 	billingProtected := client.Group("", middleware.RequireBilling(database))
 	billingProtected.Get("/details", h.ShowTenantDetails)
