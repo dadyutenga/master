@@ -97,6 +97,33 @@ templ InstanceDetail(props InstanceDetailProps) {
 			</div>
 
 			<!-- Actions -->
+			if props.Instance.BillingStatus == "unpaid" {
+				<div style="background:color-mix(in srgb, #f59e0b 6%, var(--color-bg)); border:1px solid #f59e0b; border-radius:1rem; padding:1.5rem; margin-bottom:1rem;">
+					<h2 style="font-family:var(--font-heading); font-size:1rem; font-weight:700; color:var(--color-fg); margin-bottom:0.5rem;">Payment Required</h2>
+					<p style="font-size:0.8125rem; color:var(--color-muted-fg); margin-bottom:1rem;">Complete payment to activate this instance.</p>
+					<form method="POST" action={ templ.URL("/dashboard/instances/" + props.Instance.ID.String() + "/pay") } style="display:flex; gap:0.5rem; align-items:flex-end; flex-wrap:wrap;">
+						<div style="display:flex; flex-direction:column; gap:0.25rem;">
+							<label style="font-size:0.6875rem; font-weight:600; color:var(--color-muted-fg);">Payment Method</label>
+							<select name="payment_method"
+								style="border:1px solid var(--color-border); border-radius:0.5rem; padding:0.375rem 0.5rem; font-size:0.8125rem; background:var(--color-bg); color:var(--color-fg);">
+								<option value="bank_transfer">Bank Transfer</option>
+								<option value="mobile_money">Mobile Money</option>
+								<option value="card">Card Payment</option>
+							</select>
+						</div>
+						<div style="display:flex; flex-direction:column; gap:0.25rem;">
+							<label style="font-size:0.6875rem; font-weight:600; color:var(--color-muted-fg);">Reference</label>
+							<input type="text" name="reference" placeholder="TXN ID"
+								style="border:1px solid var(--color-border); border-radius:0.5rem; padding:0.375rem 0.5rem; font-size:0.8125rem; background:var(--color-bg); color:var(--color-fg); width:160px;"/>
+						</div>
+						<button type="submit"
+							style="padding:0.5rem 1.5rem; border-radius:0.5rem; border:none; font-size:0.875rem; font-weight:600; cursor:pointer; background:#22c55e; color:#fff; transition:opacity 0.15s ease; white-space:nowrap;"
+							onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+							Pay { fmt.Sprintf("%d", int64(props.Instance.Price)) } TZS
+						</button>
+					</form>
+				</div>
+			}
 			if props.Instance.Status == "active" || props.Instance.Status == "paused" || props.Instance.Status == "disabled" {
 				<div style="background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.5rem; margin-bottom:1rem;">
 					<h2 style="font-family:var(--font-heading); font-size:1rem; font-weight:700; color:var(--color-fg); margin-bottom:1rem;">Actions</h2>

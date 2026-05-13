@@ -53,7 +53,7 @@ func NewInstance(props NewInstanceProps) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div style=\"max-width:800px; margin:0 auto;\"><div style=\"display:flex; align-items:center; gap:0.75rem; margin-bottom:1.5rem;\"><a href=\"/dashboard/instances\" style=\"color:var(--color-muted-fg); text-decoration:none; font-size:0.875rem;\">&larr; Back to Instances</a><h1 style=\"font-family:var(--font-heading); font-size:1.5rem; font-weight:700; color:var(--color-fg);\">Create New Instance</h1></div><!-- Payment Notice --><div style=\"background:color-mix(in srgb, #8b5cf6 6%, var(--color-bg)); border:1px solid #8b5cf6; border-radius:1rem; padding:1.25rem; margin-bottom:1.5rem;\"><div style=\"display:flex; align-items:flex-start; gap:0.75rem;\"><i data-lucide=\"info\" style=\"width:1.25rem; height:1.25rem; color:#8b5cf6; flex-shrink:0; margin-top:0.125rem;\"></i><div><p style=\"font-size:0.875rem; font-weight:600; color:var(--color-fg);\">Payment Required</p><p style=\"font-size:0.8125rem; color:var(--color-muted-fg); margin-top:0.25rem;\">Each instance requires a monthly subscription. Choose a package below and complete payment to activate your new hotel instance.</p></div></div></div><form method=\"POST\" action=\"/dashboard/instances/new\" style=\"display:flex; flex-direction:column; gap:1.5rem;\"><!-- Hotel Details --><div style=\"background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.5rem;\"><h2 style=\"font-family:var(--font-heading); font-size:1rem; font-weight:700; color:var(--color-fg); margin-bottom:1rem;\">Hotel Details</h2><div style=\"display:flex; flex-direction:column; gap:0.75rem;\"><div style=\"display:flex; flex-direction:column; gap:0.25rem;\"><label style=\"font-size:0.75rem; font-weight:600; color:var(--color-muted-fg);\">Hotel Name *</label> <input type=\"text\" name=\"hotel_name\" required placeholder=\"e.g. Serengeti Lodge\" style=\"border:1px solid var(--color-border); border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.875rem; background:var(--color-bg); color:var(--color-fg);\"></div><div style=\"display:flex; flex-direction:column; gap:0.25rem;\"><label style=\"font-size:0.75rem; font-weight:600; color:var(--color-muted-fg);\">Subdomain *</label><div style=\"display:flex; align-items:center; gap:0;\"><input type=\"text\" name=\"slug\" required placeholder=\"serengeti-lodge\" style=\"border:1px solid var(--color-border); border-radius:0.5rem 0 0 0.5rem; padding:0.5rem 0.75rem; font-size:0.875rem; background:var(--color-bg); color:var(--color-fg); flex:1;\"> <span style=\"padding:0.5rem 0.75rem; border:1px solid var(--color-border); border-left:0; border-radius:0 0.5rem 0.5rem 0; font-size:0.8125rem; color:var(--color-muted-fg); background:var(--color-secondary); white-space:nowrap;\">.hms.local</span></div></div></div></div><!-- Package Selection --><div style=\"background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.5rem;\"><h2 style=\"font-family:var(--font-heading); font-size:1rem; font-weight:700; color:var(--color-fg); margin-bottom:1rem;\">Select Package</h2><div style=\"display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:1rem;\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div style=\"max-width:800px; margin:0 auto;\"><div style=\"display:flex; align-items:center; gap:0.75rem; margin-bottom:1.5rem;\"><a href=\"/dashboard/instances\" style=\"color:var(--color-muted-fg); text-decoration:none; font-size:0.875rem;\">&larr; Back to Instances</a><h1 style=\"font-family:var(--font-heading); font-size:1.5rem; font-weight:700; color:var(--color-fg);\">Create New Instance</h1></div><div style=\"background:color-mix(in srgb, #8b5cf6 6%, var(--color-bg)); border:1px solid #8b5cf6; border-radius:1rem; padding:1.25rem; margin-bottom:1.5rem;\"><div style=\"display:flex; align-items:flex-start; gap:0.75rem;\"><i data-lucide=\"info\" style=\"width:1.25rem; height:1.25rem; color:#8b5cf6; flex-shrink:0; margin-top:0.125rem;\"></i><div><p style=\"font-size:0.875rem; font-weight:600; color:var(--color-fg);\">Payment After Creation</p><p style=\"font-size:0.8125rem; color:var(--color-muted-fg); margin-top:0.25rem;\">Create your instance first, then complete payment in the Billing section to activate it.</p></div></div></div><form method=\"POST\" action=\"/dashboard/instances/new\" style=\"display:flex; flex-direction:column; gap:1.5rem;\"><!-- Hotel Details --><div style=\"background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.5rem;\"><h2 style=\"font-family:var(--font-heading); font-size:1rem; font-weight:700; color:var(--color-fg); margin-bottom:1rem;\">Hotel Details</h2><div style=\"display:flex; flex-direction:column; gap:0.75rem;\"><div style=\"display:flex; flex-direction:column; gap:0.25rem;\"><label style=\"font-size:0.75rem; font-weight:600; color:var(--color-muted-fg);\">Hotel Name *</label> <input type=\"text\" name=\"hotel_name\" required placeholder=\"e.g. Serengeti Lodge\" style=\"border:1px solid var(--color-border); border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.875rem; background:var(--color-bg); color:var(--color-fg);\"></div><div style=\"display:flex; flex-direction:column; gap:0.25rem;\"><label style=\"font-size:0.75rem; font-weight:600; color:var(--color-muted-fg);\">Subdomain *</label><div style=\"display:flex; align-items:center; gap:0;\"><input type=\"text\" name=\"slug\" required placeholder=\"serengeti-lodge\" style=\"border:1px solid var(--color-border); border-radius:0.5rem 0 0 0.5rem; padding:0.5rem 0.75rem; font-size:0.875rem; background:var(--color-bg); color:var(--color-fg); flex:1;\"> <span style=\"padding:0.5rem 0.75rem; border:1px solid var(--color-border); border-left:0; border-radius:0 0.5rem 0.5rem 0; font-size:0.8125rem; color:var(--color-muted-fg); background:var(--color-secondary); white-space:nowrap;\">.hms.local</span></div></div></div></div><!-- Package Selection --><div style=\"background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.5rem;\"><h2 style=\"font-family:var(--font-heading); font-size:1rem; font-weight:700; color:var(--color-fg); margin-bottom:1rem;\">Select Package</h2><div style=\"display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:1rem;\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -65,7 +65,7 @@ func NewInstance(props NewInstanceProps) templ.Component {
 				var templ_7745c5c3_Var3 string
 				templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.ResolveAttributeValue(pkg.Name)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/new_instance.templ`, Line: 61, Col: 59}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/new_instance.templ`, Line: 60, Col: 59}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var3)
 				if templ_7745c5c3_Err != nil {
@@ -78,7 +78,7 @@ func NewInstance(props NewInstanceProps) templ.Component {
 				var templ_7745c5c3_Var4 string
 				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(pkg.Name)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/new_instance.templ`, Line: 62, Col: 175}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/new_instance.templ`, Line: 61, Col: 175}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 				if templ_7745c5c3_Err != nil {
@@ -91,7 +91,7 @@ func NewInstance(props NewInstanceProps) templ.Component {
 				var templ_7745c5c3_Var5 string
 				templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", int64(pkg.Price)))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/new_instance.templ`, Line: 63, Col: 147}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/new_instance.templ`, Line: 62, Col: 147}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 				if templ_7745c5c3_Err != nil {
@@ -104,7 +104,7 @@ func NewInstance(props NewInstanceProps) templ.Component {
 				var templ_7745c5c3_Var6 string
 				templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(pkg.BillingCycle)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/new_instance.templ`, Line: 63, Col: 251}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/new_instance.templ`, Line: 62, Col: 251}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 				if templ_7745c5c3_Err != nil {
@@ -122,7 +122,7 @@ func NewInstance(props NewInstanceProps) templ.Component {
 					var templ_7745c5c3_Var7 string
 					templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(pkg.Description)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/new_instance.templ`, Line: 65, Col: 87}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/new_instance.templ`, Line: 64, Col: 87}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 					if templ_7745c5c3_Err != nil {
@@ -138,7 +138,7 @@ func NewInstance(props NewInstanceProps) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</div></div><!-- Payment Summary --><div style=\"background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.5rem;\"><h2 style=\"font-family:var(--font-heading); font-size:1rem; font-weight:700; color:var(--color-fg); margin-bottom:1rem;\">Payment Details</h2><div style=\"display:flex; flex-direction:column; gap:0.75rem;\"><div style=\"display:flex; flex-direction:column; gap:0.25rem;\"><label style=\"font-size:0.75rem; font-weight:600; color:var(--color-muted-fg);\">Payment Method *</label> <select name=\"payment_method\" style=\"border:1px solid var(--color-border); border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.875rem; background:var(--color-bg); color:var(--color-fg);\"><option value=\"bank_transfer\">Bank Transfer</option> <option value=\"mobile_money\">Mobile Money</option> <option value=\"card\">Card Payment</option></select></div><div style=\"display:flex; flex-direction:column; gap:0.25rem;\"><label style=\"font-size:0.75rem; font-weight:600; color:var(--color-muted-fg);\">Reference / Transaction ID</label> <input type=\"text\" name=\"reference\" placeholder=\"e.g. TXN-123456\" style=\"border:1px solid var(--color-border); border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.875rem; background:var(--color-bg); color:var(--color-fg);\"></div></div></div><button type=\"submit\" style=\"padding:0.75rem 2rem; border-radius:9999px; border:none; font-size:0.9375rem; font-weight:600; cursor:pointer; background:var(--color-brand-blue); color:#fff; transition:opacity 0.15s ease; align-self:flex-start;\" onmouseover=\"this.style.opacity='0.9'\" onmouseout=\"this.style.opacity='1'\">Create Instance & Pay</button></form></div><script>if(typeof lucide!=='undefined'){lucide.createIcons();}</script>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</div></div><button type=\"submit\" style=\"padding:0.75rem 2rem; border-radius:9999px; border:none; font-size:0.9375rem; font-weight:600; cursor:pointer; background:var(--color-brand-blue); color:#fff; transition:opacity 0.15s ease; align-self:flex-start;\" onmouseover=\"this.style.opacity='0.9'\" onmouseout=\"this.style.opacity='1'\">Create Instance</button></form></div><script>if(typeof lucide!=='undefined'){lucide.createIcons();}</script>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

@@ -100,6 +100,9 @@ func runMigrationsUp(db *sql.DB) {
 	}
 	fmt.Println("All migrations applied successfully.")
 
+	// Add columns that may be missing from instances table
+	db.Exec("ALTER TABLE instances ADD COLUMN slug TEXT NOT NULL DEFAULT ''")
+
 	// Reset billing status: tenants with no actual payments should be 'unpaid'
 	db.Exec(`UPDATE tenants SET billing_status = 'unpaid' WHERE billing_status = 'paid' AND id NOT IN (SELECT DISTINCT tenant_id FROM billing_transactions WHERE transaction_type = 'payment' AND status = 'completed')`)
 	fmt.Println("Billing status reset for tenants with no payments.")

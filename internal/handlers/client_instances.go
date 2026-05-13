@@ -269,8 +269,6 @@ func (h *Handler) ClientCreateInstance(c *fiber.Ctx) error {
 	hotelName := c.FormValue("hotel_name")
 	slug := strings.ToLower(strings.ReplaceAll(c.FormValue("slug"), " ", "-"))
 	pkgName := c.FormValue("package")
-	paymentMethod := c.FormValue("payment_method")
-	reference := c.FormValue("reference")
 
 	if hotelName == "" || slug == "" {
 		return c.Status(400).SendString("Hotel name and slug are required")
@@ -294,21 +292,6 @@ func (h *Handler) ClientCreateInstance(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(500).SendString("Failed to create instance: " + err.Error())
 	}
-
-	// Record payment
-	desc := "Instance creation - " + hotelName
-	if paymentMethod != "" {
-		desc += " via " + paymentMethod
-	}
-	if reference != "" {
-		desc += " | Ref: " + reference
-	}
-	q.CreateBillingTransaction(c.Context(), inst.ID.String(), price, generated.TxnTypePayment, desc, nil)
-	q.MarkInstancePaid(c.Context(), inst.ID)
-
-	// Auto-provision
-	q.UpdateInstanceStatus(c.Context(), inst.ID, "provisioning")
-	q.CreateInstanceDeployment(c.Context(), inst.ID, "provision", "provisioning")
 
 	return c.Redirect("/dashboard/instances/" + inst.ID.String())
 }

@@ -55,6 +55,7 @@ templ instanceCard(inst generated.Instance) {
 				<div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.5rem;">
 					<h3 style="font-family:var(--font-heading); font-size:1rem; font-weight:700; color:var(--color-fg);">{ inst.HotelName }</h3>
 					@instanceStatusBadge(inst.Status)
+					@clientBillingBadge(inst.BillingStatus)
 					if inst.AdminDisabled {
 						<span style="display:inline-flex; align-items:center; padding:0.125rem 0.5rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:hsl(0, 70%, 95%); color:hsl(0, 70%, 40%);">admin disabled</span>
 					}
@@ -72,12 +73,23 @@ templ instanceCard(inst generated.Instance) {
 						<i data-lucide="credit-card" style="width:0.875rem; height:0.875rem;"></i>
 						{ strconv.FormatFloat(inst.Price, 'f', 0, 64) } TZS/mo
 					</span>
-					<span style="display:flex; align-items:center; gap:0.25rem;">
-						@clientBillingBadge(inst.BillingStatus)
-					</span>
 				</div>
 			</div>
-			<div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+			<div style="display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center;">
+				if inst.BillingStatus == "unpaid" {
+					<form method="POST" action={ templ.URL("/dashboard/instances/" + inst.ID.String() + "/pay") } style="display:inline-flex; gap:0.25rem; align-items:center;">
+						<select name="payment_method" style="border:1px solid var(--color-border); border-radius:0.5rem; padding:0.25rem 0.375rem; font-size:0.6875rem; background:var(--color-bg); color:var(--color-fg);">
+							<option value="bank_transfer">Bank</option>
+							<option value="mobile_money">MoMo</option>
+							<option value="card">Card</option>
+						</select>
+						<button type="submit"
+							style="display:inline-flex; align-items:center; gap:0.25rem; padding:0.375rem 0.75rem; border-radius:9999px; border:none; font-size:0.75rem; font-weight:600; cursor:pointer; background:#22c55e; color:#fff; transition:opacity 0.15s ease;"
+							onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+							Pay { strconv.FormatFloat(inst.Price, 'f', 0, 64) } TZS
+						</button>
+					</form>
+				}
 				if inst.Status == "active" {
 					<button
 						hx-post={ "/dashboard/instances/" + inst.ID.String() + "/pause" }

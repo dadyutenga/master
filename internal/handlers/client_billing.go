@@ -10,6 +10,7 @@ import (
 	"github.com/dadyutenga/hms-control/internal/views/client"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 )
 
 func (h *Handler) ClientBillingPage(c *fiber.Ctx) error {
@@ -37,10 +38,23 @@ func (h *Handler) ClientBillingPage(c *fiber.Ctx) error {
 		return err
 	}
 
+	instances, err := q.ListInstancesByTenantID(c.Context(), tenant.ID)
+	if err != nil {
+		instances = []generated.Instance{}
+	}
+
+	var unpaidInstances []generated.Instance
+	for _, inst := range instances {
+		if inst.BillingStatus == "unpaid" {
+			unpaidInstances = append(unpaidInstances, inst)
+		}
+	}
+
 	return render(c, client.BillingPage(client.BillingPageProps{
-		Tenant:       tenant,
-		User:         user,
-		Transactions: txns,
+		Tenant:         tenant,
+		User:           user,
+		Transactions:   txns,
+		UnpaidInstances: unpaidInstances,
 	}))
 }
 
@@ -83,6 +97,56 @@ func (h *Handler) ClientSubmitPayment(c *fiber.Ctx) error {
 	}
 
 	return c.Redirect("/dashboard/billing")
+}
+
+func (h *Handler) ClientPayInstance(c *fiber.Ctx) error {
+	sess, err := h.store.Get(c)
+	if err != nil {
+		return c.Redirect("/login")
+	}
+	userID, ok := sess.Get("userID").(int64)
+	if !ok {
+		return c.Redirect("/login")
+	}
+
+	q := generated.New(h.db)
+	tenant, err := q.GetTenantByUserID(c.Context(), userID)
+	if err != nil {
+		return c.Status(404).SendString("No tenant found")
+	}
+
+	instID, err := uuid.Parse(c.Params("id"))
+	if err != nil {
+		return c.Status(400).SendString("Invalid instance ID")
+	}
+
+	inst, err := q.GetInstanceByID(c.Context(), instID)
+	if err != nil {
+		return c.Status(404).SendString("Instance not found")
+	}
+	if inst.TenantID != tenant.ID {
+		return c.Status(403).SendString("Access denied")
+	}
+
+	method := c.FormValue("payment_method")
+	reference := c.FormValue("reference")
+	notes := c.FormValue("notes")
+
+	description := fmt.Sprintf("Instance payment for %s via %s", inst.HotelName, method)
+	if reference != "" {
+		description += " | Ref: " + reference
+	}
+	if notes != "" {
+		description += " | " + notes
+	}
+
+	q.CreateBillingTransaction(c.Context(), tenant.ID.String(), inst.Price, generated.TxnTypePayment, description, nil)
+	q.MarkInstancePaid(c.Context(), inst.ID)
+
+	q.UpdateInstanceStatus(c.Context(), inst.ID, "provisioning")
+	q.CreateInstanceDeployment(c.Context(), inst.ID, "provision", "provisioning")
+
+	return c.Redirect("/dashboard/instances/" + inst.ID.String())
 }
 
 func (h *Handler) ClientUploadReceipt(c *fiber.Ctx) error {

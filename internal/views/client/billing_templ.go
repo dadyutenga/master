@@ -15,9 +15,10 @@ import (
 )
 
 type BillingPageProps struct {
-	Tenant       generated.Tenant
-	User         generated.User
-	Transactions []generated.BillingTransaction
+	Tenant          generated.Tenant
+	User            generated.User
+	Transactions    []generated.BillingTransaction
+	UnpaidInstances []generated.Instance
 }
 
 func BillingPage(props BillingPageProps) templ.Component {
@@ -73,7 +74,7 @@ func BillingPage(props BillingPageProps) templ.Component {
 				var templ_7745c5c3_Var3 string
 				templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(props.Tenant.LastPaymentAt.Format("02 Jan 2006"))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/billing.templ`, Line: 32, Col: 125}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/billing.templ`, Line: 33, Col: 125}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 				if templ_7745c5c3_Err != nil {
@@ -101,7 +102,7 @@ func BillingPage(props BillingPageProps) templ.Component {
 				var templ_7745c5c3_Var4 string
 				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(props.Tenant.NextDueAt.Format("02 Jan 2006"))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/billing.templ`, Line: 40, Col: 121}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/billing.templ`, Line: 41, Col: 121}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 				if templ_7745c5c3_Err != nil {
@@ -117,35 +118,120 @@ func BillingPage(props BillingPageProps) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</div></div><!-- Payment Actions --><div style=\"display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.5rem;\"><!-- Make Payment --><div style=\"background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.5rem;\"><div style=\"display:flex; align-items:center; gap:0.5rem; margin-bottom:1rem;\"><i data-lucide=\"credit-card\" style=\"width:1.25rem; height:1.25rem; color:var(--color-brand-blue);\"></i><h2 style=\"font-family:var(--font-heading); font-size:1rem; font-weight:700; color:var(--color-fg);\">Make Payment</h2></div><form method=\"POST\" action=\"/dashboard/billing/payment\" enctype=\"multipart/form-data\" style=\"display:flex; flex-direction:column; gap:0.75rem;\"><div style=\"display:flex; flex-direction:column; gap:0.25rem;\"><label style=\"font-size:0.75rem; font-weight:600; color:var(--color-muted-fg);\">Amount (TZS)</label> <input type=\"number\" name=\"amount\" min=\"1\" step=\"1\" required placeholder=\"e.g. 50000\" style=\"border:1px solid var(--color-border); border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.875rem; background:var(--color-bg); color:var(--color-fg);\"></div><div style=\"display:flex; flex-direction:column; gap:0.25rem;\"><label style=\"font-size:0.75rem; font-weight:600; color:var(--color-muted-fg);\">Payment Method</label> <select name=\"payment_method\" style=\"border:1px solid var(--color-border); border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.875rem; background:var(--color-bg); color:var(--color-fg);\"><option value=\"bank_transfer\">Bank Transfer</option> <option value=\"mobile_money\">Mobile Money</option> <option value=\"card\">Card Payment</option> <option value=\"cash\">Cash</option></select></div><div style=\"display:flex; flex-direction:column; gap:0.25rem;\"><label style=\"font-size:0.75rem; font-weight:600; color:var(--color-muted-fg);\">Reference / Transaction ID</label> <input type=\"text\" name=\"reference\" placeholder=\"e.g. TXN-123456\" style=\"border:1px solid var(--color-border); border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.875rem; background:var(--color-bg); color:var(--color-fg);\"></div><div style=\"display:flex; flex-direction:column; gap:0.25rem;\"><label style=\"font-size:0.75rem; font-weight:600; color:var(--color-muted-fg);\">Notes (optional)</label> <input type=\"text\" name=\"notes\" placeholder=\"e.g. Monthly subscription payment\" style=\"border:1px solid var(--color-border); border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.875rem; background:var(--color-bg); color:var(--color-fg);\"></div><button type=\"submit\" style=\"padding:0.5rem 1rem; border-radius:0.5rem; border:none; font-size:0.8125rem; font-weight:600; cursor:pointer; background:var(--color-brand-blue); color:#fff; align-self:flex-start; transition:opacity 0.15s ease;\" onmouseover=\"this.style.opacity='0.9'\" onmouseout=\"this.style.opacity='1'\">Submit Payment</button></form></div><!-- Upload Receipt --><div style=\"background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.5rem;\"><div style=\"display:flex; align-items:center; gap:0.5rem; margin-bottom:1rem;\"><i data-lucide=\"upload\" style=\"width:1.25rem; height:1.25rem; color:hsl(25, 80%, 50%);\"></i><h2 style=\"font-family:var(--font-heading); font-size:1rem; font-weight:700; color:var(--color-fg);\">Upload Receipt</h2></div><form method=\"POST\" action=\"/dashboard/billing/receipt\" enctype=\"multipart/form-data\" style=\"display:flex; flex-direction:column; gap:0.75rem;\"><div style=\"display:flex; flex-direction:column; gap:0.25rem;\"><label style=\"font-size:0.75rem; font-weight:600; color:var(--color-muted-fg);\">Payment Reference</label> <input type=\"text\" name=\"reference\" placeholder=\"e.g. TXN-123456\" style=\"border:1px solid var(--color-border); border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.875rem; background:var(--color-bg); color:var(--color-fg);\"></div><div style=\"display:flex; flex-direction:column; gap:0.25rem;\"><label style=\"font-size:0.75rem; font-weight:600; color:var(--color-muted-fg);\">Receipt / Proof of Payment</label><div style=\"border:2px dashed var(--color-border); border-radius:0.75rem; padding:1.5rem; text-align:center; cursor:pointer; transition:border-color 0.15s ease;\" id=\"receipt-dropzone\" onclick=\"document.getElementById('receipt-input').click()\" ondragover=\"event.preventDefault();this.style.borderColor='var(--color-brand-blue)'\" ondragleave=\"this.style.borderColor='var(--color-border)'\" ondrop=\"event.preventDefault();this.style.borderColor='var(--color-border)';document.getElementById('receipt-input').files=event.dataTransfer.files;document.getElementById('receipt-filename').textContent=event.dataTransfer.files[0].name\"><i data-lucide=\"cloud-upload\" style=\"width:2rem; height:2rem; color:var(--color-muted-fg); display:block; margin:0 auto 0.5rem;\"></i><p style=\"font-size:0.8125rem; color:var(--color-muted-fg);\">Click to upload or drag and drop</p><p style=\"font-size:0.6875rem; color:var(--color-muted-fg); margin-top:0.25rem;\">PNG, JPG, PDF up to 10MB</p><p id=\"receipt-filename\" style=\"font-size:0.75rem; color:var(--color-brand-blue); margin-top:0.5rem; font-weight:500;\"></p></div><input type=\"file\" id=\"receipt-input\" name=\"receipt\" accept=\"image/*,.pdf\" required style=\"display:none;\" onchange=\"document.getElementById('receipt-filename').textContent=this.files[0].name\"></div><div style=\"display:flex; flex-direction:column; gap:0.25rem;\"><label style=\"font-size:0.75rem; font-weight:600; color:var(--color-muted-fg);\">Notes (optional)</label> <input type=\"text\" name=\"notes\" placeholder=\"e.g. Bank transfer receipt\" style=\"border:1px solid var(--color-border); border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.875rem; background:var(--color-bg); color:var(--color-fg);\"></div><button type=\"submit\" style=\"padding:0.5rem 1rem; border-radius:0.5rem; border:none; font-size:0.8125rem; font-weight:600; cursor:pointer; background:hsl(25, 80%, 50%); color:#fff; align-self:flex-start; transition:opacity 0.15s ease;\" onmouseover=\"this.style.opacity='0.9'\" onmouseout=\"this.style.opacity='1'\">Upload Receipt</button></form></div></div><!-- Transaction History --><div style=\"background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.5rem;\"><h2 style=\"font-family:var(--font-heading); font-size:1rem; font-weight:700; color:var(--color-fg); margin-bottom:1rem;\">Payment History</h2>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</div></div><!-- Unpaid Instances -->")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			if len(props.Transactions) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<p style=\"color:var(--color-muted-fg); font-size:0.875rem;\">No transactions yet.</p>")
+			if len(props.UnpaidInstances) > 0 {
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<div style=\"background:color-mix(in srgb, #f59e0b 6%, var(--color-bg)); border:1px solid #f59e0b; border-radius:1rem; padding:1.5rem; margin-bottom:1.5rem;\"><div style=\"display:flex; align-items:center; gap:0.5rem; margin-bottom:1rem;\"><i data-lucide=\"alert-triangle\" style=\"width:1.25rem; height:1.25rem; color:#f59e0b;\"></i><h2 style=\"font-family:var(--font-heading); font-size:1rem; font-weight:700; color:var(--color-fg);\">Unpaid Instances</h2></div><p style=\"font-size:0.8125rem; color:var(--color-muted-fg); margin-bottom:1rem;\">Complete payment to activate these instances.</p>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<table style=\"width:100%; font-size:0.875rem; border-collapse:collapse;\"><thead><tr style=\"border-bottom:1px solid var(--color-border); color:var(--color-muted-fg); text-align:left;\"><th style=\"padding:0.5rem 0; font-weight:500;\">Date</th><th style=\"padding:0.5rem 0; font-weight:500;\">Type</th><th style=\"padding:0.5rem 0; font-weight:500;\">Description</th><th style=\"padding:0.5rem 0; font-weight:500; text-align:right;\">Amount</th><th style=\"padding:0.5rem 0; font-weight:500;\">Status</th></tr></thead> <tbody>")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				for _, t := range props.Transactions {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<tr style=\"border-bottom:1px solid var(--color-border);\"><td style=\"padding:0.625rem 0; color:var(--color-muted-fg);\">")
+				for _, inst := range props.UnpaidInstances {
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<div style=\"background:var(--color-bg); border:1px solid var(--color-border); border-radius:0.75rem; padding:1rem; margin-bottom:0.75rem; display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap;\"><div><div style=\"font-weight:600; color:var(--color-fg); margin-bottom:0.25rem;\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var5 string
-					templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(t.CreatedAt.Format("02 Jan 2006 15:04"))
+					templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(inst.HotelName)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/billing.templ`, Line: 140, Col: 111}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/billing.templ`, Line: 59, Col: 100}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "</td><td style=\"padding:0.625rem 0;\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "</div><div style=\"font-size:0.8125rem; color:var(--color-muted-fg);\">")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					var templ_7745c5c3_Var6 string
+					templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", int64(inst.Price)))
+					if templ_7745c5c3_Err != nil {
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/billing.templ`, Line: 61, Col: 47}
+					}
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, " TZS &middot; ")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					var templ_7745c5c3_Var7 string
+					templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(inst.PackageName)
+					if templ_7745c5c3_Err != nil {
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/billing.templ`, Line: 61, Col: 81}
+					}
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, " package</div></div><form method=\"POST\" action=\"")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					var templ_7745c5c3_Var8 templ.SafeURL
+					templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinURLErrs(templ.URL("/dashboard/instances/" + inst.ID.String() + "/pay"))
+					if templ_7745c5c3_Err != nil {
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/billing.templ`, Line: 64, Col: 98}
+					}
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "\" style=\"display:flex; gap:0.5rem; align-items:flex-end; flex-wrap:wrap;\"><div style=\"display:flex; flex-direction:column; gap:0.25rem;\"><label style=\"font-size:0.6875rem; font-weight:600; color:var(--color-muted-fg);\">Payment Method</label> <select name=\"payment_method\" style=\"border:1px solid var(--color-border); border-radius:0.5rem; padding:0.375rem 0.5rem; font-size:0.8125rem; background:var(--color-bg); color:var(--color-fg);\"><option value=\"bank_transfer\">Bank Transfer</option> <option value=\"mobile_money\">Mobile Money</option> <option value=\"card\">Card Payment</option></select></div><div style=\"display:flex; flex-direction:column; gap:0.25rem;\"><label style=\"font-size:0.6875rem; font-weight:600; color:var(--color-muted-fg);\">Reference</label> <input type=\"text\" name=\"reference\" placeholder=\"TXN ID\" style=\"border:1px solid var(--color-border); border-radius:0.5rem; padding:0.375rem 0.5rem; font-size:0.8125rem; background:var(--color-bg); color:var(--color-fg); width:140px;\"></div><button type=\"submit\" style=\"padding:0.375rem 1rem; border-radius:0.5rem; border:none; font-size:0.8125rem; font-weight:600; cursor:pointer; background:#22c55e; color:#fff; transition:opacity 0.15s ease; white-space:nowrap;\" onmouseover=\"this.style.opacity='0.9'\" onmouseout=\"this.style.opacity='1'\">Pay ")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					var templ_7745c5c3_Var9 string
+					templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", int64(inst.Price)))
+					if templ_7745c5c3_Err != nil {
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/billing.templ`, Line: 82, Col: 51}
+					}
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, " TZS</button></form></div>")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "</div>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "<!-- Payment Actions --><div style=\"display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.5rem;\"><!-- Make Payment --><div style=\"background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.5rem;\"><div style=\"display:flex; align-items:center; gap:0.5rem; margin-bottom:1rem;\"><i data-lucide=\"credit-card\" style=\"width:1.25rem; height:1.25rem; color:var(--color-brand-blue);\"></i><h2 style=\"font-family:var(--font-heading); font-size:1rem; font-weight:700; color:var(--color-fg);\">Make Payment</h2></div><form method=\"POST\" action=\"/dashboard/billing/payment\" enctype=\"multipart/form-data\" style=\"display:flex; flex-direction:column; gap:0.75rem;\"><div style=\"display:flex; flex-direction:column; gap:0.25rem;\"><label style=\"font-size:0.75rem; font-weight:600; color:var(--color-muted-fg);\">Amount (TZS)</label> <input type=\"number\" name=\"amount\" min=\"1\" step=\"1\" required placeholder=\"e.g. 50000\" style=\"border:1px solid var(--color-border); border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.875rem; background:var(--color-bg); color:var(--color-fg);\"></div><div style=\"display:flex; flex-direction:column; gap:0.25rem;\"><label style=\"font-size:0.75rem; font-weight:600; color:var(--color-muted-fg);\">Payment Method</label> <select name=\"payment_method\" style=\"border:1px solid var(--color-border); border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.875rem; background:var(--color-bg); color:var(--color-fg);\"><option value=\"bank_transfer\">Bank Transfer</option> <option value=\"mobile_money\">Mobile Money</option> <option value=\"card\">Card Payment</option> <option value=\"cash\">Cash</option></select></div><div style=\"display:flex; flex-direction:column; gap:0.25rem;\"><label style=\"font-size:0.75rem; font-weight:600; color:var(--color-muted-fg);\">Reference / Transaction ID</label> <input type=\"text\" name=\"reference\" placeholder=\"e.g. TXN-123456\" style=\"border:1px solid var(--color-border); border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.875rem; background:var(--color-bg); color:var(--color-fg);\"></div><div style=\"display:flex; flex-direction:column; gap:0.25rem;\"><label style=\"font-size:0.75rem; font-weight:600; color:var(--color-muted-fg);\">Notes (optional)</label> <input type=\"text\" name=\"notes\" placeholder=\"e.g. Monthly subscription payment\" style=\"border:1px solid var(--color-border); border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.875rem; background:var(--color-bg); color:var(--color-fg);\"></div><button type=\"submit\" style=\"padding:0.5rem 1rem; border-radius:0.5rem; border:none; font-size:0.8125rem; font-weight:600; cursor:pointer; background:var(--color-brand-blue); color:#fff; align-self:flex-start; transition:opacity 0.15s ease;\" onmouseover=\"this.style.opacity='0.9'\" onmouseout=\"this.style.opacity='1'\">Submit Payment</button></form></div><!-- Upload Receipt --><div style=\"background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.5rem;\"><div style=\"display:flex; align-items:center; gap:0.5rem; margin-bottom:1rem;\"><i data-lucide=\"upload\" style=\"width:1.25rem; height:1.25rem; color:hsl(25, 80%, 50%);\"></i><h2 style=\"font-family:var(--font-heading); font-size:1rem; font-weight:700; color:var(--color-fg);\">Upload Receipt</h2></div><form method=\"POST\" action=\"/dashboard/billing/receipt\" enctype=\"multipart/form-data\" style=\"display:flex; flex-direction:column; gap:0.75rem;\"><div style=\"display:flex; flex-direction:column; gap:0.25rem;\"><label style=\"font-size:0.75rem; font-weight:600; color:var(--color-muted-fg);\">Payment Reference</label> <input type=\"text\" name=\"reference\" placeholder=\"e.g. TXN-123456\" style=\"border:1px solid var(--color-border); border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.875rem; background:var(--color-bg); color:var(--color-fg);\"></div><div style=\"display:flex; flex-direction:column; gap:0.25rem;\"><label style=\"font-size:0.75rem; font-weight:600; color:var(--color-muted-fg);\">Receipt / Proof of Payment</label><div style=\"border:2px dashed var(--color-border); border-radius:0.75rem; padding:1.5rem; text-align:center; cursor:pointer; transition:border-color 0.15s ease;\" id=\"receipt-dropzone\" onclick=\"document.getElementById('receipt-input').click()\" ondragover=\"event.preventDefault();this.style.borderColor='var(--color-brand-blue)'\" ondragleave=\"this.style.borderColor='var(--color-border)'\" ondrop=\"event.preventDefault();this.style.borderColor='var(--color-border)';document.getElementById('receipt-input').files=event.dataTransfer.files;document.getElementById('receipt-filename').textContent=event.dataTransfer.files[0].name\"><i data-lucide=\"cloud-upload\" style=\"width:2rem; height:2rem; color:var(--color-muted-fg); display:block; margin:0 auto 0.5rem;\"></i><p style=\"font-size:0.8125rem; color:var(--color-muted-fg);\">Click to upload or drag and drop</p><p style=\"font-size:0.6875rem; color:var(--color-muted-fg); margin-top:0.25rem;\">PNG, JPG, PDF up to 10MB</p><p id=\"receipt-filename\" style=\"font-size:0.75rem; color:var(--color-brand-blue); margin-top:0.5rem; font-weight:500;\"></p></div><input type=\"file\" id=\"receipt-input\" name=\"receipt\" accept=\"image/*,.pdf\" required style=\"display:none;\" onchange=\"document.getElementById('receipt-filename').textContent=this.files[0].name\"></div><div style=\"display:flex; flex-direction:column; gap:0.25rem;\"><label style=\"font-size:0.75rem; font-weight:600; color:var(--color-muted-fg);\">Notes (optional)</label> <input type=\"text\" name=\"notes\" placeholder=\"e.g. Bank transfer receipt\" style=\"border:1px solid var(--color-border); border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.875rem; background:var(--color-bg); color:var(--color-fg);\"></div><button type=\"submit\" style=\"padding:0.5rem 1rem; border-radius:0.5rem; border:none; font-size:0.8125rem; font-weight:600; cursor:pointer; background:hsl(25, 80%, 50%); color:#fff; align-self:flex-start; transition:opacity 0.15s ease;\" onmouseover=\"this.style.opacity='0.9'\" onmouseout=\"this.style.opacity='1'\">Upload Receipt</button></form></div></div><!-- Transaction History --><div style=\"background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.5rem;\"><h2 style=\"font-family:var(--font-heading); font-size:1rem; font-weight:700; color:var(--color-fg); margin-bottom:1rem;\">Payment History</h2>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			if len(props.Transactions) == 0 {
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "<p style=\"color:var(--color-muted-fg); font-size:0.875rem;\">No transactions yet.</p>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			} else {
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "<table style=\"width:100%; font-size:0.875rem; border-collapse:collapse;\"><thead><tr style=\"border-bottom:1px solid var(--color-border); color:var(--color-muted-fg); text-align:left;\"><th style=\"padding:0.5rem 0; font-weight:500;\">Date</th><th style=\"padding:0.5rem 0; font-weight:500;\">Type</th><th style=\"padding:0.5rem 0; font-weight:500;\">Description</th><th style=\"padding:0.5rem 0; font-weight:500; text-align:right;\">Amount</th><th style=\"padding:0.5rem 0; font-weight:500;\">Status</th></tr></thead> <tbody>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				for _, t := range props.Transactions {
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "<tr style=\"border-bottom:1px solid var(--color-border);\"><td style=\"padding:0.625rem 0; color:var(--color-muted-fg);\">")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					var templ_7745c5c3_Var10 string
+					templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(t.CreatedAt.Format("02 Jan 2006 15:04"))
+					if templ_7745c5c3_Err != nil {
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/billing.templ`, Line: 183, Col: 111}
+					}
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "</td><td style=\"padding:0.625rem 0;\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -153,33 +239,33 @@ func BillingPage(props BillingPageProps) templ.Component {
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "</td><td style=\"padding:0.625rem 0; color:var(--color-fg);\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "</td><td style=\"padding:0.625rem 0; color:var(--color-fg);\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					var templ_7745c5c3_Var6 string
-					templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(t.Description)
+					var templ_7745c5c3_Var11 string
+					templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(t.Description)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/billing.templ`, Line: 142, Col: 79}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/billing.templ`, Line: 185, Col: 79}
 					}
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
-					if templ_7745c5c3_Err != nil {
-						return templ_7745c5c3_Err
-					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</td><td style=\"padding:0.625rem 0; text-align:right; font-weight:600; color:var(--color-fg);\">")
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					var templ_7745c5c3_Var7 string
-					templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(formatAmount(t.Amount))
-					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/billing.templ`, Line: 143, Col: 123}
-					}
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "</td><td style=\"padding:0.625rem 0; text-align:right; font-weight:600; color:var(--color-fg);\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "</td><td style=\"padding:0.625rem 0;\">")
+					var templ_7745c5c3_Var12 string
+					templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(formatAmount(t.Amount))
+					if templ_7745c5c3_Err != nil {
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/billing.templ`, Line: 186, Col: 123}
+					}
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "</td><td style=\"padding:0.625rem 0;\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -187,17 +273,17 @@ func BillingPage(props BillingPageProps) templ.Component {
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "</td></tr>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "</td></tr>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</tbody></table>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "</tbody></table>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "</div></div><script>if(typeof lucide!=='undefined'){lucide.createIcons();}</script>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "</div></div><script>if(typeof lucide!=='undefined'){lucide.createIcons();}</script>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -227,42 +313,42 @@ func clientTxnTypeBadge(t string) templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var8 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var8 == nil {
-			templ_7745c5c3_Var8 = templ.NopComponent
+		templ_7745c5c3_Var13 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var13 == nil {
+			templ_7745c5c3_Var13 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
 		switch t {
 		case "charge":
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "<span style=\"display:inline-flex; align-items:center; padding:0.125rem 0.5rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:hsl(0, 70%, 95%); color:hsl(0, 70%, 40%);\">charge</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "<span style=\"display:inline-flex; align-items:center; padding:0.125rem 0.5rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:hsl(0, 70%, 95%); color:hsl(0, 70%, 40%);\">charge</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		case "payment":
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "<span style=\"display:inline-flex; align-items:center; padding:0.125rem 0.5rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:hsl(140, 60%, 95%); color:hsl(140, 60%, 35%);\">payment</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "<span style=\"display:inline-flex; align-items:center; padding:0.125rem 0.5rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:hsl(140, 60%, 95%); color:hsl(140, 60%, 35%);\">payment</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		case "refund":
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "<span style=\"display:inline-flex; align-items:center; padding:0.125rem 0.5rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:hsl(200, 80%, 95%); color:hsl(200, 80%, 40%);\">refund</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "<span style=\"display:inline-flex; align-items:center; padding:0.125rem 0.5rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:hsl(200, 80%, 95%); color:hsl(200, 80%, 40%);\">refund</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		default:
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "<span style=\"display:inline-flex; align-items:center; padding:0.125rem 0.5rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:var(--color-secondary); color:var(--color-muted-fg);\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "<span style=\"display:inline-flex; align-items:center; padding:0.125rem 0.5rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:var(--color-secondary); color:var(--color-muted-fg);\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var9 string
-			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(t)
+			var templ_7745c5c3_Var14 string
+			templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(t)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/billing.templ`, Line: 165, Col: 209}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/billing.templ`, Line: 208, Col: 209}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -287,42 +373,42 @@ func clientTxnStatusBadge(s string) templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var10 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var10 == nil {
-			templ_7745c5c3_Var10 = templ.NopComponent
+		templ_7745c5c3_Var15 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var15 == nil {
+			templ_7745c5c3_Var15 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
 		switch s {
 		case "completed":
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "<span style=\"display:inline-flex; align-items:center; padding:0.125rem 0.5rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:hsl(140, 60%, 95%); color:hsl(140, 60%, 35%);\">completed</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 35, "<span style=\"display:inline-flex; align-items:center; padding:0.125rem 0.5rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:hsl(140, 60%, 95%); color:hsl(140, 60%, 35%);\">completed</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		case "pending":
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "<span style=\"display:inline-flex; align-items:center; padding:0.125rem 0.5rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:hsl(35, 90%, 95%); color:hsl(35, 90%, 35%);\">pending</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "<span style=\"display:inline-flex; align-items:center; padding:0.125rem 0.5rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:hsl(35, 90%, 95%); color:hsl(35, 90%, 35%);\">pending</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		case "failed":
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "<span style=\"display:inline-flex; align-items:center; padding:0.125rem 0.5rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:hsl(0, 70%, 95%); color:hsl(0, 70%, 40%);\">failed</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "<span style=\"display:inline-flex; align-items:center; padding:0.125rem 0.5rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:hsl(0, 70%, 95%); color:hsl(0, 70%, 40%);\">failed</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		default:
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "<span style=\"display:inline-flex; align-items:center; padding:0.125rem 0.5rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:var(--color-secondary); color:var(--color-muted-fg);\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "<span style=\"display:inline-flex; align-items:center; padding:0.125rem 0.5rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:var(--color-secondary); color:var(--color-muted-fg);\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var11 string
-			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(s)
+			var templ_7745c5c3_Var16 string
+			templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(s)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/billing.templ`, Line: 178, Col: 209}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/client/billing.templ`, Line: 221, Col: 209}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, "</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -332,7 +418,7 @@ func clientTxnStatusBadge(s string) templ.Component {
 }
 
 func formatAmount(amount float64) string {
-	return fmt.Sprintf("%'d TZS", int64(amount))
+	return fmt.Sprintf("%d", int64(amount)) + " TZS"
 }
 
 var _ = templruntime.GeneratedTemplate

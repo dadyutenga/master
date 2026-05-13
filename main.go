@@ -77,6 +77,7 @@ func main() {
 	client.Post("/instances/:id/pause", h.ClientPauseInstance)
 	client.Post("/instances/:id/restart", h.ClientRestartInstance)
 	client.Post("/instances/:id/disable", h.ClientDisableInstance)
+	client.Post("/instances/:id/pay", h.ClientPayInstance)
 
 	billingProtected := client.Group("", middleware.RequireBilling(database))
 	billingProtected.Get("/details", h.ShowTenantDetails)

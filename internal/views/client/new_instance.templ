@@ -20,13 +20,12 @@ templ NewInstance(props NewInstanceProps) {
 				<h1 style="font-family:var(--font-heading); font-size:1.5rem; font-weight:700; color:var(--color-fg);">Create New Instance</h1>
 			</div>
 
-			<!-- Payment Notice -->
 			<div style="background:color-mix(in srgb, #8b5cf6 6%, var(--color-bg)); border:1px solid #8b5cf6; border-radius:1rem; padding:1.25rem; margin-bottom:1.5rem;">
 				<div style="display:flex; align-items:flex-start; gap:0.75rem;">
 					<i data-lucide="info" style="width:1.25rem; height:1.25rem; color:#8b5cf6; flex-shrink:0; margin-top:0.125rem;"></i>
 					<div>
-						<p style="font-size:0.875rem; font-weight:600; color:var(--color-fg);">Payment Required</p>
-						<p style="font-size:0.8125rem; color:var(--color-muted-fg); margin-top:0.25rem;">Each instance requires a monthly subscription. Choose a package below and complete payment to activate your new hotel instance.</p>
+						<p style="font-size:0.875rem; font-weight:600; color:var(--color-fg);">Payment After Creation</p>
+						<p style="font-size:0.8125rem; color:var(--color-muted-fg); margin-top:0.25rem;">Create your instance first, then complete payment in the Billing section to activate it.</p>
 					</div>
 				</div>
 			</div>
@@ -69,31 +68,10 @@ templ NewInstance(props NewInstanceProps) {
 					</div>
 				</div>
 
-				<!-- Payment Summary -->
-				<div style="background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.5rem;">
-					<h2 style="font-family:var(--font-heading); font-size:1rem; font-weight:700; color:var(--color-fg); margin-bottom:1rem;">Payment Details</h2>
-					<div style="display:flex; flex-direction:column; gap:0.75rem;">
-						<div style="display:flex; flex-direction:column; gap:0.25rem;">
-							<label style="font-size:0.75rem; font-weight:600; color:var(--color-muted-fg);">Payment Method *</label>
-							<select name="payment_method"
-								style="border:1px solid var(--color-border); border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.875rem; background:var(--color-bg); color:var(--color-fg);">
-								<option value="bank_transfer">Bank Transfer</option>
-								<option value="mobile_money">Mobile Money</option>
-								<option value="card">Card Payment</option>
-							</select>
-						</div>
-						<div style="display:flex; flex-direction:column; gap:0.25rem;">
-							<label style="font-size:0.75rem; font-weight:600; color:var(--color-muted-fg);">Reference / Transaction ID</label>
-							<input type="text" name="reference" placeholder="e.g. TXN-123456"
-								style="border:1px solid var(--color-border); border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.875rem; background:var(--color-bg); color:var(--color-fg);"/>
-						</div>
-					</div>
-				</div>
-
 				<button type="submit"
 					style="padding:0.75rem 2rem; border-radius:9999px; border:none; font-size:0.9375rem; font-weight:600; cursor:pointer; background:var(--color-brand-blue); color:#fff; transition:opacity 0.15s ease; align-self:flex-start;"
 					onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
-					Create Instance & Pay
+					Create Instance
 				</button>
 			</form>
 		</div>
