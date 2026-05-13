@@ -57,6 +57,10 @@ func (r *Runner) StopTenant(slug string) (string, error) {
 	return r.runDockerCommand("stop", "hms_"+slug)
 }
 
+func (r *Runner) StopInstance(slug string) (string, error) {
+	return r.runDockerCommand("stop", "hms_"+slug)
+}
+
 func (r *Runner) runDockerCommand(args ...string) (string, error) {
 	cmd := exec.Command("docker", args...)
 	var buf bytes.Buffer

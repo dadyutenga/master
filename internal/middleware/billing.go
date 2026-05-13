@@ -21,6 +21,12 @@ func RequireBilling(db *sql.DB) fiber.Handler {
 			return c.Status(404).SendString("No tenant found")
 		}
 
+		if tenant.BillingStatus == generated.BillingStatusOverdue || tenant.BillingStatus == generated.BillingStatusSuspended {
+			c.Locals("tenant", tenant)
+			c.Locals("user", user)
+			return c.Redirect("/dashboard/billing")
+		}
+
 		c.Locals("tenant", tenant)
 		return c.Next()
 	}

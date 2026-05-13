@@ -1,0 +1,59 @@
+package admin
+
+import (
+	"fmt"
+
+	"github.com/dadyutenga/hms-control/internal/db/generated"
+)
+
+templ BillingPackageEdit(pkg generated.BillingPackage) {
+	@AdminLayout("Edit Package", "") {
+		<div style="max-width:800px; margin:0 auto;">
+			<div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:1.5rem;">
+				<a href="/admin/billing-packages" style="color:var(--color-muted-fg); text-decoration:none; font-size:0.875rem;">&larr; Back to Packages</a>
+				<h1 style="font-family:var(--font-heading); font-size:1.5rem; font-weight:700; letter-spacing:-0.025em; color:var(--color-fg); text-transform:capitalize;">Edit: { pkg.Name }</h1>
+			</div>
+
+			<div style="background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.5rem;">
+				<form method="POST" action={ templ.URL(fmt.Sprintf("/admin/billing-packages/%d/edit", pkg.ID)) } style="display:flex; flex-direction:column; gap:1rem;">
+					<div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+						<div style="display:flex; flex-direction:column; gap:0.25rem;">
+							<label style="font-size:0.75rem; font-weight:600; color:var(--color-muted-fg);">Name *</label>
+							<input type="text" name="name" required value={ pkg.Name }
+								style="border:1px solid var(--color-border); border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.875rem; background:var(--color-bg); color:var(--color-fg);"/>
+						</div>
+						<div style="display:flex; flex-direction:column; gap:0.25rem;">
+							<label style="font-size:0.75rem; font-weight:600; color:var(--color-muted-fg);">Description</label>
+							<input type="text" name="description" value={ pkg.Description }
+								style="border:1px solid var(--color-border); border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.875rem; background:var(--color-bg); color:var(--color-fg);"/>
+						</div>
+						<div style="display:flex; flex-direction:column; gap:0.25rem;">
+							<label style="font-size:0.75rem; font-weight:600; color:var(--color-muted-fg);">Price (TZS) *</label>
+							<input type="number" name="price" required min="0" step="1000" value={ fmt.Sprintf("%.0f", pkg.Price) }
+								style="border:1px solid var(--color-border); border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.875rem; background:var(--color-bg); color:var(--color-fg);"/>
+						</div>
+						<div style="display:flex; flex-direction:column; gap:0.25rem;">
+							<label style="font-size:0.75rem; font-weight:600; color:var(--color-muted-fg);">Billing Cycle</label>
+							<select name="billing_cycle"
+								style="border:1px solid var(--color-border); border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.875rem; background:var(--color-bg); color:var(--color-fg);">
+								<option value="monthly" selected={ pkg.BillingCycle == "monthly" }>Monthly</option>
+								<option value="quarterly" selected={ pkg.BillingCycle == "quarterly" }>Quarterly</option>
+								<option value="yearly" selected={ pkg.BillingCycle == "yearly" }>Yearly</option>
+								<option value="one_time" selected={ pkg.BillingCycle == "one_time" }>One Time</option>
+							</select>
+						</div>
+					</div>
+					<div style="display:flex; align-items:center; gap:0.5rem;">
+						<input type="checkbox" name="is_active" value="1" checked={ pkg.IsActive }
+							style="width:1rem; height:1rem; cursor:pointer;"/>
+						<label style="font-size:0.75rem; font-weight:600; color:var(--color-muted-fg); cursor:pointer;">Active</label>
+					</div>
+					<div style="display:flex; gap:0.75rem; margin-top:0.5rem;">
+						<button type="submit" style="padding:0.5rem 1.5rem; border-radius:0.5rem; border:none; font-size:0.8125rem; font-weight:600; cursor:pointer; background:var(--color-brand-blue); color:#fff;">Save Changes</button>
+						<a href="/admin/billing-packages" style="padding:0.5rem 1.5rem; border-radius:0.5rem; border:1px solid var(--color-border); font-size:0.8125rem; font-weight:600; cursor:pointer; background:var(--color-bg); color:var(--color-muted-fg); text-decoration:none; display:inline-flex; align-items:center;">Cancel</a>
+					</div>
+				</form>
+			</div>
+		</div>
+	}
+}

@@ -136,6 +136,7 @@ func (e *Engine) billingChecker() {
 	for {
 		time.Sleep(interval)
 		e.checkOverdueTenants()
+		e.checkOverdueInstances()
 	}
 }
 
@@ -170,6 +171,38 @@ func (e *Engine) checkOverdueTenants() {
 			Status:   generated.DeploymentStatusStopped,
 		}); err != nil {
 			log.Printf("[billing-checker] failed to record deployment for %s: %v", tenant.Slug, err)
+		}
+	}
+}
+
+func (e *Engine) checkOverdueInstances() {
+	ctx := context.Background()
+	q := generated.New(e.db)
+
+	instances, err := q.ListOverdueInstances(ctx)
+	if err != nil {
+		log.Printf("[billing-checker] failed to list overdue instances: %v", err)
+		return
+	}
+
+	runner := NewRunner(e.cfg)
+	for _, inst := range instances {
+		log.Printf("[billing-checker] marking instance %s as overdue", inst.Slug)
+
+		now := time.Now()
+		if err := q.UpdateInstanceBilling(ctx, inst.ID, generated.BillingStatusOverdue, inst.LastPaymentAt, &now); err != nil {
+			log.Printf("[billing-checker] failed to mark instance %s overdue: %v", inst.Slug, err)
+			continue
+		}
+
+		if _, err := runner.StopInstance(inst.Slug); err != nil {
+			log.Printf("[billing-checker] failed to stop container for instance %s: %v", inst.Slug, err)
+		} else {
+			log.Printf("[billing-checker] stopped container for overdue instance %s", inst.Slug)
+		}
+
+		if _, err := q.CreateInstanceDeployment(ctx, inst.ID, "billing_overdue", generated.DeploymentStatusStopped); err != nil {
+			log.Printf("[billing-checker] failed to record deployment for instance %s: %v", inst.Slug, err)
 		}
 	}
 }

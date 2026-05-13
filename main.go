@@ -138,10 +138,13 @@ func main() {
 	admin.Post("/instances/:id/archive", h.AdminArchiveInstance)
 	admin.Post("/instances/:id/delete", h.AdminDeleteInstance)
 	admin.Post("/instances/:id/price", h.AdminUpdateInstancePrice)
+	admin.Post("/instances/:id/billing", h.AdminUpdateInstanceBilling)
 
 	// Billing Packages
 	admin.Get("/billing-packages", h.AdminBillingPackages)
 	admin.Post("/billing-packages/new", h.AdminCreateBillingPackage)
+	admin.Get("/billing-packages/:id/edit", h.AdminEditBillingPackage)
+	admin.Post("/billing-packages/:id/edit", h.AdminUpdateBillingPackage)
 	admin.Post("/billing-packages/:id/delete", h.AdminDeleteBillingPackage)
 
 	log.Fatal(app.Listen(":8080"))

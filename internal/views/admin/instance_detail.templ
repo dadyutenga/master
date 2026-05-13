@@ -80,6 +80,33 @@ templ AdminInstanceDetail(props AdminInstanceDetailProps) {
 							<button type="submit" style="padding:0.375rem 0.75rem; border-radius:0.5rem; border:none; font-size:0.75rem; font-weight:600; cursor:pointer; background:var(--color-brand-blue); color:#fff;">Update</button>
 						</form>
 					</div>
+
+					<!-- Update Billing Status -->
+					<div style="margin-top:1rem; padding-top:1rem; border-top:1px solid var(--color-border);">
+						<h3 style="font-size:0.75rem; font-weight:600; color:var(--color-muted-fg); margin-bottom:0.5rem;">Update Billing Status</h3>
+						<form method="POST" action={ templ.URL("/admin/instances/" + props.Instance.ID.String() + "/billing") } style="display:flex; gap:0.5rem; align-items:flex-end; flex-wrap:wrap;">
+							<div style="display:flex; flex-direction:column; gap:0.25rem;">
+								<label style="font-size:0.6875rem; color:var(--color-muted-fg);">Status</label>
+								<select name="billing_status" style="border:1px solid var(--color-border); border-radius:0.5rem; padding:0.375rem 0.5rem; font-size:0.8125rem; background:var(--color-bg); color:var(--color-fg);">
+									<option value="paid" selected={ props.Instance.BillingStatus == "paid" }>Paid</option>
+									<option value="unpaid" selected={ props.Instance.BillingStatus == "unpaid" }>Unpaid</option>
+									<option value="overdue" selected={ props.Instance.BillingStatus == "overdue" }>Overdue</option>
+									<option value="suspended" selected={ props.Instance.BillingStatus == "suspended" }>Suspended</option>
+								</select>
+							</div>
+							<div style="display:flex; flex-direction:column; gap:0.25rem;">
+								<label style="font-size:0.6875rem; color:var(--color-muted-fg);">Last Payment</label>
+								<input type="date" name="last_payment_at" value={ FormatDate(props.Instance.LastPaymentAt) }
+									style="border:1px solid var(--color-border); border-radius:0.5rem; padding:0.375rem 0.5rem; font-size:0.8125rem; background:var(--color-bg); color:var(--color-fg);"/>
+							</div>
+							<div style="display:flex; flex-direction:column; gap:0.25rem;">
+								<label style="font-size:0.6875rem; color:var(--color-muted-fg);">Next Due</label>
+								<input type="date" name="next_due_at" value={ FormatDate(props.Instance.NextDueAt) }
+									style="border:1px solid var(--color-border); border-radius:0.5rem; padding:0.375rem 0.5rem; font-size:0.8125rem; background:var(--color-bg); color:var(--color-fg);"/>
+							</div>
+							<button type="submit" style="padding:0.375rem 0.75rem; border-radius:0.5rem; border:none; font-size:0.75rem; font-weight:600; cursor:pointer; background:var(--color-brand-blue); color:#fff;">Update</button>
+						</form>
+					</div>
 				}
 			</div>
 

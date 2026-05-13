@@ -1079,6 +1079,15 @@ func (q *Queries) GetAllBillingPackages(ctx context.Context) ([]BillingPackage, 
 	return packages, rows.Err()
 }
 
+func (q *Queries) GetBillingPackageByID(ctx context.Context, id int64) (BillingPackage, error) {
+	var p BillingPackage
+	err := q.db.QueryRowContext(ctx,
+		`SELECT id, name, description, price, currency, billing_cycle, is_active, created_at, updated_at
+		 FROM billing_packages WHERE id = ?`, id,
+	).Scan(&p.ID, &p.Name, &p.Description, &p.Price, &p.Currency, &p.BillingCycle, &p.IsActive, &p.CreatedAt, &p.UpdatedAt)
+	return p, err
+}
+
 func (q *Queries) CreateBillingPackage(ctx context.Context, name, description string, price float64, currency, billingCycle string) (BillingPackage, error) {
 	result, err := q.db.ExecContext(ctx,
 		`INSERT INTO billing_packages (name, description, price, currency, billing_cycle)

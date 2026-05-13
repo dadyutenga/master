@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"strconv"
+	"time"
 
 	"github.com/dadyutenga/hms-control/internal/db/generated"
 	"github.com/dadyutenga/hms-control/internal/middleware"
@@ -223,6 +224,45 @@ func (h *Handler) AdminUpdateInstancePrice(c *fiber.Ctx) error {
 	return c.Redirect("/admin/instances/" + id.String())
 }
 
+func (h *Handler) AdminUpdateInstanceBilling(c *fiber.Ctx) error {
+	id, err := uuid.Parse(c.Params("id"))
+	if err != nil {
+		return c.Status(400).SendString("Invalid instance ID")
+	}
+
+	status := c.FormValue("billing_status")
+	if status != "unpaid" && status != "paid" && status != "overdue" && status != "suspended" {
+		return c.Status(400).SendString("Invalid billing status")
+	}
+
+	q := generated.New(h.db)
+
+	var lastPayment, nextDue *time.Time
+	if lp := c.FormValue("last_payment_at"); lp != "" {
+		t, err := time.Parse("2006-01-02", lp)
+		if err == nil {
+			lastPayment = &t
+		}
+	}
+	if nd := c.FormValue("next_due_at"); nd != "" {
+		t, err := time.Parse("2006-01-02", nd)
+		if err == nil {
+			nextDue = &t
+		}
+	}
+
+	if err := q.UpdateInstanceBilling(c.Context(), id, status, lastPayment, nextDue); err != nil {
+		return c.Status(500).SendString("Failed to update instance billing")
+	}
+
+	if uid, ok := middleware.GetUserID(c); ok {
+		tid := id.String()
+		h.audit.Log(uid, "instance.billing.updated", &tid, "billing status -> "+status, c.IP())
+	}
+
+	return c.Redirect("/admin/instances/" + id.String())
+}
+
 // Billing Packages
 
 func (h *Handler) AdminBillingPackages(c *fiber.Ctx) error {
@@ -252,6 +292,55 @@ func (h *Handler) AdminCreateBillingPackage(c *fiber.Ctx) error {
 	q := generated.New(h.db)
 	if _, err := q.CreateBillingPackage(c.Context(), name, description, price, "TZS", billingCycle); err != nil {
 		return c.Status(500).SendString("Failed to create package")
+	}
+
+	return c.Redirect("/admin/billing-packages")
+}
+
+func (h *Handler) AdminEditBillingPackage(c *fiber.Ctx) error {
+	idStr := c.Params("id")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		return c.Status(400).SendString("Invalid package ID")
+	}
+
+	q := generated.New(h.db)
+	pkg, err := q.GetBillingPackageByID(c.Context(), id)
+	if err != nil {
+		return fiber.ErrNotFound
+	}
+
+	return render(c, admin.BillingPackageEdit(pkg))
+}
+
+func (h *Handler) AdminUpdateBillingPackage(c *fiber.Ctx) error {
+	idStr := c.Params("id")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		return c.Status(400).SendString("Invalid package ID")
+	}
+
+	name := c.FormValue("name")
+	description := c.FormValue("description")
+	priceStr := c.FormValue("price")
+	billingCycle := c.FormValue("billing_cycle")
+	isActive := c.FormValue("is_active") == "1"
+
+	if name == "" {
+		return c.Status(400).SendString("Name is required")
+	}
+	price, err := strconv.ParseFloat(priceStr, 64)
+	if err != nil {
+		return c.Status(400).SendString("Invalid price")
+	}
+
+	q := generated.New(h.db)
+	if err := q.UpdateBillingPackage(c.Context(), id, name, description, price, billingCycle, isActive); err != nil {
+		return c.Status(500).SendString("Failed to update package")
+	}
+
+	if uid, ok := middleware.GetUserID(c); ok {
+		h.audit.Log(uid, "billing_package.updated", nil, "updated package '"+name+"'", c.IP())
 	}
 
 	return c.Redirect("/admin/billing-packages")
