@@ -44,7 +44,7 @@ func FormatAmount(amount float64) string {
 	if amount == 0 {
 		return "0 TZS"
 	}
-	return fmt.Sprintf("%,.0f TZS", amount)
+	return fmt.Sprintf("%'.0f TZS", amount)
 }
 
 func DomainDisplay(domain string) string {
