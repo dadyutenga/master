@@ -177,7 +177,7 @@ func AdminInstanceDetail(props AdminInstanceDetailProps) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = detailRow("Price", fmt.Sprintf("%'.0f TZS/mo", props.Instance.Price)).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = detailRow("Price", fmt.Sprintf("%'d TZS/mo", int64(props.Instance.Price))).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

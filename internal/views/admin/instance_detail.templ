@@ -50,7 +50,7 @@ templ AdminInstanceDetail(props AdminInstanceDetailProps) {
 					</div>
 					<dl style="display:flex; flex-direction:column; gap:0.75rem;">
 						@detailRow("Package", props.Instance.PackageName)
-						@detailRow("Price", fmt.Sprintf("%'.0f TZS/mo", props.Instance.Price))
+						@detailRow("Price", fmt.Sprintf("%'d TZS/mo", int64(props.Instance.Price)))
 						if props.Instance.LastPaymentAt != nil {
 							@detailRow("Last Payment", props.Instance.LastPaymentAt.Format("02 Jan 2006"))
 						} else {

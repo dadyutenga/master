@@ -64,7 +64,7 @@ templ BillingPackagesList(packages []generated.BillingPackage) {
 							<tr style="border-bottom:1px solid var(--color-border);">
 								<td style="padding:0.75rem 1rem; font-weight:600; color:var(--color-fg); text-transform:capitalize;">{ pkg.Name }</td>
 								<td style="padding:0.75rem 1rem; color:var(--color-muted-fg);">{ pkg.Description }</td>
-								<td style="padding:0.75rem 1rem; text-align:right; font-weight:600; color:var(--color-fg);">{ fmt.Sprintf("%'.0f", pkg.Price) } TZS</td>
+								<td style="padding:0.75rem 1rem; text-align:right; font-weight:600; color:var(--color-fg);">{ fmt.Sprintf("%d", int64(pkg.Price)) } TZS</td>
 								<td style="padding:0.75rem 1rem; color:var(--color-muted-fg); text-transform:capitalize;">{ pkg.BillingCycle }</td>
 								<td style="padding:0.75rem 1rem;">
 									if pkg.IsActive {

@@ -332,7 +332,7 @@ func clientTxnStatusBadge(s string) templ.Component {
 }
 
 func formatAmount(amount float64) string {
-	return fmt.Sprintf("%'.0f TZS", amount)
+	return fmt.Sprintf("%'d TZS", int64(amount))
 }
 
 var _ = templruntime.GeneratedTemplate
