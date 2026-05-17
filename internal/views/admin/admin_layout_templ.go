@@ -43,15 +43,15 @@ func AdminLayout(title string, userName string) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<style>\n\t\t\t.admin-shell { display:flex; min-height:100vh; }\n\t\t\t.admin-sidebar {\n\t\t\t\twidth: 260px;\n\t\t\t\tbackground: #1f2937;\n\t\t\t\tcolor: #f9fafb;\n\t\t\t\tposition: fixed;\n\t\t\t\ttop: 0; left: 0; bottom: 0;\n\t\t\t\toverflow-y: auto;\n\t\t\t\tpadding: 1.5rem;\n\t\t\t\tz-index: 60;\n\t\t\t\ttransition: transform 0.25s ease;\n\t\t\t}\n\t\t\t.admin-sidebar.collapsed { transform: translateX(-100%); }\n\t\t\t.admin-sidebar-link {\n\t\t\t\tdisplay: flex; align-items: center; gap: 0.625rem;\n\t\t\t\tpadding: 0.625rem 0.75rem;\n\t\t\t\tborder-radius: 0.5rem;\n\t\t\t\tfont-size: 0.875rem;\n\t\t\t\ttext-decoration: none;\n\t\t\t\tcolor: #d1d5db;\n\t\t\t\ttransition: all 0.15s ease;\n\t\t\t\tmargin-bottom: 0.125rem;\n\t\t\t}\n\t\t\t.admin-sidebar-link:hover,\n\t\t\t.admin-sidebar-link.active {\n\t\t\t\tbackground: #374151;\n\t\t\t\tcolor: #f9fafb;\n\t\t\t}\n\t\t\t.admin-sidebar-link .material-symbols-outlined { font-size: 1.125rem; }\n\t\t\t.admin-sidebar-section {\n\t\t\t\tmargin-top: 1rem;\n\t\t\t\tpadding: 0.5rem 0.75rem;\n\t\t\t\tfont-size: 0.6875rem;\n\t\t\t\tcolor: #9ca3af;\n\t\t\t\ttext-transform: uppercase;\n\t\t\t\tletter-spacing: 0.05em;\n\t\t\t\tfont-weight: 600;\n\t\t\t}\n\t\t\t.admin-main { flex: 1; margin-left: 260px; transition: margin-left 0.25s ease; }\n\t\t\t.admin-main.expanded { margin-left: 0; }\n\t\t\t.admin-topbar {\n\t\t\t\tposition: sticky; top: 0; z-index: 50;\n\t\t\t\tbackground: var(--color-bg);\n\t\t\t\tborder-bottom: 1px solid var(--color-border);\n\t\t\t\theight: 4rem;\n\t\t\t\tdisplay: flex; align-items: center; justify-content: space-between;\n\t\t\t\tpadding: 0 1.5rem;\n\t\t\t}\n\t\t\t.admin-toggle {\n\t\t\t\tbackground: transparent; border: none; cursor: pointer;\n\t\t\t\tcolor: var(--color-fg); padding: 0.25rem; border-radius: 0.5rem;\n\t\t\t\tdisplay: flex; align-items: center; justify-content: center;\n\t\t\t}\n\t\t\t.admin-toggle:hover { background: var(--color-secondary); }\n\t\t\t@media (max-width: 1023px) {\n\t\t\t\t.admin-sidebar { transform: translateX(-100%); }\n\t\t\t\t.admin-sidebar.open { transform: translateX(0); }\n\t\t\t\t.admin-main { margin-left: 0; }\n\t\t\t}\n\t\t</style> <div class=\"admin-shell\" id=\"admin-shell\"><!-- Sidebar --><aside class=\"admin-sidebar\" id=\"admin-sidebar\"><div style=\"display:flex; align-items:center; justify-content:space-between; margin-bottom:2rem;\"><a href=\"/admin\" style=\"font-family:var(--font-heading); font-weight:800; font-size:1.125rem; color:#f9fafb; text-decoration:none;\">HMS Platform</a> <button class=\"admin-toggle\" onclick=\"toggleSidebar()\" style=\"display:none;\" id=\"sidebar-close\"><span class=\"material-symbols-outlined\" style=\"font-size:1.25rem; color:#f9fafb;\">close</span></button></div><nav>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<style>\n\t\t\t.admin-shell { display:flex; min-height:100vh; }\n\t\t\t.admin-sidebar {\n\t\t\t\twidth: 260px;\n\t\t\t\tbackground: #1f2937;\n\t\t\t\tcolor: #f9fafb;\n\t\t\t\tposition: fixed;\n\t\t\t\ttop: 0; left: 0; bottom: 0;\n\t\t\t\toverflow-y: auto;\n\t\t\t\tpadding: 1.5rem;\n\t\t\t\tz-index: 60;\n\t\t\t\ttransition: transform 0.25s ease;\n\t\t\t}\n\t\t\t.admin-sidebar.collapsed { transform: translateX(-100%); }\n\t\t\t.admin-sidebar-link {\n\t\t\t\tdisplay: flex; align-items: center; gap: 0.625rem;\n\t\t\t\tpadding: 0.625rem 0.75rem;\n\t\t\t\tborder-radius: 0.5rem;\n\t\t\t\tfont-size: 0.875rem;\n\t\t\t\ttext-decoration: none;\n\t\t\t\tcolor: #d1d5db;\n\t\t\t\ttransition: all 0.15s ease;\n\t\t\t\tmargin-bottom: 0.125rem;\n\t\t\t}\n\t\t\t.admin-sidebar-link:hover,\n\t\t\t.admin-sidebar-link.active {\n\t\t\t\tbackground: #374151;\n\t\t\t\tcolor: #f9fafb;\n\t\t\t}\n\t\t\t.admin-sidebar-link i { width: 1.125rem; height: 1.125rem; }\n\t\t\t.admin-sidebar-section {\n\t\t\t\tmargin-top: 1rem;\n\t\t\t\tpadding: 0.5rem 0.75rem;\n\t\t\t\tfont-size: 0.6875rem;\n\t\t\t\tcolor: #9ca3af;\n\t\t\t\ttext-transform: uppercase;\n\t\t\t\tletter-spacing: 0.05em;\n\t\t\t\tfont-weight: 600;\n\t\t\t}\n\t\t\t.admin-main { flex: 1; margin-left: 260px; transition: margin-left 0.25s ease; }\n\t\t\t.admin-main.expanded { margin-left: 0; }\n\t\t\t.admin-topbar {\n\t\t\t\tposition: sticky; top: 0; z-index: 50;\n\t\t\t\tbackground: var(--color-bg);\n\t\t\t\tborder-bottom: 1px solid var(--color-border);\n\t\t\t\theight: 4rem;\n\t\t\t\tdisplay: flex; align-items: center; justify-content: space-between;\n\t\t\t\tpadding: 0 1.5rem;\n\t\t\t}\n\t\t\t.admin-toggle {\n\t\t\t\tbackground: transparent; border: none; cursor: pointer;\n\t\t\t\tcolor: var(--color-fg); padding: 0.25rem; border-radius: 0.5rem;\n\t\t\t\tdisplay: flex; align-items: center; justify-content: center;\n\t\t\t}\n\t\t\t.admin-toggle:hover { background: var(--color-secondary); }\n\t\t\t@media (max-width: 1023px) {\n\t\t\t\t.admin-sidebar { transform: translateX(-100%); }\n\t\t\t\t.admin-sidebar.open { transform: translateX(0); }\n\t\t\t\t.admin-main { margin-left: 0; }\n\t\t\t}\n\t\t</style> <div class=\"admin-shell\" id=\"admin-shell\"><!-- Sidebar --><aside class=\"admin-sidebar\" id=\"admin-sidebar\"><div style=\"display:flex; align-items:center; justify-content:space-between; margin-bottom:2rem;\"><a href=\"/admin\" style=\"font-family:var(--font-heading); font-weight:800; font-size:1.125rem; color:#f9fafb; text-decoration:none;\">HMS Platform</a> <button class=\"admin-toggle\" onclick=\"toggleSidebar()\" style=\"display:none;\" id=\"sidebar-close\"><i data-lucide=\"x\" style=\"width:1.25rem; height:1.25rem; color:#f9fafb;\"></i></button></div><nav>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = sidebarLink("/admin", "dashboard", "Dashboard", false).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = sidebarLink("/admin", "layout-dashboard", "Dashboard", false).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = sidebarLink("/admin/tenants", "apartment", "Tenants", false).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = sidebarLink("/admin/tenants", "building-2", "Tenants", false).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -59,11 +59,11 @@ func AdminLayout(title string, userName string) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = sidebarLink("/admin/verification", "verified_user", "Verification", false).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = sidebarLink("/admin/verification", "badge-check", "Verification", false).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = sidebarLink("/admin/payments", "payments", "Payments", false).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = sidebarLink("/admin/payments", "credit-card", "Payments", false).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -75,11 +75,11 @@ func AdminLayout(title string, userName string) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = sidebarLink("/admin/billing-packages", "sell", "Billing Packages", false).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = sidebarLink("/admin/billing-packages", "tag", "Billing Packages", false).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = sidebarLink("/admin/settings/contact", "contact_mail", "Contact", false).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = sidebarLink("/admin/settings/contact", "contact", "Contact", false).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -87,15 +87,15 @@ func AdminLayout(title string, userName string) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = sidebarLink("/admin/settings/provisioner", "deployed_code", "Provisioner", false).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = sidebarLink("/admin/settings/provisioner", "code-2", "Provisioner", false).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = sidebarLink("/admin/docker-templates", "view_quilt", "Docker Templates", false).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = sidebarLink("/admin/docker-templates", "layout-grid", "Docker Templates", false).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</nav></aside><!-- Overlay for mobile --><div id=\"sidebar-overlay\" style=\"display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:55;\" onclick=\"toggleSidebar()\"></div><!-- Main content --><div class=\"admin-main\" id=\"admin-main\"><header class=\"admin-topbar\"><div style=\"display:flex; align-items:center; gap:0.75rem;\"><button class=\"admin-toggle\" onclick=\"toggleSidebar()\" id=\"sidebar-toggle\"><span class=\"material-symbols-outlined\" style=\"font-size:1.25rem;\">menu</span></button> <span style=\"font-family:var(--font-heading); font-weight:700; font-size:1rem; color:var(--color-fg);\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</nav></aside><!-- Overlay for mobile --><div id=\"sidebar-overlay\" style=\"display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:55;\" onclick=\"toggleSidebar()\"></div><!-- Main content --><div class=\"admin-main\" id=\"admin-main\"><header class=\"admin-topbar\"><div style=\"display:flex; align-items:center; gap:0.75rem;\"><button class=\"admin-toggle\" onclick=\"toggleSidebar()\" id=\"sidebar-toggle\"><i data-lucide=\"menu\" style=\"width:1.25rem; height:1.25rem;\"></i></button> <span style=\"font-family:var(--font-heading); font-weight:700; font-size:1rem; color:var(--color-fg);\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -108,7 +108,7 @@ func AdminLayout(title string, userName string) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</span></div><details style=\"position:relative;\"><summary style=\"list-style:none; display:flex; align-items:center; gap:0.5rem; cursor:pointer; font-size:0.875rem; color:var(--color-fg);\"><span class=\"material-symbols-outlined\" style=\"font-size:1.25rem; color:var(--color-muted-fg);\">account_circle</span> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</span></div><details style=\"position:relative;\"><summary style=\"list-style:none; display:flex; align-items:center; gap:0.5rem; cursor:pointer; font-size:0.875rem; color:var(--color-fg);\"><i data-lucide=\"user-circle\" style=\"width:1.25rem; height:1.25rem; color:var(--color-muted-fg);\"></i> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -127,7 +127,7 @@ func AdminLayout(title string, userName string) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<span class=\"material-symbols-outlined\" style=\"font-size:1rem; color:var(--color-muted-fg);\">expand_more</span></summary><div style=\"position:absolute; top:2.5rem; right:0; min-width:180px; background:var(--color-bg); border:1px solid var(--color-border); border-radius:0.75rem; box-shadow:0 10px 15px -3px rgba(0,0,0,0.1); padding:0.5rem;\"><form method=\"POST\" action=\"/logout\"><button type=\"submit\" style=\"width:100%; text-align:left; padding:0.5rem 0.75rem; font-size:0.875rem; background:transparent; border:none; color:var(--color-fg); cursor:pointer; border-radius:0.5rem;\" onmouseover=\"this.style.background='var(--color-secondary)'\" onmouseout=\"this.style.background='transparent'\">Logout</button></form></div></details></header><main style=\"padding:1.5rem;\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<i data-lucide=\"chevron-down\" style=\"width:1rem; height:1rem; color:var(--color-muted-fg);\"></i></summary><div style=\"position:absolute; top:2.5rem; right:0; min-width:180px; background:var(--color-bg); border:1px solid var(--color-border); border-radius:0.75rem; box-shadow:0 10px 15px -3px rgba(0,0,0,0.1); padding:0.5rem;\"><form method=\"POST\" action=\"/logout\"><button type=\"submit\" style=\"width:100%; text-align:left; padding:0.5rem 0.75rem; font-size:0.875rem; background:transparent; border:none; color:var(--color-fg); cursor:pointer; border-radius:0.5rem;\" onmouseover=\"this.style.background='var(--color-secondary)'\" onmouseout=\"this.style.background='transparent'\">Logout</button></form></div></details></header><main style=\"padding:1.5rem;\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -135,7 +135,7 @@ func AdminLayout(title string, userName string) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</main></div></div><script>\n\t\t\t(function() {\n\t\t\t\tvar sidebar = document.getElementById('admin-sidebar');\n\t\t\t\tvar main = document.getElementById('admin-main');\n\t\t\t\tvar overlay = document.getElementById('sidebar-overlay');\n\t\t\t\tvar closeBtn = document.getElementById('sidebar-close');\n\t\t\t\tvar isMobile = window.innerWidth < 1024;\n\n\t\t\t\tif (!isMobile) {\n\t\t\t\t\tcloseBtn.style.display = 'none';\n\t\t\t\t} else {\n\t\t\t\t\tcloseBtn.style.display = 'flex';\n\t\t\t\t}\n\n\t\t\t\twindow.toggleSidebar = function() {\n\t\t\t\t\tisMobile = window.innerWidth < 1024;\n\t\t\t\t\tif (isMobile) {\n\t\t\t\t\t\tsidebar.classList.toggle('open');\n\t\t\t\t\t\toverlay.style.display = sidebar.classList.contains('open') ? 'block' : 'none';\n\t\t\t\t\t} else {\n\t\t\t\t\t\tsidebar.classList.toggle('collapsed');\n\t\t\t\t\t\tmain.classList.toggle('expanded');\n\t\t\t\t\t}\n\t\t\t\t};\n\n\t\t\t\twindow.addEventListener('resize', function() {\n\t\t\t\t\tisMobile = window.innerWidth < 1024;\n\t\t\t\t\tcloseBtn.style.display = isMobile ? 'flex' : 'none';\n\t\t\t\t\tif (!isMobile) {\n\t\t\t\t\t\tsidebar.classList.remove('open');\n\t\t\t\t\t\toverlay.style.display = 'none';\n\t\t\t\t\t}\n\t\t\t\t});\n\t\t\t})();\n\t\t</script>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</main></div></div><script>\n\t\t\tif(typeof lucide!=='undefined'){lucide.createIcons();}\n\t\t\t(function() {\n\t\t\t\tvar sidebar = document.getElementById('admin-sidebar');\n\t\t\t\tvar main = document.getElementById('admin-main');\n\t\t\t\tvar overlay = document.getElementById('sidebar-overlay');\n\t\t\t\tvar closeBtn = document.getElementById('sidebar-close');\n\t\t\t\tvar isMobile = window.innerWidth < 1024;\n\n\t\t\t\tif (!isMobile) {\n\t\t\t\t\tcloseBtn.style.display = 'none';\n\t\t\t\t} else {\n\t\t\t\t\tcloseBtn.style.display = 'flex';\n\t\t\t\t}\n\n\t\t\t\twindow.toggleSidebar = function() {\n\t\t\t\t\tisMobile = window.innerWidth < 1024;\n\t\t\t\t\tif (isMobile) {\n\t\t\t\t\t\tsidebar.classList.toggle('open');\n\t\t\t\t\t\toverlay.style.display = sidebar.classList.contains('open') ? 'block' : 'none';\n\t\t\t\t\t} else {\n\t\t\t\t\t\tsidebar.classList.toggle('collapsed');\n\t\t\t\t\t\tmain.classList.toggle('expanded');\n\t\t\t\t\t}\n\t\t\t\t};\n\n\t\t\t\twindow.addEventListener('resize', function() {\n\t\t\t\t\tisMobile = window.innerWidth < 1024;\n\t\t\t\t\tcloseBtn.style.display = isMobile ? 'flex' : 'none';\n\t\t\t\t\tif (!isMobile) {\n\t\t\t\t\t\tsidebar.classList.remove('open');\n\t\t\t\t\t\toverlay.style.display = 'none';\n\t\t\t\t\t}\n\t\t\t\t});\n\t\t\t})();\n\t\t</script>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -182,7 +182,7 @@ func sidebarLink(href string, icon string, label string, isActive bool) templ.Co
 		var templ_7745c5c3_Var7 templ.SafeURL
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinURLErrs(templ.URL(href))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/admin_layout.templ`, Line: 166, Col: 26}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/admin_layout.templ`, Line: 167, Col: 26}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
@@ -201,27 +201,27 @@ func sidebarLink(href string, icon string, label string, isActive bool) templ.Co
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "\"><span class=\"material-symbols-outlined\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "\"><i data-lucide=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var9 string
-		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(icon)
+		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.ResolveAttributeValue(icon)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/admin_layout.templ`, Line: 167, Col: 48}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/admin_layout.templ`, Line: 168, Col: 23}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var9)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</span> ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\" style=\"width:1.125rem; height:1.125rem;\"></i> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var10 string
 		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(label)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/admin_layout.templ`, Line: 168, Col: 9}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/admin_layout.templ`, Line: 169, Col: 9}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {

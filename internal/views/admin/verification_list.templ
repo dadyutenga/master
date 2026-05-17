@@ -135,7 +135,7 @@ templ VerificationTable(tenants []generated.ListTenantsRow) {
 	<div id="verification-table">
 		if len(tenants) == 0 {
 			<div style="text-align:center; padding:3rem; color:var(--color-muted-fg);">
-				<span class="material-symbols-outlined" style="font-size:3rem; display:block; margin-bottom:0.5rem;">verified_user</span>
+				<i data-lucide="badge-check" style="width:3rem; height:3rem; display:block; margin-bottom:0.5rem;"></i>
 				<p style="font-size:0.9375rem; font-weight:500;">No tenants pending verification</p>
 				<p style="font-size:0.8125rem; margin-top:0.25rem;">All caught up!</p>
 			</div>
@@ -223,7 +223,7 @@ templ VerificationActions(t generated.ListTenantsRow) {
 		<a href={ templ.URL("/admin/verification/" + t.ID.String()) }
 		   class="px-3 py-1 rounded text-xs font-medium hover:opacity-90"
 		   style="background: var(--color-secondary); color: var(--color-fg); display:inline-flex; align-items:center; gap:0.25rem;">
-			<span class="material-symbols-outlined" style="font-size:0.875rem;">visibility</span>
+			<i data-lucide="eye" style="width:0.875rem; height:0.875rem;"></i>
 			Review
 		</a>
 	</div>
@@ -233,7 +233,7 @@ templ confirmModal() {
 	<div id="confirm-modal" style="display:none; position:fixed; inset:0; z-index:200; background:rgba(0,0,0,0.5); align-items:center; justify-content:center;" onclick="if(event.target===this)closeConfirmModal()">
 		<div style="background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:2rem; max-width:420px; width:90%; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); animation:modalIn 0.15s ease-out;">
 			<div style="text-align:center;">
-				<span id="confirm-modal-icon" class="material-symbols-outlined" style="font-size:3rem; display:block; margin-bottom:0.75rem;">help</span>
+				<i id="confirm-modal-icon" data-lucide="help-circle" style="width:3rem; height:3rem; display:block; margin-bottom:0.75rem;"></i>
 				<h3 id="confirm-modal-title" style="font-family:var(--font-heading); font-size:1.125rem; font-weight:700; color:var(--color-fg); margin-bottom:0.5rem;">Are you sure?</h3>
 				<p id="confirm-modal-message" style="font-size:0.875rem; color:var(--color-muted-fg); line-height:1.5;"></p>
 			</div>

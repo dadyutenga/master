@@ -91,7 +91,7 @@ func TenantDetail(tenant generated.Tenant, user generated.User, deployments []ge
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\" hx-confirm=\"Approve and provision this tenant?\" style=\"display:inline-flex; align-items:center; gap:0.25rem; padding:0.625rem 1.5rem; border-radius:9999px; border:none; font-size:0.875rem; font-weight:600; cursor:pointer; background:var(--color-brand-blue); color:#fff; transition:opacity 0.15s ease;\" onmouseover=\"this.style.opacity='0.9'\" onmouseout=\"this.style.opacity='1'\"><span class=\"material-symbols-outlined\" style=\"font-size:1rem;\">check</span> Approve</button> <button hx-post=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\" hx-confirm=\"Approve and provision this tenant?\" style=\"display:inline-flex; align-items:center; gap:0.25rem; padding:0.625rem 1.5rem; border-radius:9999px; border:none; font-size:0.875rem; font-weight:600; cursor:pointer; background:var(--color-brand-blue); color:#fff; transition:opacity 0.15s ease;\" onmouseover=\"this.style.opacity='0.9'\" onmouseout=\"this.style.opacity='1'\"><i data-lucide=\"check\" style=\"width:1rem; height:1rem;\"></i> Approve</button> <button hx-post=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -104,7 +104,7 @@ func TenantDetail(tenant generated.Tenant, user generated.User, deployments []ge
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" hx-confirm=\"Suspend this tenant?\" style=\"display:inline-flex; align-items:center; gap:0.25rem; padding:0.625rem 1.5rem; border-radius:9999px; border:1px solid var(--color-destructive); font-size:0.875rem; font-weight:600; cursor:pointer; background:var(--color-bg); color:var(--color-destructive); transition:all 0.15s ease;\" onmouseover=\"this.style.background='var(--color-secondary)'\" onmouseout=\"this.style.background='var(--color-bg)'\"><span class=\"material-symbols-outlined\" style=\"font-size:1rem;\">block</span> Suspend</button></div></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" hx-confirm=\"Suspend this tenant?\" style=\"display:inline-flex; align-items:center; gap:0.25rem; padding:0.625rem 1.5rem; border-radius:9999px; border:1px solid var(--color-destructive); font-size:0.875rem; font-weight:600; cursor:pointer; background:var(--color-bg); color:var(--color-destructive); transition:all 0.15s ease;\" onmouseover=\"this.style.background='var(--color-secondary)'\" onmouseout=\"this.style.background='var(--color-bg)'\"><i data-lucide=\"ban\" style=\"width:1rem; height:1rem;\"></i> Suspend</button></div></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -362,7 +362,7 @@ func TenantDetail(tenant generated.Tenant, user generated.User, deployments []ge
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "\" style=\"display:inline-flex; align-items:center; gap:0.375rem; padding:0.5rem 1rem; border-radius:0.5rem; font-size:0.8125rem; font-weight:600; text-decoration:none; background:var(--color-brand-blue); color:#fff; transition:opacity 0.15s ease;\" onmouseover=\"this.style.opacity='0.9'\" onmouseout=\"this.style.opacity='1'\"><span class=\"material-symbols-outlined\" style=\"font-size:1rem;\">payments</span> Manage Billing</a>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "\" style=\"display:inline-flex; align-items:center; gap:0.375rem; padding:0.5rem 1rem; border-radius:0.5rem; font-size:0.8125rem; font-weight:600; text-decoration:none; background:var(--color-brand-blue); color:#fff; transition:opacity 0.15s ease;\" onmouseover=\"this.style.opacity='0.9'\" onmouseout=\"this.style.opacity='1'\"><i data-lucide=\"credit-card\" style=\"width:1rem; height:1rem;\"></i> Manage Billing</a>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -418,7 +418,7 @@ func TenantDetail(tenant generated.Tenant, user generated.User, deployments []ge
 							return templ_7745c5c3_Err
 						}
 					} else {
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "<div style=\"display:flex; flex-direction:column; align-items:center; gap:0.5rem; color:var(--color-muted-fg);\"><span class=\"material-symbols-outlined\" style=\"font-size:2.5rem;\">description</span> <span style=\"font-size:0.75rem;\">")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "<div style=\"display:flex; flex-direction:column; align-items:center; gap:0.5rem; color:var(--color-muted-fg);\"><i data-lucide=\"file-text\" style=\"width:2.5rem; height:2.5rem;\"></i> <span style=\"font-size:0.75rem;\">")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
@@ -498,7 +498,7 @@ func TenantDetail(tenant generated.Tenant, user generated.User, deployments []ge
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "\" hx-confirm=\"Start the tenant container?\" style=\"display:inline-flex; align-items:center; gap:0.25rem; padding:0.5rem 1.25rem; border-radius:9999px; border:none; font-size:0.75rem; font-weight:600; cursor:pointer; background:var(--color-brand-blue); color:#fff; transition:opacity 0.15s ease;\" onmouseover=\"this.style.opacity='0.9'\" onmouseout=\"this.style.opacity='1'\"><span class=\"material-symbols-outlined\" style=\"font-size:0.875rem;\">play_arrow</span> Start</button> <button hx-post=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "\" hx-confirm=\"Start the tenant container?\" style=\"display:inline-flex; align-items:center; gap:0.25rem; padding:0.5rem 1.25rem; border-radius:9999px; border:none; font-size:0.75rem; font-weight:600; cursor:pointer; background:var(--color-brand-blue); color:#fff; transition:opacity 0.15s ease;\" onmouseover=\"this.style.opacity='0.9'\" onmouseout=\"this.style.opacity='1'\"><i data-lucide=\"play\" style=\"width:0.875rem; height:0.875rem;\"></i> Start</button> <button hx-post=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -511,7 +511,7 @@ func TenantDetail(tenant generated.Tenant, user generated.User, deployments []ge
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "\" hx-confirm=\"Stop the tenant container?\" style=\"display:inline-flex; align-items:center; gap:0.25rem; padding:0.5rem 1.25rem; border-radius:9999px; border:1px solid var(--color-destructive); font-size:0.75rem; font-weight:600; cursor:pointer; background:var(--color-bg); color:var(--color-destructive); transition:all 0.15s ease;\" onmouseover=\"this.style.background='var(--color-secondary)'\" onmouseout=\"this.style.background='var(--color-bg)'\"><span class=\"material-symbols-outlined\" style=\"font-size:0.875rem;\">stop</span> Stop</button> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "\" hx-confirm=\"Stop the tenant container?\" style=\"display:inline-flex; align-items:center; gap:0.25rem; padding:0.5rem 1.25rem; border-radius:9999px; border:1px solid var(--color-destructive); font-size:0.75rem; font-weight:600; cursor:pointer; background:var(--color-bg); color:var(--color-destructive); transition:all 0.15s ease;\" onmouseover=\"this.style.background='var(--color-secondary)'\" onmouseout=\"this.style.background='var(--color-bg)'\"><i data-lucide=\"stop-circle\" style=\"width:0.875rem; height:0.875rem;\"></i> Stop</button> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -529,7 +529,7 @@ func TenantDetail(tenant generated.Tenant, user generated.User, deployments []ge
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "\" hx-confirm=\"Retry provisioning this tenant?\" style=\"display:inline-flex; align-items:center; gap:0.25rem; padding:0.5rem 1.25rem; border-radius:9999px; border:none; font-size:0.75rem; font-weight:600; cursor:pointer; background:hsl(25, 80%, 50%); color:#fff; transition:opacity 0.15s ease;\" onmouseover=\"this.style.opacity='0.9'\" onmouseout=\"this.style.opacity='1'\"><span class=\"material-symbols-outlined\" style=\"font-size:0.875rem;\">refresh</span> Retry</button> ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "\" hx-confirm=\"Retry provisioning this tenant?\" style=\"display:inline-flex; align-items:center; gap:0.25rem; padding:0.5rem 1.25rem; border-radius:9999px; border:none; font-size:0.75rem; font-weight:600; cursor:pointer; background:hsl(25, 80%, 50%); color:#fff; transition:opacity 0.15s ease;\" onmouseover=\"this.style.opacity='0.9'\" onmouseout=\"this.style.opacity='1'\"><i data-lucide=\"refresh-ccw\" style=\"width:0.875rem; height:0.875rem;\"></i> Retry</button> ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -548,7 +548,7 @@ func TenantDetail(tenant generated.Tenant, user generated.User, deployments []ge
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "\" hx-confirm=\"Suspend this tenant?\" style=\"display:inline-flex; align-items:center; gap:0.25rem; padding:0.5rem 1.25rem; border-radius:9999px; border:1px solid var(--color-destructive); font-size:0.75rem; font-weight:600; cursor:pointer; background:var(--color-bg); color:var(--color-destructive); transition:all 0.15s ease;\" onmouseover=\"this.style.background='var(--color-secondary)'\" onmouseout=\"this.style.background='var(--color-bg)'\"><span class=\"material-symbols-outlined\" style=\"font-size:0.875rem;\">block</span> Suspend</button> ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "\" hx-confirm=\"Suspend this tenant?\" style=\"display:inline-flex; align-items:center; gap:0.25rem; padding:0.5rem 1.25rem; border-radius:9999px; border:1px solid var(--color-destructive); font-size:0.75rem; font-weight:600; cursor:pointer; background:var(--color-bg); color:var(--color-destructive); transition:all 0.15s ease;\" onmouseover=\"this.style.background='var(--color-secondary)'\" onmouseout=\"this.style.background='var(--color-bg)'\"><i data-lucide=\"ban\" style=\"width:0.875rem; height:0.875rem;\"></i> Suspend</button> ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -566,7 +566,7 @@ func TenantDetail(tenant generated.Tenant, user generated.User, deployments []ge
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "\" hx-confirm=\"Impersonate this tenant?\" style=\"display:inline-flex; align-items:center; gap:0.25rem; padding:0.5rem 1.25rem; border-radius:9999px; border:1px solid var(--color-border); font-size:0.75rem; font-weight:600; cursor:pointer; background:var(--color-bg); color:var(--color-fg); transition:all 0.15s ease;\" onmouseover=\"this.style.background='var(--color-secondary)'\" onmouseout=\"this.style.background='var(--color-bg)'\"><span class=\"material-symbols-outlined\" style=\"font-size:0.875rem;\">switch_account</span> Impersonate</button></div></div><!-- Deployments Table --><div style=\"background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.5rem; margin-bottom:1rem;\"><h2 style=\"font-family:var(--font-heading); font-size:1rem; font-weight:700; color:var(--color-fg); margin-bottom:1rem;\">Deployments</h2>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "\" hx-confirm=\"Impersonate this tenant?\" style=\"display:inline-flex; align-items:center; gap:0.25rem; padding:0.5rem 1.25rem; border-radius:9999px; border:1px solid var(--color-border); font-size:0.75rem; font-weight:600; cursor:pointer; background:var(--color-bg); color:var(--color-fg); transition:all 0.15s ease;\" onmouseover=\"this.style.background='var(--color-secondary)'\" onmouseout=\"this.style.background='var(--color-bg)'\"><i data-lucide=\"user-switch\" style=\"width:0.875rem; height:0.875rem;\"></i> Impersonate</button></div></div><!-- Deployments Table --><div style=\"background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.5rem; margin-bottom:1rem;\"><h2 style=\"font-family:var(--font-heading); font-size:1rem; font-weight:700; color:var(--color-fg); margin-bottom:1rem;\">Deployments</h2>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

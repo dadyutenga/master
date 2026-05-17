@@ -246,7 +246,7 @@ templ tenantSuspendModal() {
 	<div id="suspend-modal" style="display:none; position:fixed; inset:0; z-index:200; background:rgba(0,0,0,0.5); align-items:center; justify-content:center;" onclick="if(event.target===this)closeSuspendModal()">
 		<div style="background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:2rem; max-width:420px; width:90%; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); animation:modalIn 0.15s ease-out;">
 			<div style="text-align:center;">
-				<span class="material-symbols-outlined" style="font-size:3rem; display:block; margin-bottom:0.75rem; color:var(--color-destructive);">block</span>
+				<i data-lucide="ban" style="width:3rem; height:3rem; display:block; margin-bottom:0.75rem; color:var(--color-destructive);"></i>
 				<h3 style="font-family:var(--font-heading); font-size:1.125rem; font-weight:700; color:var(--color-fg); margin-bottom:0.5rem;">Suspend Tenant</h3>
 				<p style="font-size:0.875rem; color:var(--color-muted-fg); line-height:1.5;">
 					Enter your admin password to confirm suspension of <strong id="suspend-company-name" style="color:var(--color-fg);"></strong>.
@@ -274,7 +274,7 @@ templ tenantPasswordModal() {
 	<div id="password-modal" style="display:none; position:fixed; inset:0; z-index:200; background:rgba(0,0,0,0.5); align-items:center; justify-content:center;" onclick="if(event.target===this)closePasswordModal()">
 		<div style="background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:2rem; max-width:420px; width:90%; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); animation:modalIn 0.15s ease-out;">
 			<div style="text-align:center;">
-				<span class="material-symbols-outlined" style="font-size:3rem; display:block; margin-bottom:0.75rem; color:var(--color-brand-blue);">lock_reset</span>
+				<i data-lucide="refresh-cw" style="width:3rem; height:3rem; display:block; margin-bottom:0.75rem; color:var(--color-brand-blue);"></i>
 				<h3 style="font-family:var(--font-heading); font-size:1.125rem; font-weight:700; color:var(--color-fg); margin-bottom:0.5rem;">Change Password</h3>
 				<p style="font-size:0.875rem; color:var(--color-muted-fg); line-height:1.5;">
 					Set a new password for <strong id="pw-company-name" style="color:var(--color-fg);"></strong>.

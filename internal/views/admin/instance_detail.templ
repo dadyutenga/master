@@ -121,7 +121,7 @@ templ AdminInstanceDetail(props AdminInstanceDetailProps) {
 							hx-confirm="Enable this instance?"
 							style="display:inline-flex; align-items:center; gap:0.25rem; padding:0.5rem 1.25rem; border-radius:9999px; border:none; font-size:0.75rem; font-weight:600; cursor:pointer; background:#22c55e; color:#fff; transition:opacity 0.15s ease;"
 							onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
-							<span class="material-symbols-outlined" style="font-size:0.875rem;">check_circle</span> Enable
+							<i data-lucide="check-circle" style="width:0.875rem; height:0.875rem;"></i> Enable
 						</button>
 					}
 					<!-- Disable (only if active or paused, and not already admin_disabled) -->
@@ -131,7 +131,7 @@ templ AdminInstanceDetail(props AdminInstanceDetailProps) {
 							hx-confirm="Disable this instance? Only an admin can re-enable it."
 							style="display:inline-flex; align-items:center; gap:0.25rem; padding:0.5rem 1.25rem; border-radius:9999px; border:1px solid var(--color-destructive); font-size:0.75rem; font-weight:600; cursor:pointer; background:var(--color-bg); color:var(--color-destructive); transition:all 0.15s ease;"
 							onmouseover="this.style.background='var(--color-secondary)'" onmouseout="this.style.background='var(--color-bg)'">
-							<span class="material-symbols-outlined" style="font-size:0.875rem;">block</span> Disable
+							<i data-lucide="ban" style="width:0.875rem; height:0.875rem;"></i> Disable
 						</button>
 					}
 					<!-- Start/Stop -->
@@ -141,7 +141,7 @@ templ AdminInstanceDetail(props AdminInstanceDetailProps) {
 							hx-confirm="Stop this instance?"
 							style="display:inline-flex; align-items:center; gap:0.25rem; padding:0.5rem 1.25rem; border-radius:9999px; border:1px solid #f59e0b; font-size:0.75rem; font-weight:600; cursor:pointer; background:var(--color-bg); color:#f59e0b; transition:all 0.15s ease;"
 							onmouseover="this.style.background='#fef3c7'" onmouseout="this.style.background='var(--color-bg)'">
-							<span class="material-symbols-outlined" style="font-size:0.875rem;">pause</span> Pause
+							<i data-lucide="pause-circle" style="width:0.875rem; height:0.875rem;"></i> Pause
 						</button>
 					}
 					if props.Instance.Status == "paused" {
@@ -150,7 +150,7 @@ templ AdminInstanceDetail(props AdminInstanceDetailProps) {
 							hx-confirm="Start this instance?"
 							style="display:inline-flex; align-items:center; gap:0.25rem; padding:0.5rem 1.25rem; border-radius:9999px; border:none; font-size:0.75rem; font-weight:600; cursor:pointer; background:var(--color-brand-blue); color:#fff; transition:opacity 0.15s ease;"
 							onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
-							<span class="material-symbols-outlined" style="font-size:0.875rem;">play_arrow</span> Start
+							<i data-lucide="play" style="width:0.875rem; height:0.875rem;"></i> Start
 						</button>
 					}
 					<!-- Archive (not for archived/deleted) -->
@@ -160,7 +160,7 @@ templ AdminInstanceDetail(props AdminInstanceDetailProps) {
 							hx-confirm="Archive this instance?"
 							style="display:inline-flex; align-items:center; gap:0.25rem; padding:0.5rem 1.25rem; border-radius:9999px; border:1px solid var(--color-border); font-size:0.75rem; font-weight:600; cursor:pointer; background:var(--color-bg); color:var(--color-muted-fg); transition:all 0.15s ease;"
 							onmouseover="this.style.background='var(--color-secondary)'" onmouseout="this.style.background='var(--color-bg)'">
-							<span class="material-symbols-outlined" style="font-size:0.875rem;">archive</span> Archive
+							<i data-lucide="archive" style="width:0.875rem; height:0.875rem;"></i> Archive
 						</button>
 					}
 					<!-- Delete (admin only) -->
@@ -170,7 +170,7 @@ templ AdminInstanceDetail(props AdminInstanceDetailProps) {
 							hx-confirm="Permanently delete this instance? This cannot be undone."
 							style="display:inline-flex; align-items:center; gap:0.25rem; padding:0.5rem 1.25rem; border-radius:9999px; border:1px solid var(--color-destructive); font-size:0.75rem; font-weight:600; cursor:pointer; background:var(--color-bg); color:var(--color-destructive); transition:all 0.15s ease;"
 							onmouseover="this.style.background='var(--color-secondary)'" onmouseout="this.style.background='var(--color-bg)'">
-							<span class="material-symbols-outlined" style="font-size:0.875rem;">delete</span> Delete
+							<i data-lucide="trash-2" style="width:0.875rem; height:0.875rem;"></i> Delete
 						</button>
 					}
 				</div>

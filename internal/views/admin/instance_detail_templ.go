@@ -361,7 +361,7 @@ func AdminInstanceDetail(props AdminInstanceDetailProps) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "\" hx-confirm=\"Enable this instance?\" style=\"display:inline-flex; align-items:center; gap:0.25rem; padding:0.5rem 1.25rem; border-radius:9999px; border:none; font-size:0.75rem; font-weight:600; cursor:pointer; background:#22c55e; color:#fff; transition:opacity 0.15s ease;\" onmouseover=\"this.style.opacity='0.9'\" onmouseout=\"this.style.opacity='1'\"><span class=\"material-symbols-outlined\" style=\"font-size:0.875rem;\">check_circle</span> Enable</button>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "\" hx-confirm=\"Enable this instance?\" style=\"display:inline-flex; align-items:center; gap:0.25rem; padding:0.5rem 1.25rem; border-radius:9999px; border:none; font-size:0.75rem; font-weight:600; cursor:pointer; background:#22c55e; color:#fff; transition:opacity 0.15s ease;\" onmouseover=\"this.style.opacity='0.9'\" onmouseout=\"this.style.opacity='1'\"><i data-lucide=\"check-circle\" style=\"width:0.875rem; height:0.875rem;\"></i> Enable</button>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -384,7 +384,7 @@ func AdminInstanceDetail(props AdminInstanceDetailProps) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "\" hx-confirm=\"Disable this instance? Only an admin can re-enable it.\" style=\"display:inline-flex; align-items:center; gap:0.25rem; padding:0.5rem 1.25rem; border-radius:9999px; border:1px solid var(--color-destructive); font-size:0.75rem; font-weight:600; cursor:pointer; background:var(--color-bg); color:var(--color-destructive); transition:all 0.15s ease;\" onmouseover=\"this.style.background='var(--color-secondary)'\" onmouseout=\"this.style.background='var(--color-bg)'\"><span class=\"material-symbols-outlined\" style=\"font-size:0.875rem;\">block</span> Disable</button>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "\" hx-confirm=\"Disable this instance? Only an admin can re-enable it.\" style=\"display:inline-flex; align-items:center; gap:0.25rem; padding:0.5rem 1.25rem; border-radius:9999px; border:1px solid var(--color-destructive); font-size:0.75rem; font-weight:600; cursor:pointer; background:var(--color-bg); color:var(--color-destructive); transition:all 0.15s ease;\" onmouseover=\"this.style.background='var(--color-secondary)'\" onmouseout=\"this.style.background='var(--color-bg)'\"><i data-lucide=\"ban\" style=\"width:0.875rem; height:0.875rem;\"></i> Disable</button>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -407,7 +407,7 @@ func AdminInstanceDetail(props AdminInstanceDetailProps) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "\" hx-confirm=\"Stop this instance?\" style=\"display:inline-flex; align-items:center; gap:0.25rem; padding:0.5rem 1.25rem; border-radius:9999px; border:1px solid #f59e0b; font-size:0.75rem; font-weight:600; cursor:pointer; background:var(--color-bg); color:#f59e0b; transition:all 0.15s ease;\" onmouseover=\"this.style.background='#fef3c7'\" onmouseout=\"this.style.background='var(--color-bg)'\"><span class=\"material-symbols-outlined\" style=\"font-size:0.875rem;\">pause</span> Pause</button> ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "\" hx-confirm=\"Stop this instance?\" style=\"display:inline-flex; align-items:center; gap:0.25rem; padding:0.5rem 1.25rem; border-radius:9999px; border:1px solid #f59e0b; font-size:0.75rem; font-weight:600; cursor:pointer; background:var(--color-bg); color:#f59e0b; transition:all 0.15s ease;\" onmouseover=\"this.style.background='#fef3c7'\" onmouseout=\"this.style.background='var(--color-bg)'\"><i data-lucide=\"pause-circle\" style=\"width:0.875rem; height:0.875rem;\"></i> Pause</button> ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -426,7 +426,7 @@ func AdminInstanceDetail(props AdminInstanceDetailProps) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "\" hx-confirm=\"Start this instance?\" style=\"display:inline-flex; align-items:center; gap:0.25rem; padding:0.5rem 1.25rem; border-radius:9999px; border:none; font-size:0.75rem; font-weight:600; cursor:pointer; background:var(--color-brand-blue); color:#fff; transition:opacity 0.15s ease;\" onmouseover=\"this.style.opacity='0.9'\" onmouseout=\"this.style.opacity='1'\"><span class=\"material-symbols-outlined\" style=\"font-size:0.875rem;\">play_arrow</span> Start</button>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "\" hx-confirm=\"Start this instance?\" style=\"display:inline-flex; align-items:center; gap:0.25rem; padding:0.5rem 1.25rem; border-radius:9999px; border:none; font-size:0.75rem; font-weight:600; cursor:pointer; background:var(--color-brand-blue); color:#fff; transition:opacity 0.15s ease;\" onmouseover=\"this.style.opacity='0.9'\" onmouseout=\"this.style.opacity='1'\"><i data-lucide=\"play\" style=\"width:0.875rem; height:0.875rem;\"></i> Start</button>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -449,7 +449,7 @@ func AdminInstanceDetail(props AdminInstanceDetailProps) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "\" hx-confirm=\"Archive this instance?\" style=\"display:inline-flex; align-items:center; gap:0.25rem; padding:0.5rem 1.25rem; border-radius:9999px; border:1px solid var(--color-border); font-size:0.75rem; font-weight:600; cursor:pointer; background:var(--color-bg); color:var(--color-muted-fg); transition:all 0.15s ease;\" onmouseover=\"this.style.background='var(--color-secondary)'\" onmouseout=\"this.style.background='var(--color-bg)'\"><span class=\"material-symbols-outlined\" style=\"font-size:0.875rem;\">archive</span> Archive</button>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "\" hx-confirm=\"Archive this instance?\" style=\"display:inline-flex; align-items:center; gap:0.25rem; padding:0.5rem 1.25rem; border-radius:9999px; border:1px solid var(--color-border); font-size:0.75rem; font-weight:600; cursor:pointer; background:var(--color-bg); color:var(--color-muted-fg); transition:all 0.15s ease;\" onmouseover=\"this.style.background='var(--color-secondary)'\" onmouseout=\"this.style.background='var(--color-bg)'\"><i data-lucide=\"archive\" style=\"width:0.875rem; height:0.875rem;\"></i> Archive</button>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -472,7 +472,7 @@ func AdminInstanceDetail(props AdminInstanceDetailProps) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "\" hx-confirm=\"Permanently delete this instance? This cannot be undone.\" style=\"display:inline-flex; align-items:center; gap:0.25rem; padding:0.5rem 1.25rem; border-radius:9999px; border:1px solid var(--color-destructive); font-size:0.75rem; font-weight:600; cursor:pointer; background:var(--color-bg); color:var(--color-destructive); transition:all 0.15s ease;\" onmouseover=\"this.style.background='var(--color-secondary)'\" onmouseout=\"this.style.background='var(--color-bg)'\"><span class=\"material-symbols-outlined\" style=\"font-size:0.875rem;\">delete</span> Delete</button>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "\" hx-confirm=\"Permanently delete this instance? This cannot be undone.\" style=\"display:inline-flex; align-items:center; gap:0.25rem; padding:0.5rem 1.25rem; border-radius:9999px; border:1px solid var(--color-destructive); font-size:0.75rem; font-weight:600; cursor:pointer; background:var(--color-bg); color:var(--color-destructive); transition:all 0.15s ease;\" onmouseover=\"this.style.background='var(--color-secondary)'\" onmouseout=\"this.style.background='var(--color-bg)'\"><i data-lucide=\"trash-2\" style=\"width:0.875rem; height:0.875rem;\"></i> Delete</button>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

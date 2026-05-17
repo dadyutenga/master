@@ -217,7 +217,7 @@ func PaymentsPage(props PaymentsPageProps) templ.Component {
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "\" target=\"_blank\" style=\"display:inline-flex; align-items:center; gap:0.25rem; padding:0.25rem 0.625rem; border-radius:9999px; border:1px solid var(--color-border); font-size:0.75rem; font-weight:500; cursor:pointer; background:var(--color-bg); color:var(--color-brand-blue); text-decoration:none; transition:all 0.15s ease;\" onmouseover=\"this.style.background='var(--color-secondary)'\" onmouseout=\"this.style.background='var(--color-bg)'\"><span class=\"material-symbols-outlined\" style=\"font-size:0.875rem;\">visibility</span> View</a>")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "\" target=\"_blank\" style=\"display:inline-flex; align-items:center; gap:0.25rem; padding:0.25rem 0.625rem; border-radius:9999px; border:1px solid var(--color-border); font-size:0.75rem; font-weight:500; cursor:pointer; background:var(--color-bg); color:var(--color-brand-blue); text-decoration:none; transition:all 0.15s ease;\" onmouseover=\"this.style.background='var(--color-secondary)'\" onmouseout=\"this.style.background='var(--color-bg)'\"><i data-lucide=\"eye\" style=\"width:0.875rem; height:0.875rem;\"></i> View</a>")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}

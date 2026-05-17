@@ -136,7 +136,7 @@ func VerificationDetail(tenant generated.Tenant, user generated.User, documents 
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "\" style=\"display:inline-flex; align-items:center; gap:0.25rem; padding:0.625rem 1.5rem; border-radius:9999px; border:none; font-size:0.875rem; font-weight:600; cursor:pointer; background:hsl(270, 50%, 50%); color:#fff; transition:opacity 0.15s ease;\" onmouseover=\"this.style.opacity='0.9'\" onmouseout=\"this.style.opacity='1'\"><span class=\"material-symbols-outlined\" style=\"font-size:1rem;\">mark_email_read</span> Verify Email</button> ")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "\" style=\"display:inline-flex; align-items:center; gap:0.25rem; padding:0.625rem 1.5rem; border-radius:9999px; border:none; font-size:0.875rem; font-weight:600; cursor:pointer; background:hsl(270, 50%, 50%); color:#fff; transition:opacity 0.15s ease;\" onmouseover=\"this.style.opacity='0.9'\" onmouseout=\"this.style.opacity='1'\"><i data-lucide=\"mail-check\" style=\"width:1rem; height:1rem;\"></i> Verify Email</button> ")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -155,7 +155,7 @@ func VerificationDetail(tenant generated.Tenant, user generated.User, documents 
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "\" style=\"display:inline-flex; align-items:center; gap:0.25rem; padding:0.625rem 1.5rem; border-radius:9999px; border:none; font-size:0.875rem; font-weight:600; cursor:pointer; background:var(--color-brand-blue); color:#fff; transition:opacity 0.15s ease;\" onmouseover=\"this.style.opacity='0.9'\" onmouseout=\"this.style.opacity='1'\"><span class=\"material-symbols-outlined\" style=\"font-size:1rem;\">check_circle</span> Approve Tenant</button> ")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "\" style=\"display:inline-flex; align-items:center; gap:0.25rem; padding:0.625rem 1.5rem; border-radius:9999px; border:none; font-size:0.875rem; font-weight:600; cursor:pointer; background:var(--color-brand-blue); color:#fff; transition:opacity 0.15s ease;\" onmouseover=\"this.style.opacity='0.9'\" onmouseout=\"this.style.opacity='1'\"><i data-lucide=\"check-circle\" style=\"width:1rem; height:1rem;\"></i> Approve Tenant</button> ")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -174,7 +174,7 @@ func VerificationDetail(tenant generated.Tenant, user generated.User, documents 
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "\" style=\"display:inline-flex; align-items:center; gap:0.25rem; padding:0.625rem 1.5rem; border-radius:9999px; border:none; font-size:0.875rem; font-weight:600; cursor:pointer; background:hsl(25, 80%, 50%); color:#fff; transition:opacity 0.15s ease;\" onmouseover=\"this.style.opacity='0.9'\" onmouseout=\"this.style.opacity='1'\"><span class=\"material-symbols-outlined\" style=\"font-size:1rem;\">refresh</span> Activate</button> ")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "\" style=\"display:inline-flex; align-items:center; gap:0.25rem; padding:0.625rem 1.5rem; border-radius:9999px; border:none; font-size:0.875rem; font-weight:600; cursor:pointer; background:hsl(25, 80%, 50%); color:#fff; transition:opacity 0.15s ease;\" onmouseover=\"this.style.opacity='0.9'\" onmouseout=\"this.style.opacity='1'\"><i data-lucide=\"refresh-ccw\" style=\"width:1rem; height:1rem;\"></i> Activate</button> ")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -193,7 +193,7 @@ func VerificationDetail(tenant generated.Tenant, user generated.User, documents 
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "\" style=\"display:inline-flex; align-items:center; gap:0.25rem; padding:0.625rem 1.5rem; border-radius:9999px; border:1px solid var(--color-destructive); font-size:0.875rem; font-weight:600; cursor:pointer; background:var(--color-bg); color:var(--color-destructive); transition:all 0.15s ease;\" onmouseover=\"this.style.background='var(--color-secondary)'\" onmouseout=\"this.style.background='var(--color-bg)'\"><span class=\"material-symbols-outlined\" style=\"font-size:1rem;\">cancel</span> Reject</button>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "\" style=\"display:inline-flex; align-items:center; gap:0.25rem; padding:0.625rem 1.5rem; border-radius:9999px; border:1px solid var(--color-destructive); font-size:0.875rem; font-weight:600; cursor:pointer; background:var(--color-bg); color:var(--color-destructive); transition:all 0.15s ease;\" onmouseover=\"this.style.background='var(--color-secondary)'\" onmouseout=\"this.style.background='var(--color-bg)'\"><i data-lucide=\"x-circle\" style=\"width:1rem; height:1rem;\"></i> Reject</button>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -448,7 +448,7 @@ func VerificationDetail(tenant generated.Tenant, user generated.User, documents 
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "</div><!-- Uploaded Documents Section --><div style=\"background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.5rem; margin-bottom:1rem;\"><div style=\"display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem;\"><h2 style=\"font-family:var(--font-heading); font-size:1rem; font-weight:700; color:var(--color-fg); display:flex; align-items:center; gap:0.5rem;\"><span class=\"material-symbols-outlined\" style=\"font-size:1.25rem;\">folder_open</span> Uploaded Documents</h2>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "</div><!-- Uploaded Documents Section --><div style=\"background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.5rem; margin-bottom:1rem;\"><div style=\"display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem;\"><h2 style=\"font-family:var(--font-heading); font-size:1rem; font-weight:700; color:var(--color-fg); display:flex; align-items:center; gap:0.5rem;\"><i data-lucide=\"folder-open\" style=\"width:1.25rem; height:1.25rem;\"></i> Uploaded Documents</h2>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -476,7 +476,7 @@ func VerificationDetail(tenant generated.Tenant, user generated.User, documents 
 				return templ_7745c5c3_Err
 			}
 			if len(documents) == 0 {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "<div style=\"text-align:center; padding:2rem; color:var(--color-muted-fg);\"><span class=\"material-symbols-outlined\" style=\"font-size:2.5rem; display:block; margin-bottom:0.5rem;\">cloud_upload</span><p style=\"font-size:0.875rem;\">No documents uploaded yet.</p></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "<div style=\"text-align:center; padding:2rem; color:var(--color-muted-fg);\"><i data-lucide=\"cloud-upload\" style=\"width:2.5rem; height:2.5rem; display:block; margin-bottom:0.5rem;\"></i><p style=\"font-size:0.875rem;\">No documents uploaded yet.</p></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -522,7 +522,7 @@ func VerificationDetail(tenant generated.Tenant, user generated.User, documents 
 							return templ_7745c5c3_Err
 						}
 					} else {
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "<div style=\"display:flex; flex-direction:column; align-items:center; gap:0.5rem; color:var(--color-muted-fg);\"><span class=\"material-symbols-outlined\" style=\"font-size:3rem;\">description</span> <span style=\"font-size:0.75rem;\">")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "<div style=\"display:flex; flex-direction:column; align-items:center; gap:0.5rem; color:var(--color-muted-fg);\"><i data-lucide=\"file-text\" style=\"width:3rem; height:3rem;\"></i> <span style=\"font-size:0.75rem;\">")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
@@ -592,7 +592,7 @@ func VerificationDetail(tenant generated.Tenant, user generated.User, documents 
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, "\" target=\"_blank\" rel=\"noopener noreferrer\" style=\"flex:1; display:flex; align-items:center; justify-content:center; gap:0.25rem; padding:0.375rem; border-radius:0.375rem; font-size:0.6875rem; font-weight:500; text-decoration:none; background:var(--color-secondary); color:var(--color-fg); transition:background 0.15s ease;\" onmouseover=\"this.style.background='var(--color-muted)'\" onmouseout=\"this.style.background='var(--color-secondary)'\"><span class=\"material-symbols-outlined\" style=\"font-size:0.875rem;\">open_in_new</span> View</a> <a href=\"")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, "\" target=\"_blank\" rel=\"noopener noreferrer\" style=\"flex:1; display:flex; align-items:center; justify-content:center; gap:0.25rem; padding:0.375rem; border-radius:0.375rem; font-size:0.6875rem; font-weight:500; text-decoration:none; background:var(--color-secondary); color:var(--color-fg); transition:background 0.15s ease;\" onmouseover=\"this.style.background='var(--color-muted)'\" onmouseout=\"this.style.background='var(--color-secondary)'\"><i data-lucide=\"external-link\" style=\"width:0.875rem; height:0.875rem;\"></i> View</a> <a href=\"")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -618,7 +618,7 @@ func VerificationDetail(tenant generated.Tenant, user generated.User, documents 
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, "\" style=\"flex:1; display:flex; align-items:center; justify-content:center; gap:0.25rem; padding:0.375rem; border-radius:0.375rem; font-size:0.6875rem; font-weight:500; text-decoration:none; background:var(--color-secondary); color:var(--color-fg); transition:background 0.15s ease;\" onmouseover=\"this.style.background='var(--color-muted)'\" onmouseout=\"this.style.background='var(--color-secondary)'\"><span class=\"material-symbols-outlined\" style=\"font-size:0.875rem;\">download</span> Download</a></div></div></div>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, "\" style=\"flex:1; display:flex; align-items:center; justify-content:center; gap:0.25rem; padding:0.375rem; border-radius:0.375rem; font-size:0.6875rem; font-weight:500; text-decoration:none; background:var(--color-secondary); color:var(--color-fg); transition:background 0.15s ease;\" onmouseover=\"this.style.background='var(--color-muted)'\" onmouseout=\"this.style.background='var(--color-secondary)'\"><i data-lucide=\"download\" style=\"width:0.875rem; height:0.875rem;\"></i> Download</a></div></div></div>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -651,7 +651,7 @@ func VerificationDetail(tenant generated.Tenant, user generated.User, documents 
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 55, "</div><!-- Document Modal --> <div id=\"doc-modal\" style=\"display:none; position:fixed; inset:0; z-index:100; background:rgba(0,0,0,0.85); align-items:center; justify-content:center;\" onclick=\"closeDocModal(event)\"><div style=\"position:relative; max-width:90vw; max-height:90vh;\"><button onclick=\"document.getElementById('doc-modal').style.display='none'\" style=\"position:absolute; top:-2.5rem; right:0; background:rgba(255,255,255,0.15); border:none; border-radius:0.5rem; padding:0.375rem; cursor:pointer; display:flex; align-items:center; justify-content:center;\"><span class=\"material-symbols-outlined\" style=\"font-size:1.5rem; color:#fff;\">close</span></button> <img id=\"doc-modal-img\" src=\"\" alt=\"\" style=\"max-width:90vw; max-height:85vh; object-fit:contain; border-radius:0.5rem;\"><div id=\"doc-modal-caption\" style=\"text-align:center; color:#fff; font-size:0.875rem; margin-top:0.75rem;\"></div></div></div><!-- Confirm Modal --> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 55, "</div><!-- Document Modal --> <div id=\"doc-modal\" style=\"display:none; position:fixed; inset:0; z-index:100; background:rgba(0,0,0,0.85); align-items:center; justify-content:center;\" onclick=\"closeDocModal(event)\"><div style=\"position:relative; max-width:90vw; max-height:90vh;\"><button onclick=\"document.getElementById('doc-modal').style.display='none'\" style=\"position:absolute; top:-2.5rem; right:0; background:rgba(255,255,255,0.15); border:none; border-radius:0.5rem; padding:0.375rem; cursor:pointer; display:flex; align-items:center; justify-content:center;\"><i data-lucide=\"x\" style=\"width:1.5rem; height:1.5rem; color:#fff;\"></i></button> <img id=\"doc-modal-img\" src=\"\" alt=\"\" style=\"max-width:90vw; max-height:85vh; object-fit:contain; border-radius:0.5rem;\"><div id=\"doc-modal-caption\" style=\"text-align:center; color:#fff; font-size:0.875rem; margin-top:0.75rem;\"></div></div></div><!-- Confirm Modal --> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -694,7 +694,7 @@ func detailConfirmModal() templ.Component {
 			templ_7745c5c3_Var23 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 57, "<div id=\"detail-confirm-modal\" style=\"display:none; position:fixed; inset:0; z-index:200; background:rgba(0,0,0,0.5); align-items:center; justify-content:center;\" onclick=\"if(event.target===this)closeDetailConfirmModal()\"><div style=\"background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:2rem; max-width:420px; width:90%; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); animation:dcmIn 0.15s ease-out;\"><div style=\"text-align:center;\"><span id=\"dcm-icon\" class=\"material-symbols-outlined\" style=\"font-size:3rem; display:block; margin-bottom:0.75rem;\">help</span><h3 id=\"dcm-title\" style=\"font-family:var(--font-heading); font-size:1.125rem; font-weight:700; color:var(--color-fg); margin-bottom:0.5rem;\">Are you sure?</h3><p id=\"dcm-message\" style=\"font-size:0.875rem; color:var(--color-muted-fg); line-height:1.5;\"></p></div><div style=\"display:flex; gap:0.75rem; margin-top:1.5rem;\"><button onclick=\"closeDetailConfirmModal()\" style=\"flex:1; padding:0.625rem 1rem; border-radius:0.5rem; border:1px solid var(--color-border); font-size:0.875rem; font-weight:600; cursor:pointer; background:var(--color-bg); color:var(--color-fg); transition:background 0.15s ease;\" onmouseover=\"this.style.background='var(--color-secondary)'\" onmouseout=\"this.style.background='var(--color-bg)'\">Cancel</button> <button id=\"dcm-confirm\" onclick=\"detailConfirmAction()\" style=\"flex:1; padding:0.625rem 1rem; border-radius:0.5rem; border:none; font-size:0.875rem; font-weight:600; cursor:pointer; transition:opacity 0.15s ease;\" onmouseover=\"this.style.opacity='0.9'\" onmouseout=\"this.style.opacity='1'\">Confirm</button></div></div></div><style>\n\t\t@keyframes dcmIn {\n\t\t\tfrom { opacity:0; transform:scale(0.95) translateY(0.5rem); }\n\t\t\tto { opacity:1; transform:scale(1) translateY(0); }\n\t\t}\n\t</style>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 57, "<div id=\"detail-confirm-modal\" style=\"display:none; position:fixed; inset:0; z-index:200; background:rgba(0,0,0,0.5); align-items:center; justify-content:center;\" onclick=\"if(event.target===this)closeDetailConfirmModal()\"><div style=\"background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:2rem; max-width:420px; width:90%; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); animation:dcmIn 0.15s ease-out;\"><div style=\"text-align:center;\"><i id=\"dcm-icon\" data-lucide=\"help-circle\" style=\"width:3rem; height:3rem; display:block; margin-bottom:0.75rem;\"></i><h3 id=\"dcm-title\" style=\"font-family:var(--font-heading); font-size:1.125rem; font-weight:700; color:var(--color-fg); margin-bottom:0.5rem;\">Are you sure?</h3><p id=\"dcm-message\" style=\"font-size:0.875rem; color:var(--color-muted-fg); line-height:1.5;\"></p></div><div style=\"display:flex; gap:0.75rem; margin-top:1.5rem;\"><button onclick=\"closeDetailConfirmModal()\" style=\"flex:1; padding:0.625rem 1rem; border-radius:0.5rem; border:1px solid var(--color-border); font-size:0.875rem; font-weight:600; cursor:pointer; background:var(--color-bg); color:var(--color-fg); transition:background 0.15s ease;\" onmouseover=\"this.style.background='var(--color-secondary)'\" onmouseout=\"this.style.background='var(--color-bg)'\">Cancel</button> <button id=\"dcm-confirm\" onclick=\"detailConfirmAction()\" style=\"flex:1; padding:0.625rem 1rem; border-radius:0.5rem; border:none; font-size:0.875rem; font-weight:600; cursor:pointer; transition:opacity 0.15s ease;\" onmouseover=\"this.style.opacity='0.9'\" onmouseout=\"this.style.opacity='1'\">Confirm</button></div></div></div><style>\n\t\t@keyframes dcmIn {\n\t\t\tfrom { opacity:0; transform:scale(0.95) translateY(0.5rem); }\n\t\t\tto { opacity:1; transform:scale(1) translateY(0); }\n\t\t}\n\t</style>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
