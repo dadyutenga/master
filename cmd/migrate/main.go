@@ -109,6 +109,9 @@ func runMigrationsUp(db *sql.DB) {
 	// Payment methods table
 	db.Exec(migrationPaymentMethods)
 
+	// Add payment_status column to instances for tracking pending payments
+	db.Exec("ALTER TABLE instances ADD COLUMN payment_status TEXT NOT NULL DEFAULT ''")
+
 	// Reset billing status: tenants with no actual payments should be 'unpaid'
 	db.Exec(`UPDATE tenants SET billing_status = 'unpaid' WHERE billing_status = 'paid' AND id NOT IN (SELECT DISTINCT tenant_id FROM billing_transactions WHERE transaction_type = 'payment' AND status = 'completed')`)
 	fmt.Println("Billing status reset for tenants with no payments.")

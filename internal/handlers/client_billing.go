@@ -46,7 +46,7 @@ func (h *Handler) ClientBillingPage(c *fiber.Ctx) error {
 
 	var unpaidInstances []generated.Instance
 	for _, inst := range instances {
-		if inst.BillingStatus == "unpaid" {
+		if inst.BillingStatus == "unpaid" && inst.PaymentStatus != "pending" {
 			unpaidInstances = append(unpaidInstances, inst)
 		}
 	}
@@ -100,7 +100,7 @@ func (h *Handler) ClientSubmitPayment(c *fiber.Ctx) error {
 		description += " | " + notes
 	}
 
-	if _, err := q.CreateBillingTransaction(c.Context(), tenant.ID.String(), amount, generated.TxnTypePayment, description, nil); err != nil {
+	if _, err := q.CreateBillingTransaction(c.Context(), tenant.ID.String(), amount, generated.TxnTypePayment, description, nil, "pending"); err != nil {
 		return c.Status(500).SendString("Failed to submit payment")
 	}
 
@@ -174,8 +174,9 @@ func (h *Handler) ClientPayInstance(c *fiber.Ctx) error {
 		}
 	}
 
-	// Create pending transaction (DO NOT mark as paid yet)
-	q.CreateBillingTransaction(c.Context(), tenant.ID.String(), inst.Price, generated.TxnTypePayment, description, nil)
+	// Create pending transaction and mark instance payment_status as pending
+	q.CreateBillingTransaction(c.Context(), tenant.ID.String(), inst.Price, generated.TxnTypePayment, description, nil, "pending")
+	q.UpdateInstancePaymentStatus(c.Context(), inst.ID, "pending")
 
 	return c.Redirect("/dashboard/instances/" + inst.ID.String())
 }
@@ -230,7 +231,7 @@ func (h *Handler) ClientUploadReceipt(c *fiber.Ctx) error {
 	receiptPath := "uploads/receipts/" + tenant.ID.String() + "/" + filename
 	description += " | File: " + receiptPath
 
-	if _, err := q.CreateBillingTransaction(c.Context(), tenant.ID.String(), 0, generated.TxnTypePayment, description, nil); err != nil {
+	if _, err := q.CreateBillingTransaction(c.Context(), tenant.ID.String(), 0, generated.TxnTypePayment, description, nil, "pending"); err != nil {
 		return c.Status(500).SendString("Failed to record receipt")
 	}
 

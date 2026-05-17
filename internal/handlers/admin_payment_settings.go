@@ -165,7 +165,8 @@ func (h *Handler) AdminApprovePayment(c *fiber.Ctx) error {
 	if err == nil {
 		instances, _ := q.ListInstancesByTenantID(c.Context(), tenantID)
 		for _, inst := range instances {
-			if inst.BillingStatus == "unpaid" || inst.BillingStatus == "overdue" {
+			if inst.PaymentStatus == "pending" || inst.BillingStatus == "unpaid" || inst.BillingStatus == "overdue" {
+				q.UpdateInstancePaymentStatus(c.Context(), inst.ID, "")
 				q.MarkInstancePaid(c.Context(), inst.ID)
 				q.UpdateInstanceStatus(c.Context(), inst.ID, "provisioning")
 				q.CreateInstanceDeployment(c.Context(), inst.ID, "provision", "provisioning")
@@ -198,6 +199,17 @@ func (h *Handler) AdminRejectPayment(c *fiber.Ctx) error {
 
 	q.CreateBillingTransaction(c.Context(), txn.TenantID, 0, generated.TxnTypeAdjustment,
 		"Payment rejected by admin", nil)
+
+	// Clear payment_status on instances for this tenant
+	tenantID, err := uuid.Parse(txn.TenantID)
+	if err == nil {
+		instances, _ := q.ListInstancesByTenantID(c.Context(), tenantID)
+		for _, inst := range instances {
+			if inst.PaymentStatus == "pending" {
+				q.UpdateInstancePaymentStatus(c.Context(), inst.ID, "")
+			}
+		}
+	}
 
 	if uid, ok := middleware.GetUserID(c); ok {
 		tid := txn.TenantID

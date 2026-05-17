@@ -99,7 +99,7 @@ templ InstanceDetail(props InstanceDetailProps) {
 			</div>
 
 			<!-- Actions -->
-			if props.Instance.BillingStatus == "unpaid" {
+			if props.Instance.BillingStatus == "unpaid" && props.Instance.PaymentStatus != "pending" {
 				<div style="background:color-mix(in srgb, #f59e0b 6%, var(--color-bg)); border:1px solid #f59e0b; border-radius:1rem; padding:1.5rem; margin-bottom:1rem;">
 					<h2 style="font-family:var(--font-heading); font-size:1rem; font-weight:700; color:var(--color-fg); margin-bottom:0.5rem;">Payment Required</h2>
 					<p style="font-size:0.8125rem; color:var(--color-muted-fg); margin-bottom:1rem;">Complete payment to activate this instance.</p>
@@ -111,6 +111,18 @@ templ InstanceDetail(props InstanceDetailProps) {
 						onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
 						Pay { fmt.Sprintf("%d", int64(props.Instance.Price)) } TZS
 					</button>
+				</div>
+			}
+			if props.Instance.BillingStatus == "unpaid" && props.Instance.PaymentStatus == "pending" {
+				<div style="background:color-mix(in srgb, #f59e0b 6%, var(--color-bg)); border:1px solid #f59e0b; border-radius:1rem; padding:1.5rem; margin-bottom:1rem;">
+					<h2 style="font-family:var(--font-heading); font-size:1rem; font-weight:700; color:var(--color-fg); margin-bottom:0.5rem;">Payment Submitted</h2>
+					<div style="display:flex; align-items:center; gap:0.75rem;">
+						<i data-lucide="clock" style="width:1.5rem; height:1.5rem; color:hsl(35, 90%, 35%);"></i>
+						<div>
+							<p style="font-size:0.875rem; color:var(--color-fg); font-weight:500;">Your payment is pending verification</p>
+							<p style="font-size:0.8125rem; color:var(--color-muted-fg);">Payment may take time to process. You will be notified once approved by admin.</p>
+						</div>
+					</div>
 				</div>
 			}
 			if props.Instance.Status == "active" || props.Instance.Status == "paused" || props.Instance.Status == "disabled" {

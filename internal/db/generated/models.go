@@ -150,6 +150,7 @@ type Instance struct {
 	BillingStatus  string     `json:"billing_status"`
 	Price          float64    `json:"price"`
 	PackageName    string     `json:"package_name"`
+	PaymentStatus  string     `json:"payment_status"`
 	LastPaymentAt  *time.Time `json:"last_payment_at"`
 	NextDueAt      *time.Time `json:"next_due_at"`
 	ProvisionLog   *string    `json:"provision_log"`

@@ -696,11 +696,15 @@ func (q *Queries) CreateSuperadminIfNotExists(ctx context.Context, arg CreateUse
 	return err
 }
 
-func (q *Queries) CreateBillingTransaction(ctx context.Context, tenantID string, amount float64, txnType, description string, adminID *int64) (BillingTransaction, error) {
+func (q *Queries) CreateBillingTransaction(ctx context.Context, tenantID string, amount float64, txnType, description string, adminID *int64, status ...string) (BillingTransaction, error) {
+	txnStatus := TxnStatusCompleted
+	if len(status) > 0 && status[0] != "" {
+		txnStatus = status[0]
+	}
 	result, err := q.db.ExecContext(ctx,
-		`INSERT INTO billing_transactions (tenant_id, amount, transaction_type, description, admin_id)
-		 VALUES (?, ?, ?, ?, ?)`,
-		tenantID, amount, txnType, description, adminID,
+		`INSERT INTO billing_transactions (tenant_id, amount, transaction_type, description, admin_id, status)
+		 VALUES (?, ?, ?, ?, ?, ?)`,
+		tenantID, amount, txnType, description, adminID, txnStatus,
 	)
 	if err != nil {
 		return BillingTransaction{}, err
@@ -708,7 +712,7 @@ func (q *Queries) CreateBillingTransaction(ctx context.Context, tenantID string,
 	id, _ := result.LastInsertId()
 	return BillingTransaction{
 		ID: id, TenantID: tenantID, Amount: amount, Currency: "TZS",
-		TransactionType: txnType, Description: description, Status: TxnStatusCompleted,
+		TransactionType: txnType, Description: description, Status: txnStatus,
 		AdminID: adminID, CreatedAt: time.Now(),
 	}, nil
 }
@@ -792,7 +796,7 @@ func (q *Queries) MarkTenantPaid(ctx context.Context, tenantID string) error {
 
 // ── Instances ──────────────────────────────────────────────────────────────
 
-const instanceCols = `id, tenant_id, hotel_name, slug, domain, db_name, db_user, db_password, app_key, status, admin_disabled, billing_status, price, package_name, last_payment_at, next_due_at, provision_log, approved_at, provisioned_at, archived_at, deleted_at, created_at, updated_at`
+const instanceCols = `id, tenant_id, hotel_name, slug, domain, db_name, db_user, db_password, app_key, status, admin_disabled, billing_status, price, package_name, payment_status, last_payment_at, next_due_at, provision_log, approved_at, provisioned_at, archived_at, deleted_at, created_at, updated_at`
 
 func scanInstance(scanner interface{ Scan(dest ...any) error }) (Instance, error) {
 	var inst Instance
@@ -803,6 +807,7 @@ func scanInstance(scanner interface{ Scan(dest ...any) error }) (Instance, error
 		&inst.ID, &inst.TenantID, &inst.HotelName, &inst.Slug, &inst.Domain,
 		&inst.DbName, &inst.DbUser, &inst.DbPassword, &appKey, &inst.Status,
 		&inst.AdminDisabled, &inst.BillingStatus, &price, &inst.PackageName,
+		&inst.PaymentStatus,
 		&lastPaymentAt, &nextDueAt, &provisionLog,
 		&approvedAt, &provisionedAt, &archivedAt, &deletedAt,
 		&inst.CreatedAt, &inst.UpdatedAt,
@@ -959,6 +964,14 @@ func (q *Queries) UpdateInstancePrice(ctx context.Context, id uuid.UUID, price f
 	_, err := q.db.ExecContext(ctx,
 		`UPDATE instances SET price = ?, package_name = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`,
 		price, packageName, id,
+	)
+	return err
+}
+
+func (q *Queries) UpdateInstancePaymentStatus(ctx context.Context, id uuid.UUID, paymentStatus string) error {
+	_, err := q.db.ExecContext(ctx,
+		`UPDATE instances SET payment_status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`,
+		paymentStatus, id,
 	)
 	return err
 }
