@@ -1,5 +1,8 @@
 .env
 /data/
+/data/*.db
+/data/*.db-shm
+/data/*.db-wal
 /uploads/*
 !uploads/.gitkeep
 /tmp/
