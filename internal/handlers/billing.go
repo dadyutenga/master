@@ -13,6 +13,22 @@ import (
 	"github.com/google/uuid"
 )
 
+func (h *Handler) AdminPayments(c *fiber.Ctx) error {
+	q := generated.New(h.db)
+	payments, err := q.ListAllPayments(c.Context())
+	if err != nil {
+		return c.Status(500).SendString("Failed to load payments: " + err.Error())
+	}
+
+	if payments == nil {
+		payments = []generated.ListPaymentsRow{}
+	}
+
+	return render(c, admin.PaymentsPage(admin.PaymentsPageProps{
+		Payments: payments,
+	}))
+}
+
 func (h *Handler) TenantBillingPage(c *fiber.Ctx) error {
 	id, err := uuid.Parse(c.Params("id"))
 	if err != nil {

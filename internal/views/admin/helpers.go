@@ -4,7 +4,14 @@ import (
 	"fmt"
 	"strings"
 	"time"
+
+	"github.com/dadyutenga/hms-control/internal/db/generated"
 )
+
+type DockerTemplateOption struct {
+	ID   int64
+	Name string
+}
 
 func FormatDate(value *time.Time) string {
 	if value == nil {
@@ -56,4 +63,44 @@ func DomainDisplay(domain string) string {
 
 func IsPendingDomain(domain string) bool {
 	return strings.HasPrefix(domain, "pending-")
+}
+
+type PaymentSummary struct {
+	TotalCount  int
+	TotalAmount float64
+	ClientCount int
+	LatestDate  string
+}
+
+func calcPaymentSummary(payments []generated.ListPaymentsRow) PaymentSummary {
+	var s PaymentSummary
+	seen := make(map[string]bool)
+	for _, p := range payments {
+		s.TotalCount++
+		s.TotalAmount += p.Amount
+		if !seen[p.TenantID] {
+			seen[p.TenantID] = true
+			s.ClientCount++
+		}
+	}
+	if s.TotalCount > 0 {
+		s.LatestDate = payments[0].CreatedAt.Format("02 Jan 2006")
+	}
+	return s
+}
+
+func ExtractReceiptPath(description string) string {
+	prefix := " | File: "
+	if idx := strings.LastIndex(description, prefix); idx != -1 {
+		return description[idx+len(prefix):]
+	}
+	return ""
+}
+
+func PaymentDescriptionShort(description string) string {
+	// Remove the file path from description for cleaner display
+	if idx := strings.LastIndex(description, " | File: "); idx != -1 {
+		return description[:idx]
+	}
+	return description
 }

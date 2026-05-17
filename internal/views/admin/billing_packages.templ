@@ -6,7 +6,7 @@ import (
 	"github.com/dadyutenga/hms-control/internal/db/generated"
 )
 
-templ BillingPackagesList(packages []generated.BillingPackage) {
+templ BillingPackagesList(packages []generated.BillingPackage, dockerTemplates []DockerTemplateOption) {
 	@AdminLayout("Billing Packages", "") {
 		<div style="max-width:1200px; margin:0 auto;">
 			<div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1.5rem;">
@@ -16,7 +16,7 @@ templ BillingPackagesList(packages []generated.BillingPackage) {
 			<!-- Create Package Form -->
 			<div style="background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.5rem; margin-bottom:1.5rem;">
 				<h2 style="font-family:var(--font-heading); font-size:1rem; font-weight:700; color:var(--color-fg); margin-bottom:1rem;">Create New Package</h2>
-				<form method="POST" action="/admin/billing-packages/new" style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr auto; gap:0.75rem; align-items:flex-end;">
+				<form method="POST" action="/admin/billing-packages/new" style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr 1fr auto; gap:0.75rem; align-items:flex-end;">
 					<div style="display:flex; flex-direction:column; gap:0.25rem;">
 						<label style="font-size:0.75rem; font-weight:600; color:var(--color-muted-fg);">Name *</label>
 						<input type="text" name="name" required placeholder="e.g. enterprise"
@@ -40,6 +40,16 @@ templ BillingPackagesList(packages []generated.BillingPackage) {
 							<option value="quarterly">Quarterly</option>
 							<option value="yearly">Yearly</option>
 							<option value="one_time">One Time</option>
+						</select>
+					</div>
+					<div style="display:flex; flex-direction:column; gap:0.25rem;">
+						<label style="font-size:0.75rem; font-weight:600; color:var(--color-muted-fg);">Docker Template</label>
+						<select name="docker_template_id"
+							style="border:1px solid var(--color-border); border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.875rem; background:var(--color-bg); color:var(--color-fg);">
+							<option value="">-- Select template (required) --</option>
+							for _, dt := range dockerTemplates {
+								<option value={ fmt.Sprintf("%d", dt.ID) }>{ dt.Name }</option>
+							}
 						</select>
 					</div>
 					<button type="submit" style="padding:0.5rem 1.25rem; border-radius:0.5rem; border:none; font-size:0.8125rem; font-weight:600; cursor:pointer; background:var(--color-brand-blue); color:#fff; white-space:nowrap;">Create Package</button>

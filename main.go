@@ -90,6 +90,7 @@ func main() {
 		middleware.RequireRole("admin"),
 	)
 	admin.Get("/", h.AdminDashboard)
+	admin.Get("/payments", h.AdminPayments)
 	admin.Get("/audit", h.AuditLog)
 	admin.Get("/audit/export", h.ExportAuditCSV)
 	// /tenants/export MUST come before /tenants/:id

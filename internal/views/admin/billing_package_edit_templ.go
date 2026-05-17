@@ -14,7 +14,7 @@ import (
 	"github.com/dadyutenga/hms-control/internal/db/generated"
 )
 
-func BillingPackageEdit(pkg generated.BillingPackage) templ.Component {
+func BillingPackageEdit(pkg generated.BillingPackage, dockerTemplates []DockerTemplateOption) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -164,20 +164,69 @@ func BillingPackageEdit(pkg generated.BillingPackage) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "\">One Time</option></select></div></div><div style=\"display:flex; align-items:center; gap:0.5rem;\"><input type=\"checkbox\" name=\"is_active\" value=\"1\" checked=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "\">One Time</option></select></div><div style=\"display:flex; flex-direction:column; gap:0.25rem;\"><label style=\"font-size:0.75rem; font-weight:600; color:var(--color-muted-fg);\">Docker Template</label> <select name=\"docker_template_id\" style=\"border:1px solid var(--color-border); border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.875rem; background:var(--color-bg); color:var(--color-fg);\"><option value=\"\">-- No template --</option> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var12 string
-			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.ResolveAttributeValue(pkg.IsActive)
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/billing_package_edit.templ`, Line: 47, Col: 78}
+			for _, dt := range dockerTemplates {
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<option value=\"")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var12 string
+				templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("%d", dt.ID))
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/billing_package_edit.templ`, Line: 51, Col: 49}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var12)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\" selected=\"")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var13 string
+				templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.ResolveAttributeValue(pkg.DockerTemplateID != nil && *pkg.DockerTemplateID == dt.ID)
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/billing_package_edit.templ`, Line: 51, Col: 124}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var13)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "\">")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var14 string
+				templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(dt.Name)
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/billing_package_edit.templ`, Line: 51, Col: 136}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "</option>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var12)
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "</select></div></div><div style=\"display:flex; align-items:center; gap:0.5rem;\"><input type=\"checkbox\" name=\"is_active\" value=\"1\" checked=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\" style=\"width:1rem; height:1rem; cursor:pointer;\"> <label style=\"font-size:0.75rem; font-weight:600; color:var(--color-muted-fg); cursor:pointer;\">Active</label></div><div style=\"display:flex; gap:0.75rem; margin-top:0.5rem;\"><button type=\"submit\" style=\"padding:0.5rem 1.5rem; border-radius:0.5rem; border:none; font-size:0.8125rem; font-weight:600; cursor:pointer; background:var(--color-brand-blue); color:#fff;\">Save Changes</button> <a href=\"/admin/billing-packages\" style=\"padding:0.5rem 1.5rem; border-radius:0.5rem; border:1px solid var(--color-border); font-size:0.8125rem; font-weight:600; cursor:pointer; background:var(--color-bg); color:var(--color-muted-fg); text-decoration:none; display:inline-flex; align-items:center;\">Cancel</a></div></form></div></div>")
+			var templ_7745c5c3_Var15 string
+			templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.ResolveAttributeValue(pkg.IsActive)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/views/admin/billing_package_edit.templ`, Line: 57, Col: 78}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var15)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "\" style=\"width:1rem; height:1rem; cursor:pointer;\"> <label style=\"font-size:0.75rem; font-weight:600; color:var(--color-muted-fg); cursor:pointer;\">Active</label></div><div style=\"display:flex; gap:0.75rem; margin-top:0.5rem;\"><button type=\"submit\" style=\"padding:0.5rem 1.5rem; border-radius:0.5rem; border:none; font-size:0.8125rem; font-weight:600; cursor:pointer; background:var(--color-brand-blue); color:#fff;\">Save Changes</button> <a href=\"/admin/billing-packages\" style=\"padding:0.5rem 1.5rem; border-radius:0.5rem; border:1px solid var(--color-border); font-size:0.8125rem; font-weight:600; cursor:pointer; background:var(--color-bg); color:var(--color-muted-fg); text-decoration:none; display:inline-flex; align-items:center;\">Cancel</a></div></form></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

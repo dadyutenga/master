@@ -80,9 +80,10 @@ templ AdminLayout(title string, userName string) {
 					@sidebarLink("/admin/tenants", "apartment", "Tenants", false)
 					@sidebarLink("/admin/instances", "server", "Instances", false)
 					@sidebarLink("/admin/verification", "verified_user", "Verification", false)
+					@sidebarLink("/admin/payments", "payments", "Payments", false)
 					@sidebarLink("/admin/audit", "history", "Audit Log", false)
 					<div class="admin-sidebar-section">Settings</div>
-					@sidebarLink("/admin/billing-packages", "payments", "Billing Packages", false)
+					@sidebarLink("/admin/billing-packages", "sell", "Billing Packages", false)
 					@sidebarLink("/admin/settings/contact", "contact_mail", "Contact", false)
 					@sidebarLink("/admin/settings/smtp", "mail", "SMTP", false)
 					@sidebarLink("/admin/settings/provisioner", "deployed_code", "Provisioner", false)

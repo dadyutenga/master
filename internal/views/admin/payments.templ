@@ -1,0 +1,111 @@
+package admin
+
+import (
+	"fmt"
+
+	"github.com/dadyutenga/hms-control/internal/db/generated"
+)
+
+type PaymentsPageProps struct {
+	Payments []generated.ListPaymentsRow
+}
+
+templ PaymentsPage(props PaymentsPageProps) {
+	@AdminLayout("Payments", "") {
+		<div style="max-width:1200px; margin:0 auto;">
+			<div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1.5rem;">
+				<div>
+					<h1 style="font-family:var(--font-heading); font-size:1.5rem; font-weight:700; letter-spacing:-0.025em; color:var(--color-fg);">Payments</h1>
+					<p style="font-size:0.875rem; color:var(--color-muted-fg); margin-top:0.25rem;">All client payments and receipts across all tenants</p>
+				</div>
+			</div>
+
+			{{ summary := calcPaymentSummary(props.Payments) }}
+			<div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:1rem; margin-bottom:1.5rem;">
+				<div style="background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.25rem;">
+					<div style="font-size:0.75rem; color:var(--color-muted-fg); margin-bottom:0.375rem;">Total Payments</div>
+					<div style="font-size:1.25rem; font-weight:700; color:var(--color-fg);">{ fmt.Sprintf("%d", summary.TotalCount) }</div>
+				</div>
+				<div style="background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.25rem;">
+					<div style="font-size:0.75rem; color:var(--color-muted-fg); margin-bottom:0.375rem;">Total Revenue</div>
+					<div style="font-size:1.25rem; font-weight:700; color:hsl(140, 60%, 35%);">{ FormatAmount(summary.TotalAmount) }</div>
+				</div>
+				<div style="background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.25rem;">
+					<div style="font-size:0.75rem; color:var(--color-muted-fg); margin-bottom:0.375rem;">Clients with Payments</div>
+					<div style="font-size:1.25rem; font-weight:700; color:var(--color-brand-blue);">{ fmt.Sprintf("%d", summary.ClientCount) }</div>
+				</div>
+				if summary.LatestDate != "" {
+					<div style="background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; padding:1.25rem;">
+						<div style="font-size:0.75rem; color:var(--color-muted-fg); margin-bottom:0.375rem;">Latest Payment</div>
+						<div style="font-size:1rem; font-weight:700; color:var(--color-fg);">{ summary.LatestDate }</div>
+					</div>
+				}
+			</div>
+
+			<div style="background:var(--color-bg); border:1px solid var(--color-border); border-radius:1rem; overflow:hidden;">
+				if len(props.Payments) == 0 {
+					<div style="padding:3rem; text-align:center;">
+						<i data-lucide="credit-card" style="width:3rem; height:3rem; color:var(--color-muted-fg); display:block; margin:0 auto 1rem;"></i>
+						<h2 style="font-family:var(--font-heading); font-size:1.125rem; font-weight:600; color:var(--color-fg); margin-bottom:0.5rem;">No payments yet</h2>
+						<p style="font-size:0.875rem; color:var(--color-muted-fg);">Payments from clients will appear here once they submit payments or upload receipts.</p>
+					</div>
+				} else {
+					<table style="width:100%; font-size:0.875rem; border-collapse:collapse;">
+						<thead>
+							<tr style="border-bottom:2px solid var(--color-border); background:var(--color-elevated);">
+								<th style="text-align:left; padding:0.75rem 1rem; font-weight:600; color:var(--color-muted-fg);">Date</th>
+								<th style="text-align:left; padding:0.75rem 1rem; font-weight:600; color:var(--color-muted-fg);">Client</th>
+								<th style="text-align:left; padding:0.75rem 1rem; font-weight:600; color:var(--color-muted-fg);">Description</th>
+								<th style="text-align:right; padding:0.75rem 1rem; font-weight:600; color:var(--color-muted-fg);">Amount</th>
+								<th style="text-align:center; padding:0.75rem 1rem; font-weight:600; color:var(--color-muted-fg);">Receipt</th>
+								<th style="text-align:left; padding:0.75rem 1rem; font-weight:600; color:var(--color-muted-fg);">Status</th>
+							</tr>
+						</thead>
+						<tbody>
+							for _, p := range props.Payments {
+								<tr style="border-bottom:1px solid var(--color-border);">
+									<td style="padding:0.75rem 1rem; color:var(--color-muted-fg); white-space:nowrap;">{ p.CreatedAt.Format("02 Jan 2006 15:04") }</td>
+									<td style="padding:0.75rem 1rem;">
+										<div style="font-weight:600; color:var(--color-fg);">{ p.CompanyName }</div>
+										<div style="font-size:0.75rem; color:var(--color-muted-fg);">{ p.UserEmail }</div>
+									</td>
+									<td style="padding:0.75rem 1rem; color:var(--color-fg);">{ PaymentDescriptionShort(p.Description) }</td>
+									<td style="padding:0.75rem 1rem; text-align:right; font-weight:600; color:var(--color-fg); white-space:nowrap;">{ FormatAmount(p.Amount) }</td>
+									<td style="padding:0.75rem 1rem; text-align:center;">
+										{{ rpath := ExtractReceiptPath(p.Description) }}
+										if rpath != "" {
+											<a href={ templ.URL("/" + rpath) } target="_blank"
+												style="display:inline-flex; align-items:center; gap:0.25rem; padding:0.25rem 0.625rem; border-radius:9999px; border:1px solid var(--color-border); font-size:0.75rem; font-weight:500; cursor:pointer; background:var(--color-bg); color:var(--color-brand-blue); text-decoration:none; transition:all 0.15s ease;"
+												onmouseover="this.style.background='var(--color-secondary)'" onmouseout="this.style.background='var(--color-bg)'">
+												<span class="material-symbols-outlined" style="font-size:0.875rem;">visibility</span> View
+											</a>
+										} else {
+											<span style="font-size:0.75rem; color:var(--color-muted-fg);">—</span>
+										}
+									</td>
+									<td style="padding:0.75rem 1rem;">@PaymentBillingBadge(p.BillingStatus)</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				}
+			</div>
+		</div>
+		<script>if(typeof lucide!=='undefined'){lucide.createIcons();}</script>
+	}
+}
+
+templ PaymentBillingBadge(status string) {
+	switch status {
+		case "paid":
+			<span style="display:inline-flex; align-items:center; padding:0.125rem 0.5rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:hsl(140, 60%, 95%); color:hsl(140, 60%, 35%);">paid</span>
+		case "unpaid":
+			<span style="display:inline-flex; align-items:center; padding:0.125rem 0.5rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:hsl(35, 90%, 95%); color:hsl(35, 90%, 35%);">unpaid</span>
+		case "overdue":
+			<span style="display:inline-flex; align-items:center; padding:0.125rem 0.5rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:hsl(0, 70%, 95%); color:hsl(0, 70%, 40%);">overdue</span>
+		case "suspended":
+			<span style="display:inline-flex; align-items:center; padding:0.125rem 0.5rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:hsl(300, 30%, 95%); color:hsl(300, 30%, 40%);">suspended</span>
+		default:
+			<span style="display:inline-flex; align-items:center; padding:0.125rem 0.5rem; border-radius:9999px; font-size:0.625rem; font-weight:500; background:var(--color-secondary); color:var(--color-muted-fg);">{ status }</span>
+	}
+}

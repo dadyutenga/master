@@ -1,11 +1,13 @@
 package handlers
 
 import (
+	"database/sql"
 	"strconv"
 	"time"
 
 	"github.com/dadyutenga/hms-control/internal/db/generated"
 	"github.com/dadyutenga/hms-control/internal/middleware"
+	"github.com/dadyutenga/hms-control/internal/models"
 	"github.com/dadyutenga/hms-control/internal/views/admin"
 
 	"github.com/gofiber/fiber/v2"
@@ -272,7 +274,17 @@ func (h *Handler) AdminBillingPackages(c *fiber.Ctx) error {
 		packages = []generated.BillingPackage{}
 	}
 
-	return render(c, admin.BillingPackagesList(packages))
+	dtStore := models.NewDockerTemplateStore(h.db)
+	templates, err := dtStore.List()
+	if err != nil {
+		templates = []models.DockerTemplate{}
+	}
+	opts := make([]admin.DockerTemplateOption, len(templates))
+	for i, t := range templates {
+		opts[i] = admin.DockerTemplateOption{ID: t.ID, Name: t.Name}
+	}
+
+	return render(c, admin.BillingPackagesList(packages, opts))
 }
 
 func (h *Handler) AdminCreateBillingPackage(c *fiber.Ctx) error {
@@ -280,6 +292,7 @@ func (h *Handler) AdminCreateBillingPackage(c *fiber.Ctx) error {
 	description := c.FormValue("description")
 	priceStr := c.FormValue("price")
 	billingCycle := c.FormValue("billing_cycle")
+	dockerTemplateIDStr := c.FormValue("docker_template_id")
 
 	if name == "" {
 		return c.Status(400).SendString("Name is required")
@@ -289,9 +302,17 @@ func (h *Handler) AdminCreateBillingPackage(c *fiber.Ctx) error {
 		return c.Status(400).SendString("Invalid price")
 	}
 
+	var dockerTemplateID sql.NullInt64
+	if dockerTemplateIDStr != "" {
+		id, err := strconv.ParseInt(dockerTemplateIDStr, 10, 64)
+		if err == nil {
+			dockerTemplateID = sql.NullInt64{Int64: id, Valid: true}
+		}
+	}
+
 	q := generated.New(h.db)
-	if _, err := q.CreateBillingPackage(c.Context(), name, description, price, "TZS", billingCycle); err != nil {
-		return c.Status(500).SendString("Failed to create package")
+	if _, err := q.CreateBillingPackage(c.Context(), name, description, price, "TZS", billingCycle, dockerTemplateID); err != nil {
+		return c.Status(500).SendString("Failed to create package: " + err.Error())
 	}
 
 	return c.Redirect("/admin/billing-packages")
@@ -310,7 +331,17 @@ func (h *Handler) AdminEditBillingPackage(c *fiber.Ctx) error {
 		return fiber.ErrNotFound
 	}
 
-	return render(c, admin.BillingPackageEdit(pkg))
+	dtStore := models.NewDockerTemplateStore(h.db)
+	templates, err := dtStore.List()
+	if err != nil {
+		templates = []models.DockerTemplate{}
+	}
+	opts := make([]admin.DockerTemplateOption, len(templates))
+	for i, t := range templates {
+		opts[i] = admin.DockerTemplateOption{ID: t.ID, Name: t.Name}
+	}
+
+	return render(c, admin.BillingPackageEdit(pkg, opts))
 }
 
 func (h *Handler) AdminUpdateBillingPackage(c *fiber.Ctx) error {
@@ -325,6 +356,7 @@ func (h *Handler) AdminUpdateBillingPackage(c *fiber.Ctx) error {
 	priceStr := c.FormValue("price")
 	billingCycle := c.FormValue("billing_cycle")
 	isActive := c.FormValue("is_active") == "1"
+	dockerTemplateIDStr := c.FormValue("docker_template_id")
 
 	if name == "" {
 		return c.Status(400).SendString("Name is required")
@@ -334,8 +366,16 @@ func (h *Handler) AdminUpdateBillingPackage(c *fiber.Ctx) error {
 		return c.Status(400).SendString("Invalid price")
 	}
 
+	var dockerTemplateID sql.NullInt64
+	if dockerTemplateIDStr != "" {
+		id, err := strconv.ParseInt(dockerTemplateIDStr, 10, 64)
+		if err == nil {
+			dockerTemplateID = sql.NullInt64{Int64: id, Valid: true}
+		}
+	}
+
 	q := generated.New(h.db)
-	if err := q.UpdateBillingPackage(c.Context(), id, name, description, price, billingCycle, isActive); err != nil {
+	if err := q.UpdateBillingPackage(c.Context(), id, name, description, price, billingCycle, isActive, dockerTemplateID); err != nil {
 		return c.Status(500).SendString("Failed to update package")
 	}
 

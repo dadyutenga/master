@@ -749,6 +749,40 @@ func (q *Queries) GetBillingTransactionByID(ctx context.Context, id int64) (Bill
 	return t, err
 }
 
+func (q *Queries) ListAllPayments(ctx context.Context) ([]ListPaymentsRow, error) {
+	rows, err := q.db.QueryContext(ctx,
+		`SELECT bt.id, bt.tenant_id, bt.amount, bt.currency, bt.description, bt.transaction_type, bt.status, bt.admin_id, bt.created_at,
+		        t.company_name, t.billing_status, u.name as user_name, u.email as user_email
+		 FROM billing_transactions bt
+		 JOIN tenants t ON bt.tenant_id = t.id
+		 JOIN users u ON t.user_id = u.id
+		 WHERE bt.transaction_type = 'payment'
+		 ORDER BY bt.created_at DESC`,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var result []ListPaymentsRow
+	for rows.Next() {
+		var r ListPaymentsRow
+		var adminID sql.NullInt64
+		err := rows.Scan(
+			&r.ID, &r.TenantID, &r.Amount, &r.Currency, &r.Description,
+			&r.TransactionType, &r.Status, &adminID, &r.CreatedAt,
+			&r.CompanyName, &r.BillingStatus, &r.UserName, &r.UserEmail,
+		)
+		if err != nil {
+			return nil, err
+		}
+		if adminID.Valid {
+			r.AdminID = &adminID.Int64
+		}
+		result = append(result, r)
+	}
+	return result, rows.Err()
+}
+
 func (q *Queries) MarkTenantPaid(ctx context.Context, tenantID string) error {
 	_, err := q.db.ExecContext(ctx,
 		`UPDATE tenants SET billing_status = 'paid', last_payment_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP WHERE id = ?`,
@@ -1037,10 +1071,25 @@ func (q *Queries) ListInstanceDeployments(ctx context.Context, instanceID uuid.U
 
 // ── Billing Packages ──────────────────────────────────────────────────────
 
+const billingPackageCols = `id, name, description, price, currency, billing_cycle, is_active, docker_template_id, created_at, updated_at`
+
+func scanBillingPackage(scanner interface{ Scan(dest ...any) error }) (BillingPackage, error) {
+	var p BillingPackage
+	var dtID sql.NullInt64
+	err := scanner.Scan(
+		&p.ID, &p.Name, &p.Description, &p.Price, &p.Currency,
+		&p.BillingCycle, &p.IsActive, &dtID,
+		&p.CreatedAt, &p.UpdatedAt,
+	)
+	if dtID.Valid {
+		p.DockerTemplateID = &dtID.Int64
+	}
+	return p, err
+}
+
 func (q *Queries) ListBillingPackages(ctx context.Context) ([]BillingPackage, error) {
 	rows, err := q.db.QueryContext(ctx,
-		`SELECT id, name, description, price, currency, billing_cycle, is_active, created_at, updated_at
-		 FROM billing_packages WHERE is_active = 1 ORDER BY price ASC`,
+		`SELECT `+billingPackageCols+` FROM billing_packages WHERE is_active = 1 ORDER BY price ASC`,
 	)
 	if err != nil {
 		return nil, err
@@ -1048,8 +1097,7 @@ func (q *Queries) ListBillingPackages(ctx context.Context) ([]BillingPackage, er
 	defer rows.Close()
 	var packages []BillingPackage
 	for rows.Next() {
-		var p BillingPackage
-		err := rows.Scan(&p.ID, &p.Name, &p.Description, &p.Price, &p.Currency, &p.BillingCycle, &p.IsActive, &p.CreatedAt, &p.UpdatedAt)
+		p, err := scanBillingPackage(rows)
 		if err != nil {
 			return nil, err
 		}
@@ -1060,8 +1108,7 @@ func (q *Queries) ListBillingPackages(ctx context.Context) ([]BillingPackage, er
 
 func (q *Queries) GetAllBillingPackages(ctx context.Context) ([]BillingPackage, error) {
 	rows, err := q.db.QueryContext(ctx,
-		`SELECT id, name, description, price, currency, billing_cycle, is_active, created_at, updated_at
-		 FROM billing_packages ORDER BY price ASC`,
+		`SELECT `+billingPackageCols+` FROM billing_packages ORDER BY price ASC`,
 	)
 	if err != nil {
 		return nil, err
@@ -1069,8 +1116,7 @@ func (q *Queries) GetAllBillingPackages(ctx context.Context) ([]BillingPackage, 
 	defer rows.Close()
 	var packages []BillingPackage
 	for rows.Next() {
-		var p BillingPackage
-		err := rows.Scan(&p.ID, &p.Name, &p.Description, &p.Price, &p.Currency, &p.BillingCycle, &p.IsActive, &p.CreatedAt, &p.UpdatedAt)
+		p, err := scanBillingPackage(rows)
 		if err != nil {
 			return nil, err
 		}
@@ -1080,35 +1126,24 @@ func (q *Queries) GetAllBillingPackages(ctx context.Context) ([]BillingPackage, 
 }
 
 func (q *Queries) GetBillingPackageByID(ctx context.Context, id int64) (BillingPackage, error) {
-	var p BillingPackage
-	err := q.db.QueryRowContext(ctx,
-		`SELECT id, name, description, price, currency, billing_cycle, is_active, created_at, updated_at
-		 FROM billing_packages WHERE id = ?`, id,
-	).Scan(&p.ID, &p.Name, &p.Description, &p.Price, &p.Currency, &p.BillingCycle, &p.IsActive, &p.CreatedAt, &p.UpdatedAt)
-	return p, err
+	return scanBillingPackage(q.db.QueryRowContext(ctx,
+		`SELECT `+billingPackageCols+` FROM billing_packages WHERE id = ?`, id,
+	))
 }
 
-func (q *Queries) CreateBillingPackage(ctx context.Context, name, description string, price float64, currency, billingCycle string) (BillingPackage, error) {
-	result, err := q.db.ExecContext(ctx,
-		`INSERT INTO billing_packages (name, description, price, currency, billing_cycle)
-		 VALUES (?, ?, ?, ?, ?)`,
-		name, description, price, currency, billingCycle,
-	)
-	if err != nil {
-		return BillingPackage{}, err
-	}
-	id, _ := result.LastInsertId()
-	return BillingPackage{
-		ID: id, Name: name, Description: description, Price: price,
-		Currency: currency, BillingCycle: billingCycle, IsActive: true,
-		CreatedAt: time.Now(), UpdatedAt: time.Now(),
-	}, nil
+func (q *Queries) CreateBillingPackage(ctx context.Context, name, description string, price float64, currency, billingCycle string, dockerTemplateID sql.NullInt64) (BillingPackage, error) {
+	return scanBillingPackage(q.db.QueryRowContext(ctx,
+		`INSERT INTO billing_packages (name, description, price, currency, billing_cycle, docker_template_id)
+		 VALUES (?, ?, ?, ?, ?, ?)
+		 RETURNING `+billingPackageCols,
+		name, description, price, currency, billingCycle, dockerTemplateID,
+	))
 }
 
-func (q *Queries) UpdateBillingPackage(ctx context.Context, id int64, name, description string, price float64, billingCycle string, isActive bool) error {
+func (q *Queries) UpdateBillingPackage(ctx context.Context, id int64, name, description string, price float64, billingCycle string, isActive bool, dockerTemplateID sql.NullInt64) error {
 	_, err := q.db.ExecContext(ctx,
-		`UPDATE billing_packages SET name = ?, description = ?, price = ?, billing_cycle = ?, is_active = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`,
-		name, description, price, billingCycle, isActive, id,
+		`UPDATE billing_packages SET name = ?, description = ?, price = ?, billing_cycle = ?, is_active = ?, docker_template_id = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`,
+		name, description, price, billingCycle, isActive, dockerTemplateID, id,
 	)
 	return err
 }

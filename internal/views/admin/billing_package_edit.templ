@@ -6,7 +6,7 @@ import (
 	"github.com/dadyutenga/hms-control/internal/db/generated"
 )
 
-templ BillingPackageEdit(pkg generated.BillingPackage) {
+templ BillingPackageEdit(pkg generated.BillingPackage, dockerTemplates []DockerTemplateOption) {
 	@AdminLayout("Edit Package", "") {
 		<div style="max-width:800px; margin:0 auto;">
 			<div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:1.5rem;">
@@ -40,6 +40,16 @@ templ BillingPackageEdit(pkg generated.BillingPackage) {
 								<option value="quarterly" selected={ pkg.BillingCycle == "quarterly" }>Quarterly</option>
 								<option value="yearly" selected={ pkg.BillingCycle == "yearly" }>Yearly</option>
 								<option value="one_time" selected={ pkg.BillingCycle == "one_time" }>One Time</option>
+							</select>
+						</div>
+						<div style="display:flex; flex-direction:column; gap:0.25rem;">
+							<label style="font-size:0.75rem; font-weight:600; color:var(--color-muted-fg);">Docker Template</label>
+							<select name="docker_template_id"
+								style="border:1px solid var(--color-border); border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.875rem; background:var(--color-bg); color:var(--color-fg);">
+								<option value="">-- No template --</option>
+								for _, dt := range dockerTemplates {
+									<option value={ fmt.Sprintf("%d", dt.ID) } selected={ pkg.DockerTemplateID != nil && *pkg.DockerTemplateID == dt.ID }>{ dt.Name }</option>
+								}
 							</select>
 						</div>
 					</div>

@@ -173,16 +173,33 @@ type InstanceDeployment struct {
 	CompletedAt  *time.Time `json:"completed_at"`
 }
 
+type ListPaymentsRow struct {
+	ID              int64     `json:"id"`
+	TenantID        string    `json:"tenant_id"`
+	Amount          float64   `json:"amount"`
+	Currency        string    `json:"currency"`
+	Description     string    `json:"description"`
+	TransactionType string    `json:"transaction_type"`
+	Status          string    `json:"status"`
+	AdminID         *int64    `json:"admin_id"`
+	CreatedAt       time.Time `json:"created_at"`
+	CompanyName     string    `json:"company_name"`
+	BillingStatus   string    `json:"billing_status"`
+	UserName        string    `json:"user_name"`
+	UserEmail       string    `json:"user_email"`
+}
+
 type BillingPackage struct {
-	ID           int64     `json:"id"`
-	Name         string    `json:"name"`
-	Description  string    `json:"description"`
-	Price        float64   `json:"price"`
-	Currency     string    `json:"currency"`
-	BillingCycle string    `json:"billing_cycle"`
-	IsActive     bool      `json:"is_active"`
-	CreatedAt    time.Time `json:"created_at"`
-	UpdatedAt    time.Time `json:"updated_at"`
+	ID              int64     `json:"id"`
+	Name            string    `json:"name"`
+	Description     string    `json:"description"`
+	Price           float64   `json:"price"`
+	Currency        string    `json:"currency"`
+	BillingCycle    string    `json:"billing_cycle"`
+	IsActive        bool      `json:"is_active"`
+	DockerTemplateID *int64   `json:"docker_template_id"`
+	CreatedAt       time.Time `json:"created_at"`
+	UpdatedAt       time.Time `json:"updated_at"`
 }
 
 type Queries struct {

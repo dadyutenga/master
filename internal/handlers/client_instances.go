@@ -243,10 +243,18 @@ func (h *Handler) ClientShownewInstance(c *fiber.Ctx) error {
 		packages = []generated.BillingPackage{}
 	}
 
+	// Only show packages that have a docker template linked
+	var filtered []generated.BillingPackage
+	for _, p := range packages {
+		if p.DockerTemplateID != nil {
+			filtered = append(filtered, p)
+		}
+	}
+
 	return render(c, client.NewInstance(client.NewInstanceProps{
 		User:     user,
 		Tenant:   tenant,
-		Packages: packages,
+		Packages: filtered,
 	}))
 }
 
@@ -274,14 +282,22 @@ func (h *Handler) ClientCreateInstance(c *fiber.Ctx) error {
 		return c.Status(400).SendString("Hotel name and slug are required")
 	}
 
-	// Find package price
+	// Find package price and validate docker template is linked
 	packages, _ := q.ListBillingPackages(c.Context())
 	var price float64
+	var found bool
 	for _, p := range packages {
 		if p.Name == pkgName {
+			if p.DockerTemplateID == nil {
+				return c.Status(400).SendString("Selected package has no docker template linked")
+			}
 			price = p.Price
+			found = true
 			break
 		}
+	}
+	if !found {
+		return c.Status(400).SendString("Selected package not found")
 	}
 
 	dbName := "hms_" + slug

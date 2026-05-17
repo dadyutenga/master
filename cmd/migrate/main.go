@@ -103,6 +103,9 @@ func runMigrationsUp(db *sql.DB) {
 	// Add columns that may be missing from instances table
 	db.Exec("ALTER TABLE instances ADD COLUMN slug TEXT NOT NULL DEFAULT ''")
 
+	// Add docker_template_id to billing_packages for package-template association
+	db.Exec("ALTER TABLE billing_packages ADD COLUMN docker_template_id INTEGER REFERENCES docker_templates(id) ON DELETE SET NULL")
+
 	// Reset billing status: tenants with no actual payments should be 'unpaid'
 	db.Exec(`UPDATE tenants SET billing_status = 'unpaid' WHERE billing_status = 'paid' AND id NOT IN (SELECT DISTINCT tenant_id FROM billing_transactions WHERE transaction_type = 'payment' AND status = 'completed')`)
 	fmt.Println("Billing status reset for tenants with no payments.")
