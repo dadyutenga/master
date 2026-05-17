@@ -73,7 +73,7 @@ templ InstanceDetail(props InstanceDetailProps) {
 							</div>
 							<div style="display:flex; justify-content:space-between; align-items:center; gap:1rem;">
 								<dt style="font-size:0.8125rem; color:var(--color-muted-fg);">Price</dt>
-								<dd style="font-size:0.875rem; color:var(--color-fg); font-weight:500; text-align:right;">{ fmt.Sprintf("%'d", int64(props.Instance.Price)) } TZS/mo</dd>
+								<dd style="font-size:0.875rem; color:var(--color-fg); font-weight:500; text-align:right;">{ fmt.Sprintf("%d", int64(props.Instance.Price)) } TZS/mo</dd>
 							</div>
 							<div style="display:flex; justify-content:space-between; align-items:center; gap:1rem;">
 								<dt style="font-size:0.8125rem; color:var(--color-muted-fg);">Status</dt>
