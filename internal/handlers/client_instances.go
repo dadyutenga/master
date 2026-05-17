@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/dadyutenga/hms-control/internal/db/generated"
+	"github.com/dadyutenga/hms-control/internal/models"
 	"github.com/dadyutenga/hms-control/internal/views/client"
 
 	"github.com/gofiber/fiber/v2"
@@ -79,10 +80,14 @@ func (h *Handler) ClientInstanceDetail(c *fiber.Ctx) error {
 		deployments = []generated.InstanceDeployment{}
 	}
 
+	pmStore := models.NewPaymentMethodStore(h.db)
+	paymentMethods, _ := pmStore.ListActive()
+
 	return render(c, client.InstanceDetail(client.InstanceDetailProps{
-		User:        user,
-		Instance:    inst,
-		Deployments: deployments,
+		User:           user,
+		Instance:       inst,
+		Deployments:    deployments,
+		PaymentMethods: paymentMethods,
 	}))
 }
 

@@ -81,12 +81,14 @@ templ AdminLayout(title string, userName string) {
 					@sidebarLink("/admin/instances", "server", "Instances", false)
 					@sidebarLink("/admin/verification", "badge-check", "Verification", false)
 					@sidebarLink("/admin/payments", "credit-card", "Payments", false)
+					@sidebarLink("/admin/payments/pending", "clock", "Pending Payments", false)
 					@sidebarLink("/admin/audit", "history", "Audit Log", false)
 					<div class="admin-sidebar-section">Settings</div>
 					@sidebarLink("/admin/billing-packages", "tag", "Billing Packages", false)
 					@sidebarLink("/admin/settings/contact", "contact", "Contact", false)
 					@sidebarLink("/admin/settings/smtp", "mail", "SMTP", false)
 					@sidebarLink("/admin/settings/provisioner", "code-2", "Provisioner", false)
+					@sidebarLink("/admin/settings/payment-methods", "credit-card", "Payment Methods", false)
 					@sidebarLink("/admin/docker-templates", "layout-grid", "Docker Templates", false)
 				</nav>
 			</aside>

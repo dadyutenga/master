@@ -106,6 +106,9 @@ func runMigrationsUp(db *sql.DB) {
 	// Add docker_template_id to billing_packages for package-template association
 	db.Exec("ALTER TABLE billing_packages ADD COLUMN docker_template_id INTEGER REFERENCES docker_templates(id) ON DELETE SET NULL")
 
+	// Payment methods table
+	db.Exec(migrationPaymentMethods)
+
 	// Reset billing status: tenants with no actual payments should be 'unpaid'
 	db.Exec(`UPDATE tenants SET billing_status = 'unpaid' WHERE billing_status = 'paid' AND id NOT IN (SELECT DISTINCT tenant_id FROM billing_transactions WHERE transaction_type = 'payment' AND status = 'completed')`)
 	fmt.Println("Billing status reset for tenants with no payments.")
@@ -390,3 +393,18 @@ INSERT OR IGNORE INTO billing_packages (name, description, price, billing_cycle)
     ('standard', 'Standard hotel management package', 100000, 'monthly'),
     ('premium', 'Premium hotel management package', 200000, 'monthly');
 `
+
+const migrationPaymentMethods = `
+CREATE TABLE IF NOT EXISTS payment_methods (
+    id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    name            TEXT NOT NULL,
+    method_type     TEXT NOT NULL CHECK(method_type IN ('card','lipa_namba','mobile')),
+    api_key         TEXT NOT NULL DEFAULT '',
+    api_secret      TEXT NOT NULL DEFAULT '',
+    webhook_secret  TEXT NOT NULL DEFAULT '',
+    callback_url    TEXT NOT NULL DEFAULT '',
+    lipa_namba      TEXT NOT NULL DEFAULT '',
+    is_active       INTEGER NOT NULL DEFAULT 1,
+    created_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);`

@@ -91,6 +91,9 @@ func main() {
 	)
 	admin.Get("/", h.AdminDashboard)
 	admin.Get("/payments", h.AdminPayments)
+	admin.Get("/payments/pending", h.AdminPendingPayments)
+	admin.Post("/payments/:id/approve", h.AdminApprovePayment)
+	admin.Post("/payments/:id/reject", h.AdminRejectPayment)
 	admin.Get("/audit", h.AuditLog)
 	admin.Get("/audit/export", h.ExportAuditCSV)
 	// /tenants/export MUST come before /tenants/:id
@@ -121,6 +124,11 @@ func main() {
 	admin.Post("/settings/smtp/test", h.TestSMTP)
 	admin.Get("/settings/provisioner", h.AdminProvisionerSettings)
 	admin.Post("/settings/provisioner", h.UpdateProvisionerSettings)
+	admin.Get("/settings/payment-methods", h.AdminPaymentSettings)
+	admin.Post("/settings/payment-methods/new", h.AdminCreatePaymentMethod)
+	admin.Get("/settings/payment-methods/:id/edit", h.AdminEditPaymentMethod)
+	admin.Post("/settings/payment-methods/:id/edit", h.AdminUpdatePaymentMethod)
+	admin.Post("/settings/payment-methods/:id/toggle", h.AdminTogglePaymentMethod)
 
 	// Docker Templates
 	admin.Get("/docker-templates", h.ListDockerTemplates)

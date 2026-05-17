@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/dadyutenga/hms-control/internal/db/generated"
+	"github.com/dadyutenga/hms-control/internal/models"
 	"github.com/dadyutenga/hms-control/internal/views/client"
 
 	"github.com/gofiber/fiber/v2"
@@ -50,11 +51,18 @@ func (h *Handler) ClientBillingPage(c *fiber.Ctx) error {
 		}
 	}
 
+	pmStore := models.NewPaymentMethodStore(h.db)
+	paymentMethods, err := pmStore.ListActive()
+	if err != nil {
+		paymentMethods = []models.PaymentMethod{}
+	}
+
 	return render(c, client.BillingPage(client.BillingPageProps{
-		Tenant:         tenant,
-		User:           user,
-		Transactions:   txns,
+		Tenant:          tenant,
+		User:            user,
+		Transactions:    txns,
 		UnpaidInstances: unpaidInstances,
+		PaymentMethods:  paymentMethods,
 	}))
 }
 
@@ -128,11 +136,22 @@ func (h *Handler) ClientPayInstance(c *fiber.Ctx) error {
 		return c.Status(403).SendString("Access denied")
 	}
 
-	method := c.FormValue("payment_method")
+	pmID := c.FormValue("payment_method_id")
 	reference := c.FormValue("reference")
 	notes := c.FormValue("notes")
 
-	description := fmt.Sprintf("Instance payment for %s via %s", inst.HotelName, method)
+	// Get payment method name
+	pmStore := models.NewPaymentMethodStore(h.db)
+	pmName := "unknown"
+	if pmID != "" {
+		if id, err := strconv.ParseInt(pmID, 10, 64); err == nil {
+			if pm, err := pmStore.GetByID(id); err == nil {
+				pmName = pm.Name
+			}
+		}
+	}
+
+	description := fmt.Sprintf("Instance payment for %s via %s", inst.HotelName, pmName)
 	if reference != "" {
 		description += " | Ref: " + reference
 	}
@@ -140,11 +159,23 @@ func (h *Handler) ClientPayInstance(c *fiber.Ctx) error {
 		description += " | " + notes
 	}
 
-	q.CreateBillingTransaction(c.Context(), tenant.ID.String(), inst.Price, generated.TxnTypePayment, description, nil)
-	q.MarkInstancePaid(c.Context(), inst.ID)
+	// Handle receipt upload
+	file, ferr := c.FormFile("receipt")
+	if ferr == nil && file.Size <= 10<<20 {
+		uploadDir := filepath.Join(h.cfg.UploadDir, "receipts", tenant.ID.String())
+		if err := os.MkdirAll(uploadDir, 0755); err == nil {
+			ext := filepath.Ext(file.Filename)
+			filename := "receipt_" + randomHexName() + ext
+			dst := filepath.Join(uploadDir, filename)
+			if err := c.SaveFile(file, dst); err == nil {
+				receiptPath := "uploads/receipts/" + tenant.ID.String() + "/" + filename
+				description += " | File: " + receiptPath
+			}
+		}
+	}
 
-	q.UpdateInstanceStatus(c.Context(), inst.ID, "provisioning")
-	q.CreateInstanceDeployment(c.Context(), inst.ID, "provision", "provisioning")
+	// Create pending transaction (DO NOT mark as paid yet)
+	q.CreateBillingTransaction(c.Context(), tenant.ID.String(), inst.Price, generated.TxnTypePayment, description, nil)
 
 	return c.Redirect("/dashboard/instances/" + inst.ID.String())
 }

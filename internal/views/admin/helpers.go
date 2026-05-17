@@ -61,6 +61,24 @@ func DomainDisplay(domain string) string {
 	return domain
 }
 
+func ActiveLabel(active bool) string {
+	if active {
+		return "Deactivate"
+	}
+	return "Activate"
+}
+
+func PMBadgeStyle(methodType string) string {
+	switch methodType {
+	case "card":
+		return "background:hsl(217, 91%, 95%); color:hsl(217, 91%, 40%);"
+	case "lipa_namba":
+		return "background:hsl(140, 60%, 95%); color:hsl(140, 60%, 35%);"
+	default:
+		return "background:hsl(25, 80%, 95%); color:hsl(25, 80%, 40%);"
+	}
+}
+
 func IsPendingDomain(domain string) bool {
 	return strings.HasPrefix(domain, "pending-")
 }
